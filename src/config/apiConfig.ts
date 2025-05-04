@@ -7,5 +7,4 @@ export const ENDPOINTS = {
 
 export const API_HEADERS = {
   'X-RapidAPI-Key': process.env.API_KEY || '',
-  'X-RapidAPI-Host': 'v1.basketball.api-sports.io',
 };

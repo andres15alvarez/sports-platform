@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchBasketballData } from "../../services/basketballApi";
 
-const useOdds = (gameId: string) => {
+const useOdds = ({ league, season}: { league: string; season: string }) => {
   const [odds, setOdds] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -9,9 +9,14 @@ const useOdds = (gameId: string) => {
   useEffect(() => {
     const fetchOdds = async () => {
       try {
-        const res = await fetchBasketballData("odds", { game: gameId });
+        const res = await fetchBasketballData("odds", {
+          league,
+          season,
+        });
+        console.log("Datos de odds recibidos:", res);
+
         if (res?.response && res.response.length > 0) {
-          setOdds(res.response[0]); 
+          setOdds(res.response);
         } else {
           setError("No hay predicciones disponibles");
         }
@@ -23,10 +28,10 @@ const useOdds = (gameId: string) => {
       }
     };
 
-    if (gameId) {
+    if (league && season) {
       fetchOdds();
     }
-  }, [gameId]);
+  }, [league, season]);
 
   return { odds, loading, error };
 };

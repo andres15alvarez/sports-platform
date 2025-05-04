@@ -2,6 +2,58 @@
 
 import useGames from "../hooks/basketball/useGames";
 import useLeagues from "../hooks/basketball/useLeagues";
+import useOdds from "../hooks/basketball/useOdds"; 
+
+const GameOdds = ({
+  league,
+  season,
+  homeTeam,
+  awayTeam,
+}: {
+  league: string;
+  season: string;
+  homeTeam: string;
+  awayTeam: string;
+}) => {
+  const { odds, loading, error } = useOdds({ league, season});
+
+  if (loading) return <p>Cargando predicciones...</p>;
+  if (error) return <p>{error}</p>;
+
+  const first = odds[0];
+  const bookmaker = first?.bookmakers?.[0];
+  const bets = bookmaker?.bets?.[0]?.values;
+
+  return (
+    <div style={{ marginBottom: "20px", padding: "10px", border: "1px solid #ccc" }}>
+      <strong>{homeTeam} vs {awayTeam}</strong><br />
+      <strong>Probabilidades (según {bookmaker?.name}):</strong>
+      {bets ? (
+        <ul>
+          {bets.map((b: any) => {
+        if (b.value === "Home") {
+          return (
+            <li key={b.value}>
+              <strong>Local ({homeTeam}): </strong> {b.odd}
+            </li>
+          );
+        }
+        if (b.value === "Away") {
+          return (
+            <li key={b.value}>
+              <strong>Visitante ({awayTeam}): </strong> {b.odd}
+            </li>
+          );
+        }
+        return null;
+      })}
+        </ul>
+      ) : (
+        <p>No hay apuestas disponibles.</p>
+      )}
+    </div>
+  );
+};
 
 const Home = () => {
   const { leagues, loading: loadingLeagues, error: errorLeagues } = useLeagues();
@@ -103,6 +155,29 @@ const Home = () => {
                 Fecha y hora: {date}<br />
                 Lugar: {venue}, {country}
               </div>
+            );
+          })
+        )}
+      </section>
+
+      {/* Predicciones */}
+      <section style={{ marginTop: "40px" }}>
+        <h3>PREDICCIONES PARA LOS PRÓXIMOS JUEGOS</h3>
+        {upcomingGames.length === 0 ? (
+          <p>No hay predicciones disponibles.</p>
+        ) : (
+          upcomingGames.map((game) => {
+            const home = game.teams.home.name;
+            const away = game.teams.away.name;
+
+            return (
+              <GameOdds
+                key={game.id}
+                league="12"
+                season="2024-2025"
+                homeTeam={home}
+                awayTeam={away}
+              />
             );
           })
         )}
