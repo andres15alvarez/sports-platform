@@ -100,7 +100,7 @@ const GameOdds = ({
           if (!bets) return null;
 
           return (
-            <div key={bookmaker.key} className="border-t pt-2">
+            <div key={bookmaker.id || bookmaker.name} className="border-t pt-2">
               <p className="font-semibold text-green-800 mb-1">
                 {bookmaker.name}
               </p>
