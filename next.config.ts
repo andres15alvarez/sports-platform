@@ -1,7 +1,11 @@
-import type { NextConfig } from "next";
+import nextTranslate from 'next-translate';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  webpack(config, options) {
+    return config;
+  },
 };
 
-export default nextConfig;
+export default nextTranslate(nextConfig);
