@@ -35,7 +35,7 @@ const Text: React.FC = () => {
       <section className="mb-8">
         <div className="justify-between items-center mb-4 hidden lg:flex">
           <h2 className="text-xl font-semibold text-green-700">
-            Today's Sports Predictions [This section will be generated using OpenAI API + Sport-api.io + Human-crafted prompt, generating 100-200 words]
+            Today&apos;s Sports Predictions [This section will be generated using OpenAI API + Sport-api.io + Human-crafted prompt, generating 100-200 words]
           </h2>
           <a href="/all-predictions" className="text-green-600 hover:text-green-800 flex items-center">
             See all <i className="bx bx-chevron-right ml-1"></i>
@@ -45,7 +45,7 @@ const Text: React.FC = () => {
         {/* Sport Tabs - Mobile (Scrollable) */}
         <div className="flex justify-between items-center mb-4 sm:hidden">
           <h2 className="text-md whitespace-nowrap font-semibold text-green-700">
-            Today's Sports Predictions
+            Today&apos;s Sports Predictions
           </h2>
           <a href="/all-predictions" className="text-green-600 hover:text-green-800 flex items-center text-sm">
             See all <i className="bx bx-chevron-right ml-1"></i>

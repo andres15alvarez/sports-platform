@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import React from 'react';
 
-// Tipos definidos para mejor claridad y seguridad
 type Odd = {
     label: string;
     value: string;
@@ -54,10 +53,11 @@ const FeaturedEvents: React.FC = () => {
                 ))}
             </div>
             <div className="text-center mt-4">
-                <Link href="/today-events">
-                    <p className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium cursor-pointer">
-                        View all of today's events
-                    </p>
+                <Link
+                href="/today-events"
+                className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
+                >
+                View all of today's events
                 </Link>
             </div>
         </section>
@@ -71,9 +71,10 @@ const FeaturedEventCard: React.FC<Event> = ({ league, dateTime, matchHref, match
                 <span className="text-sm text-gray-500">{league}</span>
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">{dateTime}</span>
             </div>
+
             <h3 className="font-bold text-lg mb-2">
-                <Link href={matchHref}>
-                    <p className="hover:text-green-600 cursor-pointer">{matchTitle}</p>
+                <Link href={matchHref} className="hover:text-green-600 cursor-pointer">
+                    {matchTitle}
                 </Link>
             </h3>
             <div className="flex justify-between">

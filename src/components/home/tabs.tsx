@@ -12,7 +12,9 @@ interface MatchData {
   greenOddsIndex?: number;
   leagueLogo: string;
   leagueName: string;
+  [key: string]: string | number | undefined;
 }
+
 
 // Datos Desktop
 const seriesADesktop: MatchData[] = [
@@ -120,7 +122,7 @@ const euroleagueDesktop: MatchData[] = [
   },
 ];
 
-const formula1Desktop: MatchData[] = [
+const f1Desktop: MatchData[] = [
   {
     match: 'Max Verstappen - Red Bull',
     date: '05/26 15:00',
@@ -224,7 +226,7 @@ const nbaMobile: MatchData[] = [
   },
 ];
 
-const formula1Mobile: MatchData[] = [
+const f1Mobile: MatchData[] = [
   {
     match: 'Verstappen',
     date: '05/26 15:00',
@@ -238,9 +240,8 @@ const formula1Mobile: MatchData[] = [
   },
 ];
 
-// Columnas (asumiendo estructura de tabla)
 interface TableColumn {
-  key: keyof MatchData;
+  key: string;
   label: string;
 }
 
@@ -253,64 +254,14 @@ const desktopCol: TableColumn[] = [
   { key: 'odds', label: 'Odds' },
 ];
 
-const f1Desktop: MatchData[] = [
-  {
-    match: 'Max Verstappen - Red Bull',
-    date: '05/26 15:00',
-    probability: '38%',
-    prediction: 'Winner',
-    result: '1st',
-    odds: '1.60',
-    greenOddsIndex: 0,
-    leagueLogo: 'https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg',
-    leagueName: 'Formula 1'
-  },
-  {
-    match: 'Charles Leclerc - Ferrari',
-    date: '05/26 15:00',
-    probability: '25%',
-    prediction: 'Pole',
-    result: '1st',
-    odds: '2.10',
-    greenOddsIndex: 0,
-    leagueLogo: 'https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg',
-    leagueName: 'Formula 1'
-  },
-  {
-    match: 'Lando Norris - McLaren',
-    date: '05/26 15:00',
-    probability: '65%',
-    prediction: 'Podium',
-    result: '3rd',
-    odds: '1.85',
-    greenOddsIndex: 0,
-    leagueLogo: 'https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg',
-    leagueName: 'Formula 1'
-  }
-];
-
-const f1Mobile: MatchData[] = [
-  {
-    match: 'Verstappen',
-    date: '05/26 15:00',
-    probability: '38%',
-    prediction: 'Win',
-    result: '1st',
-    odds: '1.60',
-    greenOddsIndex: 0,
-    leagueLogo: 'https://upload.wikimedia.org/wikipedia/commons/3/33/F1.svg',
-    leagueName: 'Formula 1'
-  }
-];
-
-const desktopMonacoCol: TableColumn[] = [ 
+//const desktopMonacoCol: TableColumn[] = [ 
     //{ key: 'driver', label: 'Driver' },
-    { key: 'date', label: 'Date' },
-    { key: 'probability', label: 'Prob. %' },
-    { key: 'prediction', label: 'Prediction' },
-    { key: 'result', label: 'Result' },
-    { key: 'odds', label: 'Odds' },
-];
+    //{ key: 'date', label: 'Date' },
+    //{ key: 'probability', label: 'Prob. %' },
+    //{ key: 'prediction', label: 'Prediction' },
+    //{ key: 'result', label: 'Result' },
+    //{ key: 'odds', label: 'Odds' },
+//];
 
 
 const mobileCol: TableColumn[] = [

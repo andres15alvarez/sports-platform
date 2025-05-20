@@ -1,4 +1,5 @@
 import React from "react";
+import Image from 'next/image';
 
 interface Column {
   key: string;
@@ -14,7 +15,7 @@ interface BookmakerOdds {
   greenOddsIndex?: number;
   probability: string;
   prediction: string;
-  [key: string]: any;
+  [key: string]: string | number | undefined;
 }
 
 interface TableProps {
@@ -44,10 +45,13 @@ export const Table: React.FC<TableProps> = ({ bookmakerOdds, columns, title }) =
                   <td key={i} className="py-2 px-3 text-center">
                     {col.key === "match" || col.key === "driver" ? (
                       <div className="flex items-center">
-                        <img
+                        <Image
                           src={odds.leagueLogo}
                           alt={odds.leagueName}
+                          width={20}
+                          height={20}
                           className="w-5 h-5 mr-2"
+                          unoptimized 
                         />
                         <a
                           href={`/prediction/${odds.match.toLowerCase().replace(/ - /g, "-").replace(/\s/g, "")}`}

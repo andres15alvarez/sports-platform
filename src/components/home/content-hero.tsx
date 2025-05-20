@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-// Tipos
 interface Slide {
   id: number;
   bgImage: string;
@@ -27,7 +26,6 @@ interface HeroControlsProps {
   goToSlide: (index: number) => void;
 }
 
-// Datos
 const slides: Slide[] = [
   {
     id: 1,
@@ -64,7 +62,6 @@ const slides: Slide[] = [
   },
 ];
 
-// Componente principal
 export default function HeroCarousel() {
   const [current, setCurrent] = useState<number>(0);
 
@@ -98,7 +95,6 @@ export default function HeroCarousel() {
   );
 }
 
-// Componente Slide
 function HeroSlide({ slide, isActive }: HeroSlideProps) {
   return (
     <div
@@ -122,7 +118,6 @@ function HeroSlide({ slide, isActive }: HeroSlideProps) {
   );
 }
 
-// Componente de controles
 function HeroControls({ slides, currentSlide, prevSlide, nextSlide, goToSlide }: HeroControlsProps) {
   return (
     <>
@@ -139,7 +134,6 @@ function HeroControls({ slides, currentSlide, prevSlide, nextSlide, goToSlide }:
         <i className="bx bx-chevron-right"></i>
       </button>
 
-      {/* Indicadores */}
       <div className="absolute bottom-2 md:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
         {slides.map((_, index) => (
           <span

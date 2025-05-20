@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from 'next/image';
 import Carousel from "./carousel";
 
 type Offer = {
@@ -81,11 +82,13 @@ const RightSidebar: React.FC = () => {
               className="flex items-center justify-between bg-green-100 hover:bg-green-200 transition-colors duration-300 px-4 py-2 rounded-lg"
             >
               <div className="flex items-center space-x-3">
-                <img
+                <Image
                   src={offer.logo}
                   alt={`${offer.name} logo`}
-                  className="h-8 w-auto object-contain"
-                  loading="lazy"
+                  width={80}
+                  height={32}
+                  className="object-contain"
+                  unoptimized 
                 />
                 <span className="text-sm font-bold">{offer.bonus}</span>
               </div>
