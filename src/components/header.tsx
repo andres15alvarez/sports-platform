@@ -144,37 +144,37 @@ export default function Header() {
             href="/news"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
-            Results
+            {results}
           </a>
           <a
             href="#"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
-            Odds
+            {odds}
           </a>
           <a
             href="/soccer-prediction"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
-            Predictions
+            {predictions}
           </a>
           <a
             href="#"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
-            Bookmakers
+            {bookmarkers}
           </a>
           <a
             href="#"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
-            Promos
+            {promos}
           </a>
           <a
             href="#"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
-            Tools
+            {tools}
           </a>
         </div>
       </nav>
