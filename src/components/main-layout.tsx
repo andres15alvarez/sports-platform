@@ -12,11 +12,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <div className="hidden lg:block">
         <LeftSidebar />
       </div>
-
       <main className="flex-1 bg-white p-4 lg:p-6 mt-5 rounded-lg shadow">
         {children}
       </main>
-
       <div className="hidden lg:block">
         <RightSidebar />
       </div>

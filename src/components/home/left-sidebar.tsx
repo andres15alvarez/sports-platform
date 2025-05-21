@@ -20,19 +20,19 @@ const LeftSidebar: React.FC = () => {
           <li className="flex items-center justify-center space-x-2 hover:text-yellow-300">
             <Image
               src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg"
-              alt="Serie A logo"
+              alt="Serie A"
               width={20}
               height={20}
               unoptimized
             />
-            <Link href="/leagues/serie-a" title="Serie A odds and predictions">
+            <Link href="#" title="Serie A odds and predictions">
               Serie A
             </Link>
           </li>
           <li className="flex items-center justify-center space-x-2 hover:text-yellow-300">
             <Image
               src="https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg"
-              alt="Premier League logo"
+              alt="Premier League"
               width={20}
               height={20}
               unoptimized
@@ -47,7 +47,7 @@ const LeftSidebar: React.FC = () => {
           <li className="flex items-center justify-center space-x-2 hover:text-yellow-300">
             <Image
               src="https://upload.wikimedia.org/wikipedia/en/f/f5/UEFA_Champions_League.svg"
-              alt="Champions League logo"
+              alt="Champions League"
               width={20}
               height={20}
               unoptimized
