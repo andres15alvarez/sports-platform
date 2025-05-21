@@ -30,20 +30,20 @@ interface MatchData {
 //     prediction: '1',
 //     result: '
 
-const premierDesktop: MatchData[] = [
-  {
-    match: 'Liverpool - Man City',
-    date: '04/27 18:30',
-    probability: '35%  35%  30%',
-    prediction: 'X',
-    result: '1-1',
-    odds: '2.50  3.40  2.80',
-    greenOddsIndex: 1,
-    leagueLogo:
-      'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
-    leagueName: 'Premier',
-  },
-];
+// const premierDesktop: MatchData[] = [
+//  {
+//  match: 'Liverpool - Man City',
+//  date: '04/27 18:30',
+//  probability: '35%  35%  30%',
+//  prediction: 'X',
+//  result: '1-1',
+//  odds: '2.50  3.40  2.80',
+//  greenOddsIndex: 1,
+//  leagueLogo:
+//    'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
+//  leagueName: 'Premier',
+// },
+// ];
 
 const atpDesktop: MatchData[] = [
   {
@@ -336,6 +336,8 @@ const Tabs: React.FC = () => {
         };
       }) ?? [];
 
+  ///Football
+
   const { odds: footballOdds } = useFootballOdds({
     league: '3',
     season: '2024',
@@ -348,6 +350,73 @@ const Tabs: React.FC = () => {
 
       const homeTeam = item.teams?.home?.name ?? 'Tottenham Hotspur';
       const awayTeam = item.teams?.away?.name ?? 'Manchester United';
+
+      const date = new Date(fixture.date).toLocaleString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const result = '-';
+
+      const bookmaker =
+        item.bookmakers?.find((b) => b.name === 'Bwin') || item.bookmakers?.[0];
+      const matchWinnerBet = bookmaker?.bets?.find(
+        (b) => b.name === 'Match Winner',
+      );
+      const matchWinnerValues = matchWinnerBet?.values ?? [];
+
+      let prediction = '?';
+      let probability = '?';
+      let greenOddsIndex: number | undefined = undefined;
+
+      if (matchWinnerValues.length) {
+        const oddsWithIndex = matchWinnerValues.map(
+          (v: OddValue, i: number) => ({ ...v, index: i }),
+        );
+        const best = oddsWithIndex.reduce(
+          (
+            min: { odd: string; index: number; value: string },
+            curr: { odd: string; index: number; value: string },
+          ) => (parseFloat(curr.odd) < parseFloat(min.odd) ? curr : min),
+        );
+
+        prediction =
+          best.value === 'Home' ? '1' : best.value === 'Away' ? '2' : 'X';
+        probability = (100 / parseFloat(best.odd)).toFixed(0) + '%';
+        greenOddsIndex = best.index;
+      }
+
+      const oddsString = matchWinnerValues.map((v) => v.odd).join(' ');
+
+      return {
+        match: `${homeTeam} - ${awayTeam}`,
+        date,
+        prediction,
+        probability,
+        result,
+        odds: oddsString,
+        greenOddsIndex,
+        leagueLogo: league.logo ?? '',
+        leagueName: league.name ?? '',
+      };
+    }) ?? [];
+
+  ////CODIGO REPETIDO, ARREGLAR LUEGO
+
+  const { odds: brazilFootballOdds } = useFootballOdds({
+    league: '73',
+    season: '2025',
+  });
+
+  const brazilLeagueData: MatchData[] =
+    brazilFootballOdds?.map((item: FootballOdd) => {
+      const fixture = item.fixture;
+      const league = item.league || {};
+
+      const homeTeam = item.teams?.home?.name ?? 'Home';
+      const awayTeam = item.teams?.away?.name ?? 'Away';
 
       const date = new Date(fixture.date).toLocaleString('en-US', {
         month: '2-digit',
@@ -530,8 +599,8 @@ const Tabs: React.FC = () => {
 
             <div className="mb-6 hidden lg:block">
               <Table
-                title={'Premier League'}
-                bookmakerOdds={premierDesktop}
+                title={'Copa Do Brazil'}
+                bookmakerOdds={brazilLeagueData}
                 columns={desktopCol}
               />
             </div>
