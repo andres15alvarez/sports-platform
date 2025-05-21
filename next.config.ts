@@ -1,4 +1,4 @@
-import nextTranslate from 'next-translate';
+import nextTranslate from 'next-translate-plugin';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {

@@ -1,9 +1,18 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import useTranslation from 'next-translate/useTranslation';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t, lang } = useTranslation('common');
+  const results = t('results');
+  const odds = t('odds');
+  const predictions = t('predictions');
+  const bookmarkers = t('bookmarkers');
+  const promos = t('promos');
+  const tools = t('tools');
+  const login = t('login');
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow-lg border-b-4 border-green-600 z-50">
@@ -36,22 +45,22 @@ export default function Header() {
           aria-label="Main navigation"
         >
           <a href="#" title="Sports results in real time">
-            Results
+            {results}
           </a>
           <a href="#" title="Odds from the best bookmakers">
-            Odds
+            {odds}
           </a>
           <a href="/soccer-prediction" title="Expert sports predictions">
-            Predictions
+            {predictions}
           </a>
           <a href="#" title="Reviews of the best bookmakers">
-            Bookmakers
+            {bookmarkers}
           </a>
           <a href="#" title="Exclusive promotions and bonuses">
-            Promos
+            {promos}
           </a>
           <a href="#" title="Tools for bettors">
-            Tools
+            {tools}
           </a>
         </nav>
 
@@ -66,7 +75,7 @@ export default function Header() {
           </button>
           {/* Login Button */}
           <button className="hidden lg:block bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md font-medium focus:outline-none border-2 border-yellow-400 text-sm">
-            Login
+            {login}
           </button>
           {/* Favorites Button */}
           <button
@@ -84,31 +93,41 @@ export default function Header() {
               aria-label="Change language"
             >
               <img
-                src="https://flagcdn.com/gb.svg"
+                src={`https://flagcdn.com/${lang == 'en' ? 'gb' : 'es'}.svg`}
                 alt="English"
                 className="h-4 w-auto mr-1"
               />
-              <span className="hidden sm:inline">EN</span>
+              <span className="hidden sm:inline">{lang.toUpperCase()}</span>
               <i className="bx bx-chevron-down ml-1 text-lg"></i>
             </button>
             <ul className="absolute right-0 mt-1 w-24 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none group-hover:pointer-events-auto">
               <li>
-                <a
-                  href="https://www.oddssite.it/"
-                  hrefLang="it"
-                  className="block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
+                <Link
+                  href="/?lang=es"
+                  hrefLang="es"
+                  className="flex block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
                 >
-                  IT
-                </a>
+                  <img
+                    src="https://flagcdn.com/es.svg"
+                    alt="Spanish"
+                    className="h-4 w-auto mr-1"
+                  />
+                  ES
+                </Link>
               </li>
               <li>
-                <a
-                  href="https://www.oddssite.com/en/"
+                <Link
+                  href="/"
                   hrefLang="en"
-                  className="block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
+                  className="flex block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
                 >
+                  <img
+                    src="https://flagcdn.com/gb.svg"
+                    alt="English"
+                    className="h-4 w-auto mr-1"
+                  />
                   EN
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
