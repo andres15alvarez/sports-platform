@@ -2,15 +2,21 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import useLeagues from "@/src/hooks/basketball/useLeagues";
+import useFootballLeagues from "@/src/hooks/football/useFootballLeagues";
 
-type MenuKey = "football" | "baseball" | "tennis";
+type MenuKey = "football" | "baseball" | "tennis" | "basketball";
 
 export default function SportsMenu() {
   const [open, setOpen] = useState<Record<MenuKey, boolean>>({
     football: false,
     baseball: false,
     tennis: false,
+    basketball: false,
   });
+
+  const { leagues, loading, error } = useLeagues();
+   const { leagues: footballLeagues, loading: footballLoading, error: footballError } = useFootballLeagues();
 
   const toggleMenu = (menu: MenuKey) => {
     setOpen((prev) => ({ ...prev, [menu]: !prev[menu] }));
@@ -31,33 +37,24 @@ export default function SportsMenu() {
         </button>
         {open.football && (
           <ul className="ml-4 mt-2 space-y-1 text-sm">
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/280px-Premier_League_Logo.svg.png"
-                alt="Premier League"
-                width={16}
-                height={16}
-              />
-              <Link href="#" title="Premier League Odds">Premier League</Link>
-            </li>
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Serie_A_logo_2022.svg/261px-Serie_A_logo_2022.svg.png"
-                alt="Serie A"
-                width={16}
-                height={16}
-              />
-              <Link href="/news" title="Serie A Odds">Serie A</Link>
-            </li>
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/LaLiga_EA_Sports_2023_Vertical_Logo.svg/250px-LaLiga_EA_Sports_2023_Vertical_Logo.svg.png"
-                alt="La Liga"
-                width={16}
-                height={16}
-              />
-              <Link href="/soccer-prediction" title="La Liga Odds">La Liga</Link>
-            </li>
+            {footballLoading && <li className="text-gray-400">Cargando ligas...</li>}
+            {footballError && <li className="text-red-400">{footballError}</li>}
+            {!footballLoading &&
+              !footballError &&
+              footballLeagues.slice(0, 10).map((league) => (
+                <li key={league.id} className="flex items-center space-x-2 hover:text-yellow-300">
+                  <Image
+                    src={league.logo || ""}
+                    alt={league.name}
+                    width={16}
+                    height={16}
+                    unoptimized
+                  />
+                  <Link href={`/football/${league.id}`} title={`${league.name} Odds`}>
+                    {league.name}
+                  </Link>
+                </li>
+              ))}
           </ul>
         )}
       </div>
@@ -81,6 +78,7 @@ export default function SportsMenu() {
                 alt="MLB"
                 width={16}
                 height={16}
+                unoptimized 
               />
               <Link href="/baseball-prediction" title="MLB Odds">MLB</Link>
             </li>
@@ -90,6 +88,7 @@ export default function SportsMenu() {
                 alt="NPB"
                 width={16}
                 height={16}
+                unoptimized 
               />
               <Link href="/basket-prediction" title="NPB Odds">NPB</Link>
             </li>
@@ -99,6 +98,7 @@ export default function SportsMenu() {
                 alt="MiLB"
                 width={16}
                 height={16}
+                unoptimized 
               />
               <Link href="#" title="MiLB Odds">MiLB</Link>
             </li>
@@ -125,6 +125,7 @@ export default function SportsMenu() {
                 alt="ATP Tour"
                 width={16}
                 height={16}
+                unoptimized 
               />
               <Link href="#" title="ATP Tour Odds">ATP Tour</Link>
             </li>
@@ -134,6 +135,7 @@ export default function SportsMenu() {
                 alt="WTA Tour"
                 width={16}
                 height={16}
+                unoptimized 
               />
               <Link href="#" title="WTA Tour Odds">WTA Tour</Link>
             </li>
@@ -143,9 +145,47 @@ export default function SportsMenu() {
                 alt="Grand Slams"
                 width={16}
                 height={16}
+                unoptimized 
               />
               <Link href="#" title="Grand Slams Odds">Grand Slams</Link>
             </li>
+          </ul>
+        )}
+      </div>
+      {/* Basketball */}
+      <div className="mb-4">
+        <button
+          onClick={() => toggleMenu("basketball")}
+          className="w-full flex cursor-pointer justify-between items-center text-white font-semibold focus:outline-none"
+        >
+          <span className="flex items-center gap-2">
+            <i className="bx bx-basketball text-lg"></i>Basketball
+          </span>
+          <i className={`bx ${open.basketball ? "bx-chevron-up" : "bx-chevron-down"}`}></i>
+        </button>
+        {open.basketball && (
+          <ul className="ml-4 mt-2 space-y-1 text-sm">
+            {loading && <li className="text-gray-400">Cargando ligas...</li>}
+            {error && <li className="text-red-400">{error}</li>}
+            {!loading &&
+              !error &&
+              leagues.slice(0, 10).map((league) => (
+                <li
+                  key={league.id}
+                  className="flex items-center space-x-2 hover:text-yellow-300"
+                >
+                  <Image
+                    src={league.logo || "/default-basket-logo.png"}
+                    alt={league.name}
+                    width={16}
+                    height={16}
+                    unoptimized
+                  />
+                  <Link href={`/basketball/${league.id}`} title={`${league.name} Odds`}>
+                    {league.name}
+                  </Link>
+                </li>
+              ))}
           </ul>
         )}
       </div>

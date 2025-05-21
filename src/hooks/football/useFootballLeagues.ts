@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchBasketballData } from '../../services/basketballApi';
+import { fetchFootballData } from '@/src/services/footballApi';
 
 interface League {
   id: number;
@@ -7,8 +7,7 @@ interface League {
   logo: string;
 }
 
-
-const useLeagues = () => {
+const useFootballLeagues = () => {
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,10 +15,15 @@ const useLeagues = () => {
   useEffect(() => {
     const fetchLeagues = async () => {
       try {
-        const res = await fetchBasketballData('leagues');
-        console.log('Leagues Data:', res);
+        const res = await fetchFootballData('leagues');
+        console.log('Football Leagues Data:', res);
         if (res?.response) {
-          setLeagues(res.response);
+          const mappedLeagues = res.response.map((item: any) => ({
+            id: item.league.id,
+            name: item.league.name,
+            logo: item.league.logo,
+          }));
+          setLeagues(mappedLeagues);
         } else {
           setError('No se encontraron ligas');
         }
@@ -37,4 +41,4 @@ const useLeagues = () => {
   return { leagues, loading, error };
 };
 
-export default useLeagues;
+export default useFootballLeagues;

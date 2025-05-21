@@ -18,7 +18,7 @@ const useGames = (params: {
     const fetchGames = async () => {
       try {
         const res = await fetchBasketballData('games', params);
-        console.log('Games Data:', res);
+        //console.log('Games Data:', res);
         if (res?.response) {
           setGames(res.response);
         } else {

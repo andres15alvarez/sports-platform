@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
+
 
 interface Slide {
   title: string;
@@ -56,7 +58,15 @@ export default function Carousel() {
               <p className="text-xs text-gray-500 text-center">{slide.subtitle}</p>
               <div className="flex items-center justify-between bg-green-50 rounded-lg p-4 hover:bg-green-100 transition-colors duration-300">
                 <span className="text-base font-semibold text-green-800">{slide.odds}</span>
-                <img src={slide.logo} alt="bookmaker" className="h-8" loading="lazy" />
+                <Image
+                  src={slide.logo}
+                  alt="bookmaker"
+                  width={100}
+                  height={32}
+                  className="h-8 w-auto"
+                  loading="lazy"
+                  unoptimized
+                />
               </div>
             </div>
           </div>
