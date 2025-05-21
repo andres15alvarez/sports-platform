@@ -40,9 +40,7 @@ const Text: React.FC = () => {
       <section className="mb-8">
         <div className="justify-between items-center mb-4 hidden lg:flex">
           <h2 className="text-xl font-semibold text-green-700">
-            Today&apos;s Sports Predictions [This section will be generated
-            using OpenAI API + Sport-api.io + Human-crafted prompt, generating
-            100-200 words]
+            Today&apos;s Sports Predictions
           </h2>
           <a
             href="/all-predictions"

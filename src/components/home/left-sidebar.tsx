@@ -8,7 +8,7 @@ import SportsMenu from './sports-menu';
 const LeftSidebar: React.FC = () => {
   return (
     <aside
-      className="w-56 bg-gradient-to-b from-green-900 to-green-800 text-white h-screen sticky top-16 p-4 shadow-lg"
+      className="w-56 bg-gradient-to-b from-green-900 to-green-800 text-white h-screen sticky top-16 p-4 shadow-lg overflow-y-auto"
       aria-label="Popular leagues and sports"
     >
       {/* Popular Leagues */}
@@ -23,6 +23,7 @@ const LeftSidebar: React.FC = () => {
               alt="Serie A"
               width={20}
               height={20}
+              unoptimized
             />
             <Link href="#" title="Serie A odds and predictions">
               Serie A
@@ -34,10 +35,14 @@ const LeftSidebar: React.FC = () => {
               alt="Premier League"
               width={20}
               height={20}
+              unoptimized
             />
-            <a href="#" title="Premier League odds and predictions">
+            <Link
+              href="/leagues/premier-league"
+              title="Premier League odds and predictions"
+            >
               Premier League
-            </a>
+            </Link>
           </li>
           <li className="flex items-center justify-center space-x-2 hover:text-yellow-300">
             <Image
@@ -45,10 +50,14 @@ const LeftSidebar: React.FC = () => {
               alt="Champions League"
               width={20}
               height={20}
+              unoptimized
             />
-            <a href="#" title="Champions League odds and predictions">
+            <Link
+              href="/leagues/champions-league"
+              title="Champions League odds and predictions"
+            >
               Champions League
-            </a>
+            </Link>
           </li>
         </ul>
       </div>

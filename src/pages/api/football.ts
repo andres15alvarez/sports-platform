@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { API_URL_Basketball, API_HEADERS } from '@/src/config/apiConfig';
+import { API_URL_Football, API_HEADERS } from '@/src/config/apiConfig';
 
 export default async function handler(
   req: NextApiRequest,
@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   const { endpoint = 'leagues', ...params } = req.query;
 
-  const url = new URL(`${API_URL_Basketball}/${endpoint}`);
+  const url = new URL(`${API_URL_Football}/${endpoint}`);
 
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.append(key, String(value));

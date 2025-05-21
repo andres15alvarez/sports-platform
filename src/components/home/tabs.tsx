@@ -2,6 +2,11 @@
 import React, { useState } from 'react';
 import { Table } from './table';
 
+import useOdds, { Odd, OddValue } from '@/src/hooks/basketball/useOdds';
+import useFootballOdds, {
+  FootballOdd,
+} from '@/src/hooks/football/useFootballOdds';
+
 interface MatchData {
   match: string;
   date: string;
@@ -16,47 +21,29 @@ interface MatchData {
 }
 
 // Datos Desktop
-const seriesADesktop: MatchData[] = [
-  {
-    match: 'Inter - Milan',
-    date: '04/27 20:45',
-    probability: '42%  28%  30%',
-    prediction: '1',
-    result: '2-1',
-    odds: '1.85  3.40  4.50',
-    greenOddsIndex: 0,
-    leagueLogo:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Serie_A_logo_2022.svg/261px-Serie_A_logo_2022.svg.png',
-    leagueName: 'Serie A',
-  },
-  {
-    match: 'Juventus - Roma',
-    date: '04/27 15:00',
-    probability: '44%  30%  26%',
-    prediction: '1',
-    result: '2-0',
-    odds: '1.95  3.30  3.75',
-    greenOddsIndex: 0,
-    leagueLogo:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Serie_A_logo_2022.svg/261px-Serie_A_logo_2022.svg.png',
-    leagueName: 'Serie A',
-  },
-];
 
-const premierDesktop: MatchData[] = [
-  {
-    match: 'Liverpool - Man City',
-    date: '04/27 18:30',
-    probability: '35%  35%  30%',
-    prediction: 'X',
-    result: '1-1',
-    odds: '2.50  3.40  2.80',
-    greenOddsIndex: 1,
-    leagueLogo:
-      'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
-    leagueName: 'Premier',
-  },
-];
+// const seriesADesktop: MatchData[] = [
+//   {
+//     match: 'Inter - Milan',
+//     date: '04/27 20:45',
+//     probability: '42%  28%  30%',
+//     prediction: '1',
+//     result: '
+
+// const premierDesktop: MatchData[] = [
+//  {
+//  match: 'Liverpool - Man City',
+//  date: '04/27 18:30',
+//  probability: '35%  35%  30%',
+//  prediction: 'X',
+//  result: '1-1',
+//  odds: '2.50  3.40  2.80',
+//  greenOddsIndex: 1,
+//  leagueLogo:
+//    'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
+//  leagueName: 'Premier',
+// },
+// ];
 
 const atpDesktop: MatchData[] = [
   {
@@ -88,32 +75,30 @@ const wtaDesktop: MatchData[] = [
   },
 ];
 
-const nbaDesktop: MatchData[] = [
-  {
-    match: 'Lakers - Celtics',
-    date: '04/27 02:30',
-    probability: '48%  52%',
-    prediction: '2',
-    result: '98-105',
-    odds: '2.10  1.75',
-    greenOddsIndex: 1,
-    leagueLogo:
-      'https://upload.wikimedia.org/wikipedia/en/0/03/National_Basketball_Association_logo.svg',
-    leagueName: 'NBA',
-  },
-  {
-    match: 'Bucks - Heat',
-    date: '04/27 23:00',
-    probability: '65%  35%',
-    prediction: '1',
-    result: '112-103',
-    odds: '1.45  2.75',
-    greenOddsIndex: 0,
-    leagueLogo:
-      'https://upload.wikimedia.org/wikipedia/en/0/03/National_Basketball_Association_logo.svg',
-    leagueName: 'NBA',
-  },
-];
+//const nbaDesktop: MatchData[] = [
+//{
+//match: 'Lakers - Celtics',
+//date: '04/27 02:30',
+//probability: '48%  52%',
+//prediction: '2',
+//result: '98-105',
+//odds: '2.10  1.75',
+//greenOddsIndex: 1,
+//leagueLogo: 'https://upload.wikimedia.org/wikipedia/en/0/03/National_Basketball_Association_logo.svg',
+//leagueName: 'NBA',
+//},
+//{
+// match: 'Bucks - Heat',
+//date: '04/27 23:00',
+//probability: '65%  35%',
+//prediction: '1',
+//result: '112-103',
+//odds: '1.45  2.75',
+//greenOddsIndex: 0,
+//leagueLogo: 'https://upload.wikimedia.org/wikipedia/en/0/03/National_Basketball_Association_logo.svg',
+//leagueName: 'NBA',
+//},
+//];
 
 const euroleagueDesktop: MatchData[] = [
   {
@@ -290,6 +275,201 @@ const Tabs: React.FC = () => {
     setActiveTab(tab);
   };
 
+  const { odds } = useOdds({ league: '12', season: '2024-2025' });
+  const parsedData: MatchData[] =
+    odds
+      ?.filter(
+        (item: Odd) =>
+          item?.game?.teams?.home?.name && item?.game?.teams?.away?.name,
+      )
+      .map((item: Odd) => {
+        const homeName = item.game.teams.home.name;
+        const awayName = item.game.teams.away.name;
+        const date = new Date(item.game.date).toLocaleString('en-US', {
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+        const status = item.game.status.short;
+        const homeScore = item.game.scores?.home?.total ?? '-';
+        const awayScore = item.game.scores?.away?.total ?? '-';
+        const result = status === 'FT' ? `${homeScore} - ${awayScore}` : '-';
+
+        const firstBookmaker = item.bookmakers?.[0];
+        const oddsValues = firstBookmaker?.bets?.[0]?.values ?? [];
+        const oddsString = oddsValues.map((v) => v.odd).join(' ');
+
+        let prediction = '?';
+        let probability = '?';
+        let greenOddsIndex: number | undefined = undefined;
+
+        if (oddsValues.length) {
+          const oddsWithIndex = oddsValues.map((v: OddValue, i: number) => ({
+            ...v,
+            index: i,
+          }));
+          const best = oddsWithIndex.reduce(
+            (
+              min: { odd: string; index: number; value: string },
+              curr: { odd: string; index: number; value: string },
+            ) => (parseFloat(curr.odd) < parseFloat(min.odd) ? curr : min),
+          );
+
+          prediction =
+            best.value === 'Home' ? '1' : best.value === 'Away' ? '2' : 'X';
+          probability = (100 / parseFloat(best.odd)).toFixed(0) + '%';
+          greenOddsIndex = best.index;
+        }
+
+        return {
+          match: `${homeName} - ${awayName}`,
+          date,
+          prediction,
+          probability,
+          result,
+          odds: oddsString,
+          greenOddsIndex,
+          leagueLogo: item.league.logo,
+          leagueName: item.league.name,
+        };
+      }) ?? [];
+
+  ///Football
+
+  const { odds: footballOdds } = useFootballOdds({
+    league: '3',
+    season: '2024',
+  });
+
+  const europaLeagueData: MatchData[] =
+    footballOdds?.map((item: FootballOdd) => {
+      const fixture = item.fixture;
+      const league = item.league || {};
+
+      const homeTeam = item.teams?.home?.name ?? 'Tottenham Hotspur';
+      const awayTeam = item.teams?.away?.name ?? 'Manchester United';
+
+      const date = new Date(fixture.date).toLocaleString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const result = '-';
+
+      const bookmaker =
+        item.bookmakers?.find((b) => b.name === 'Bwin') || item.bookmakers?.[0];
+      const matchWinnerBet = bookmaker?.bets?.find(
+        (b) => b.name === 'Match Winner',
+      );
+      const matchWinnerValues = matchWinnerBet?.values ?? [];
+
+      let prediction = '?';
+      let probability = '?';
+      let greenOddsIndex: number | undefined = undefined;
+
+      if (matchWinnerValues.length) {
+        const oddsWithIndex = matchWinnerValues.map(
+          (v: OddValue, i: number) => ({ ...v, index: i }),
+        );
+        const best = oddsWithIndex.reduce(
+          (
+            min: { odd: string; index: number; value: string },
+            curr: { odd: string; index: number; value: string },
+          ) => (parseFloat(curr.odd) < parseFloat(min.odd) ? curr : min),
+        );
+
+        prediction =
+          best.value === 'Home' ? '1' : best.value === 'Away' ? '2' : 'X';
+        probability = (100 / parseFloat(best.odd)).toFixed(0) + '%';
+        greenOddsIndex = best.index;
+      }
+
+      const oddsString = matchWinnerValues.map((v) => v.odd).join(' ');
+
+      return {
+        match: `${homeTeam} - ${awayTeam}`,
+        date,
+        prediction,
+        probability,
+        result,
+        odds: oddsString,
+        greenOddsIndex,
+        leagueLogo: league.logo ?? '',
+        leagueName: league.name ?? '',
+      };
+    }) ?? [];
+
+  ////CODIGO REPETIDO, ARREGLAR LUEGO
+
+  const { odds: brazilFootballOdds } = useFootballOdds({
+    league: '73',
+    season: '2025',
+  });
+
+  const brazilLeagueData: MatchData[] =
+    brazilFootballOdds?.map((item: FootballOdd) => {
+      const fixture = item.fixture;
+      const league = item.league || {};
+
+      const homeTeam = item.teams?.home?.name ?? 'Home';
+      const awayTeam = item.teams?.away?.name ?? 'Away';
+
+      const date = new Date(fixture.date).toLocaleString('en-US', {
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const result = '-';
+
+      const bookmaker =
+        item.bookmakers?.find((b) => b.name === 'Bwin') || item.bookmakers?.[0];
+      const matchWinnerBet = bookmaker?.bets?.find(
+        (b) => b.name === 'Match Winner',
+      );
+      const matchWinnerValues = matchWinnerBet?.values ?? [];
+
+      let prediction = '?';
+      let probability = '?';
+      let greenOddsIndex: number | undefined = undefined;
+
+      if (matchWinnerValues.length) {
+        const oddsWithIndex = matchWinnerValues.map(
+          (v: OddValue, i: number) => ({ ...v, index: i }),
+        );
+        const best = oddsWithIndex.reduce(
+          (
+            min: { odd: string; index: number; value: string },
+            curr: { odd: string; index: number; value: string },
+          ) => (parseFloat(curr.odd) < parseFloat(min.odd) ? curr : min),
+        );
+
+        prediction =
+          best.value === 'Home' ? '1' : best.value === 'Away' ? '2' : 'X';
+        probability = (100 / parseFloat(best.odd)).toFixed(0) + '%';
+        greenOddsIndex = best.index;
+      }
+
+      const oddsString = matchWinnerValues.map((v) => v.odd).join(' ');
+
+      return {
+        match: `${homeTeam} - ${awayTeam}`,
+        date,
+        prediction,
+        probability,
+        result,
+        odds: oddsString,
+        greenOddsIndex,
+        leagueLogo: league.logo ?? '',
+        leagueName: league.name ?? '',
+      };
+    }) ?? [];
+
   return (
     <>
       <div className="mb-4 border-b border-gray-200 ">
@@ -403,8 +583,8 @@ const Tabs: React.FC = () => {
             </div>
             <div className="mb-6 hidden lg:block">
               <Table
-                title={'Serie A'}
-                bookmakerOdds={seriesADesktop}
+                title={'UEFA Europa League'}
+                bookmakerOdds={europaLeagueData}
                 columns={desktopCol}
               />
             </div>
@@ -419,8 +599,8 @@ const Tabs: React.FC = () => {
 
             <div className="mb-6 hidden lg:block">
               <Table
-                title={'Premier League'}
-                bookmakerOdds={premierDesktop}
+                title={'Copa Do Brazil'}
+                bookmakerOdds={brazilLeagueData}
                 columns={desktopCol}
               />
             </div>
@@ -545,7 +725,7 @@ const Tabs: React.FC = () => {
             <div className="mb-6 hidden lg:block">
               <Table
                 title={'NBA'}
-                bookmakerOdds={nbaDesktop}
+                bookmakerOdds={parsedData}
                 columns={desktopCol}
               />
             </div>

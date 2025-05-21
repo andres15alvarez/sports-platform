@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface Slide {
   id: number;
@@ -30,7 +30,7 @@ const slides: Slide[] = [
   {
     id: 1,
     bgImage:
-      'https://images.unsplash.com/photo-1508098682722-e99c643e7f3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      'https://imagenes.eltiempo.com/files/image_1200_535/files/fp/uploads/2025/01/10/6781b6a4af25b.r_d.987-603-7059.jpeg',
     tag: 'SPECIAL OFFER',
     tagColor: 'bg-yellow-500 text-black',
     title: 'Welcome Bonus',
@@ -54,12 +54,12 @@ const slides: Slide[] = [
   {
     id: 3,
     bgImage:
-      'https://images.unsplash.com/photo-1561280626-c9ef00e4b221?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      'https://images2.minutemediacdn.com/image/upload/c_crop,w_3973,h_2234,x_0,y_149/c_fill,w_2160,ar_16:9,f_auto,q_auto,g_auto/images%2FImagnImages%2Fmmsport%2Fsi-temp%2F01hwybaa5e325pycb9ep.jpg',
     tag: 'LIVE',
     tagColor: 'bg-red-600 text-white',
-    title: 'Betting Contest',
-    description: 'Guess results & win Champions League VIP',
-    buttonText: 'PARTICIPATE',
+    title: 'NBA Conference Finals',
+    description: 'Follow game live',
+    buttonText: 'View more',
     buttonLink: '#',
     buttonStyle: 'bg-white hover:bg-gray-100 text-green-700',
   },
@@ -68,17 +68,22 @@ const slides: Slide[] = [
 export default function HeroCarousel() {
   const [current, setCurrent] = useState<number>(0);
 
+  const nextSlide = useCallback(() => {
+    setCurrent((prev) => (prev + 1) % slides.length);
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  }, []);
+
+  const goToSlide = (index: number) => setCurrent(index);
+
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
     }, 5000);
     return () => clearInterval(interval);
-  }, [current]);
-
-  const nextSlide = () => setCurrent((current + 1) % slides.length);
-  const prevSlide = () =>
-    setCurrent((current - 1 + slides.length) % slides.length);
-  const goToSlide = (index: number) => setCurrent(index);
+  }, [nextSlide]);
 
   return (
     <div className="hero-carousel-container w-full relative overflow-hidden mb-6 rounded-lg">
@@ -110,10 +115,10 @@ function HeroSlide({ slide, isActive }: HeroSlideProps) {
       style={{
         backgroundImage: `url(${slide.bgImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'top',
       }}
     >
-      <div className="slide-content absolute bottom-0 left-0 p-4 md:p-6 text-white bg-black/50 max-w-full w-full">
+      <div className="slide-content absolute bottom-0 left-0 p-4 md:p-6 text-white bg-black/50 max-w-full w-full h-full">
         <span
           className={`${slide.tagColor} font-bold px-2 py-1 mb-2 inline-block text-sm`}
         >

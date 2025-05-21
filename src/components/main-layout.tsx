@@ -2,9 +2,9 @@ import React, { ReactNode } from 'react';
 import LeftSidebar from './home/left-sidebar';
 import RightSidebar from './home/right-sidebar';
 
-interface MainLayoutProps {
+type MainLayoutProps = {
   children: ReactNode;
-}
+};
 
 export default function MainLayout({ children }: MainLayoutProps) {
   return (

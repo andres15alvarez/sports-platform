@@ -48,30 +48,34 @@ const Footer: React.FC = () => {
             </h3>
             <ul className="space-y-2 text-xs lg:text-sm">
               <li>
-                <Link href="/sport/football">
-                  <p className="hover:text-yellow-300">Football</p>
+                <Link href="/sport/football" className="hover:text-yellow-300">
+                  Football
                 </Link>
               </li>
               <li>
-                <Link href="/sport/tennis">
-                  <p className="hover:text-yellow-300">Tennis</p>
+                <Link href="/sport/tennis" className="hover:text-yellow-300">
+                  Tennis
                 </Link>
               </li>
               <li>
-                <Link href="/sport/basketball">
-                  <p className="hover:text-yellow-300">Basketball</p>
+                <Link
+                  href="/sport/basketball"
+                  className="hover:text-yellow-300"
+                >
+                  Basketball
                 </Link>
               </li>
               <li>
-                <Link href="/sport/formula-1">
-                  <p className="hover:text-yellow-300">Formula 1</p>
+                <Link href="/sport/formula-1" className="hover:text-yellow-300">
+                  Formula 1
                 </Link>
               </li>
               <li>
-                <Link href="/sport/volleyball">
-                  <p className="hover:text-yellow-300 hidden lg:block">
-                    Volleyball
-                  </p>
+                <Link
+                  href="/sport/volleyball"
+                  className="hover:text-yellow-300 hidden lg:block"
+                >
+                  Volleyball
                 </Link>
               </li>
             </ul>
@@ -82,30 +86,43 @@ const Footer: React.FC = () => {
             <h3 className="text-base lg:text-lg font-bold mb-4">Top Leagues</h3>
             <ul className="space-y-2 text-xs lg:text-sm">
               <li>
-                <Link href="/football/serie-a">
-                  <p className="hover:text-yellow-300">Serie A</p>
+                <Link
+                  href="/football/serie-a"
+                  className="hover:text-yellow-300"
+                >
+                  Serie A
                 </Link>
               </li>
               <li>
-                <Link href="/football/premier-league">
-                  <p className="hover:text-yellow-300">Premier League</p>
+                <Link
+                  href="/football/premier-league"
+                  className="hover:text-yellow-300"
+                >
+                  Premier League
                 </Link>
               </li>
               <li>
-                <Link href="/football/champions-league">
-                  <p className="hover:text-yellow-300">Champions League</p>
+                <Link
+                  href="/football/champions-league"
+                  className="hover:text-yellow-300"
+                >
+                  Champions League
                 </Link>
               </li>
               <li>
-                <Link href="/football/bundesliga">
-                  <p className="hover:text-yellow-300 hidden lg:block">
-                    Bundesliga
-                  </p>
+                <Link
+                  href="/football/bundesliga"
+                  className="hover:text-yellow-300 hidden lg:block"
+                >
+                  Bundesliga
                 </Link>
               </li>
               <li>
-                <Link href="/football/la-liga">
-                  <p className="hover:text-yellow-300">La Liga</p>
+                <Link
+                  href="/football/la-liga"
+                  className="hover:text-yellow-300"
+                >
+                  La Liga
                 </Link>
               </li>
             </ul>
@@ -116,35 +133,40 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-bold mb-4">Useful Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/about-us">
-                  <p className="hover:text-yellow-300">About Us</p>
+                <Link href="/about-us" className="hover:text-yellow-300">
+                  About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact">
-                  <p className="hover:text-yellow-300">Contact</p>
+                <Link href="/contact" className="hover:text-yellow-300">
+                  Contact
                 </Link>
               </li>
               <li>
-                <Link href="/terms-conditions">
-                  <p className="hover:text-yellow-300">Terms and Conditions</p>
+                <Link
+                  href="/terms-conditions"
+                  className="hover:text-yellow-300"
+                >
+                  Terms and Conditions
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy">
-                  <p className="hover:text-yellow-300">Privacy Policy</p>
+                <Link href="/privacy-policy" className="hover:text-yellow-300">
+                  Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/responsible-gambling">
-                  <p className="hover:text-yellow-300">Responsible Gambling</p>
+                <Link
+                  href="/responsible-gambling"
+                  className="hover:text-yellow-300"
+                >
+                  Responsible Gambling
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Socials on Mobile */}
         <div className="flex justify-center space-x-4 mt-4 lg:hidden">
           <a
             href="https://www.facebook.com/oddssite"
@@ -183,24 +205,33 @@ const Footer: React.FC = () => {
             bookmakers.
           </p>
         </div>
-
         <div className="flex justify-center text-xs mt-2 mb-12 space-x-2 lg:hidden">
-          <Link href="/about-us">
-            <p className="cursor-pointer hover:text-yellow-300">About</p>
+          <Link
+            href="/about-us"
+            className="cursor-pointer hover:text-yellow-300"
+          >
+            About
           </Link>
           <span>|</span>
-          <Link href="/terms-conditions">
-            <p className="cursor-pointer hover:text-yellow-300">Terms</p>
+          <Link
+            href="/terms-conditions"
+            className="cursor-pointer hover:text-yellow-300"
+          >
+            Terms
           </Link>
           <span>|</span>
-          <Link href="/privacy-policy">
-            <p className="cursor-pointer hover:text-yellow-300">Privacy</p>
+          <Link
+            href="/privacy-policy"
+            className="cursor-pointer hover:text-yellow-300"
+          >
+            Privacy
           </Link>
           <span>|</span>
-          <Link href="/responsible-gambling">
-            <p className="cursor-pointer hover:text-yellow-300">
-              Responsible Gambling
-            </p>
+          <Link
+            href="/responsible-gambling"
+            className="cursor-pointer hover:text-yellow-300"
+          >
+            Responsible Gambling
           </Link>
         </div>
       </div>

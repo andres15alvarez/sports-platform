@@ -1,37 +1,45 @@
 import { useEffect, useState } from 'react';
-import { fetchBasketballData } from '../../services/basketballApi';
-import { Game, League } from './useGames';
+import { fetchFootballData } from '../../services/footballApi';
+import { Game, League, Teams } from '../basketball/useGames';
+import { OddValue } from '../basketball/useOdds';
 
-export type OddValue = {
-  odd: string;
-  index: number;
-  value: string;
-};
-
-export type Odd = {
+export type FootballOdd = {
   id: number;
+  fixture: {
+    date: string;
+  };
   game: Game;
   bookmakers: {
     bets: {
       values: OddValue[];
+      name: string;
     }[];
+    name: string;
   }[];
   league: League;
+  teams: Teams;
 };
 
-const useOdds = ({ league, season }: { league: string; season: string }) => {
-  const [odds, setOdds] = useState<Odd[] | null>(null);
+const useFootballOdds = ({
+  league,
+  season,
+}: {
+  league: string;
+  season: string;
+}) => {
+  const [odds, setOdds] = useState<FootballOdd[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOdds = async () => {
       try {
-        const res = await fetchBasketballData('odds', {
+        const res = await fetchFootballData('odds', {
           league,
           season,
         });
-        //console.log('Datos de odds recibidos:', res);
+
+        //console.log('Datos de odds de fútbol recibidos:', res);
 
         if (res?.response && res.response.length > 0) {
           setOdds(res.response);
@@ -39,7 +47,7 @@ const useOdds = ({ league, season }: { league: string; season: string }) => {
           setError('No hay predicciones disponibles');
         }
       } catch (e) {
-        console.error('Error al cargar odds:', e);
+        console.error('Error al cargar odds de fútbol:', e);
         setError('Error al cargar predicciones');
       } finally {
         setLoading(false);
@@ -48,10 +56,14 @@ const useOdds = ({ league, season }: { league: string; season: string }) => {
 
     if (league && season) {
       fetchOdds();
+    } else {
+      setLoading(false);
+      setOdds(null);
+      setError(null);
     }
   }, [league, season]);
 
   return { odds, loading, error };
 };
 
-export default useOdds;
+export default useFootballOdds;
