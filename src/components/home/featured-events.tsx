@@ -1,76 +1,80 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
-
-type Odd = {
-  label: string;
-  value: string;
-};
-
-type Event = {
-  league: string;
-  dateTime: string;
-  matchHref: string;
-  matchTitle: string;
-  odds: Odd[];
-};
-
-const events: Event[] = [
-  {
-    league: 'Serie A',
-    dateTime: '04/28/2025 - 20:45',
-    matchHref: '/football/serie-a/inter-milan',
-    matchTitle: 'Inter vs Milan',
-    odds: [
-      { label: '1', value: '2.10' },
-      { label: 'X', value: '3.25' },
-      { label: '2', value: '3.60' },
-    ],
-  },
-  {
-    league: 'Premier League',
-    dateTime: '04/27/2025 - 17:30',
-    matchHref: '/football/premier-league/liverpool-manchester-city',
-    matchTitle: 'Liverpool vs Manchester City',
-    odds: [
-      { label: '1', value: '2.45' },
-      { label: 'X', value: '3.40' },
-      { label: '2', value: '2.90' },
-    ],
-  },
-];
+import React, { useState } from 'react';
+import useGames, { Game } from '@/src/hooks/basketball/useGames';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 const FeaturedEvents: React.FC = () => {
+  const [params] = useState({
+    timezone: 'America/New_York',
+    league: '12',
+    season: '2024-2025',
+  });
+  const { games, loading, error } = useGames(params);
+
+  const upcomingGames = games
+    .filter((g: Game) => g.status.long === 'Not Started')
+    .slice(0, 4);
+
+  if (loading) return <p>Cargando partidos...</p>;
+  if (error) return <p>{error}</p>;
+  if (upcomingGames.length === 0)
+    return <p>No hay próximos juegos disponibles.</p>;
+
   return (
     <section className="my-6">
       <h2 className="text-lg lg:text-xl font-semibold text-green-700 mb-3">
-        Featured Sports Events{' '}
-        <span className="hidden lg:inline-block">[Sport-api.io]</span>
+        Featured Sports Events
       </h2>
+
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-600">{error}</p>}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {events.map((event, index) => (
-          <FeaturedEventCard key={index} {...event} />
-        ))}
+        {upcomingGames?.map((game: Game) => {
+          const gameDate = new Date(game.date);
+          const formattedDate = format(gameDate, 'dd/MM/yyyy - HH:mm', {
+            locale: es,
+          });
+
+          return (
+            <FeaturedEventCard
+              key={game.id}
+              league={game.league.name}
+              dateTime={formattedDate}
+              matchTitle={`${game.teams.home.name} vs ${game.teams.away.name}`}
+              location={game.venue || 'Not available'}
+            />
+          );
+        })}
       </div>
+
       <div className="text-center mt-4">
         <Link
           href="/today-events"
           className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
         >
-          View all of todays events
+          View all upcoming events
         </Link>
       </div>
     </section>
   );
 };
 
-const FeaturedEventCard: React.FC<Event> = ({
+type FeaturedCardProps = {
+  league: string;
+  dateTime: string;
+  matchTitle: string;
+  location: string;
+};
+
+const FeaturedEventCard: React.FC<FeaturedCardProps> = ({
   league,
   dateTime,
-  matchHref,
   matchTitle,
-  odds,
+  location,
 }) => {
   return (
     <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -81,19 +85,8 @@ const FeaturedEventCard: React.FC<Event> = ({
         </span>
       </div>
 
-      <h3 className="font-bold text-lg mb-2">
-        <Link href={matchHref} className="hover:text-green-600 cursor-pointer">
-          {matchTitle}
-        </Link>
-      </h3>
-      <div className="flex justify-between">
-        {odds.map((odd, i) => (
-          <div key={i} className="flex flex-col items-center">
-            <span className="text-xs">{odd.label}</span>
-            <span className="font-semibold">{odd.value}</span>
-          </div>
-        ))}
-      </div>
+      <h3 className="font-bold text-lg mb-1">{matchTitle}</h3>
+      <p className="text-sm text-gray-600">{location}</p>
     </div>
   );
 };

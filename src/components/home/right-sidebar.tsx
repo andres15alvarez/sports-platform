@@ -1,7 +1,7 @@
-import React from "react";
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
-import Carousel from "./carousel";
+import Carousel from './carousel';
 
 type Offer = {
   name: string;
@@ -88,7 +88,7 @@ const RightSidebar: React.FC = () => {
                   width={80}
                   height={32}
                   className="object-contain"
-                  unoptimized 
+                  unoptimized
                 />
                 <span className="text-sm font-bold">{offer.bonus}</span>
               </div>
@@ -106,7 +106,9 @@ const RightSidebar: React.FC = () => {
 
         {/* Latest Predictions */}
         <div className="mt-6">
-          <h2 className="text-green-700 font-semibold mb-2">Latest Predictions</h2>
+          <h2 className="text-green-700 font-semibold mb-2">
+            Latest Predictions
+          </h2>
           <ul className="space-y-1 text-black">
             {predictions.map((prediction) => (
               <li key={prediction.id}>

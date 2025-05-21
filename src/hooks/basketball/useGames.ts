@@ -1,9 +1,50 @@
 import { useEffect, useState } from 'react';
 import { fetchBasketballData } from '../../services/basketballApi';
 
-interface Game {
+export type League = {
   id: number;
-}
+  name: string;
+  country: string;
+  logo: string;
+  flag: string;
+};
+
+export type Teams = {
+  home: {
+    id: number;
+    name: string;
+    logo: string;
+    winner: boolean | null;
+  };
+  away: {
+    id: number;
+    name: string;
+    logo: string;
+    winner: boolean | null;
+  };
+};
+
+export type Game = {
+  id: number;
+  league: League;
+  status: {
+    long: string;
+    short: string;
+  };
+  date: string;
+  teams: Teams;
+  venue: string;
+  scores: {
+    home: {
+      total: number;
+      quarter: number[];
+    };
+    away: {
+      total: number;
+      quarter: number[];
+    };
+  };
+};
 
 const useGames = (params: {
   timezone: string;
@@ -18,7 +59,7 @@ const useGames = (params: {
     const fetchGames = async () => {
       try {
         const res = await fetchBasketballData('games', params);
-        console.log('Games Data:', res);
+        //console.log('Games Data:', res);
         if (res?.response) {
           setGames(res.response);
         } else {
