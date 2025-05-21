@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import React from 'react';
-import useGames from '@/src/hooks/basketball/useGames';
+import useGames, { Game } from '@/src/hooks/basketball/useGames';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -14,7 +14,7 @@ const FeaturedEvents: React.FC = () => {
   });
 
  const upcomingGames = games
-    .filter((g: any) => g.status.long === 'Not Started')
+    .filter((g: Game) => g.status.long === 'Not Started')
     .slice(0, 4);
 
   if (loading) return <p>Cargando partidos...</p>;
@@ -31,7 +31,7 @@ const FeaturedEvents: React.FC = () => {
       {error && <p className="text-red-600">{error}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {upcomingGames?.map((game: any) => {
+        {upcomingGames?.map((game: Game) => {
           const gameDate = new Date(game.date);
           const formattedDate = format(gameDate, "dd/MM/yyyy - HH:mm", { locale: es });
 

@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { Table } from './table';
 
-import useOdds from '@/src/hooks/basketball/useOdds';
+import useOdds, { Odd } from '@/src/hooks/basketball/useOdds';
 import useFootballOdds from '@/src/hooks/football/useFootballOdds';
 
 interface MatchData {
@@ -269,8 +269,8 @@ const Tabs: React.FC = () => {
   
   const { odds } = useOdds({ league: '12', season: '2024-2025' }); 
   const parsedData: MatchData[] = odds
-  ?.filter((item: any) => item?.game?.teams?.home?.name && item?.game?.teams?.away?.name)
-  .map((item: any) => {
+  ?.filter((item: Odd) => item?.game?.teams?.home?.name && item?.game?.teams?.away?.name)
+  .map((item: Odd) => {
     const homeName = item.game.teams.home.name;
     const awayName = item.game.teams.away.name;
     const date = new Date(item.game.date).toLocaleString('en-US', {

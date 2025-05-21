@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
 import { fetchBasketballData } from '../../services/basketballApi';
+import { Game, League } from './useGames';
 
-interface Odd {
+export type Odd = {
   id: number;
+  game: Game;
+  bookmakers: {
+    bets: {
+      values: number[]
+    }[]
+  }[]
+  league: League;
 }
 
 const useOdds = ({ league, season }: { league: string; season: string }) => {

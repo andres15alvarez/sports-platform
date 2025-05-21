@@ -5,6 +5,11 @@ interface League {
   id: number;
   name: string;
   logo: string;
+  league: {
+    id: number;
+    name: string;
+    logo: string;
+  }
 }
 
 const useFootballLeagues = () => {
@@ -18,7 +23,7 @@ const useFootballLeagues = () => {
         const res = await fetchFootballData('leagues');
         console.log('Football Leagues Data:', res);
         if (res?.response) {
-          const mappedLeagues = res.response.map((item: any) => ({
+          const mappedLeagues = res.response.map((item: League) => ({
             id: item.league.id,
             name: item.league.name,
             logo: item.league.logo,

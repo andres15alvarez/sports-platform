@@ -1,8 +1,47 @@
 import { useEffect, useState } from 'react';
 import { fetchBasketballData } from '../../services/basketballApi';
 
-interface Game {
+export type League = {
   id: number;
+    name: string;
+    country: string;
+    logo: string;
+    flag: string;
+}
+
+export type Game = {
+  id: number;
+  league: League;
+  status: {
+    long: string
+    short: string;
+  };
+  date: string;
+  teams: {
+    home: {
+      id: number;
+      name: string;
+      logo: string;
+      winner: boolean | null;
+    };
+    away: {
+      id: number;
+      name: string;
+      logo: string;
+      winner: boolean | null;
+    };
+  },
+  venue: string;
+  scores: {
+    home: {
+      total: number;
+      quarter: number[];
+    };
+    away: {
+      total: number;
+      quarter: number[];
+    };
+  };
 }
 
 const useGames = (params: {
