@@ -37,94 +37,56 @@ const bettingOffers: BettingOffer[] = [
   },
 ];
 
-const OfferCard = ({ offer }: { offer: BettingOffer }): React.ReactElement =>
-  React.createElement(
-    'div',
-    { className: 'bg-white rounded-lg shadow-sm overflow-hidden' },
-    [
-      React.createElement(
-        'div',
-        { className: 'bg-green-600 text-white p-4', key: 'header' },
-        React.createElement(
-          'h3',
-          { className: 'font-semibold text-lg' },
-          offer.title,
-        ),
-      ),
-      React.createElement('div', { className: 'p-4', key: 'body' }, [
-        React.createElement(
-          'div',
-          {
-            className: 'flex items-center justify-between mb-3',
-            key: 'row',
-          },
-          [
-            React.createElement(Image, {
-              key: 'image',
-              src: offer.image,
-              alt: offer.alt,
-              width: offer.width,
-              height: 32,
-              className: 'h-8 w-auto',
-            }),
-            React.createElement(
-              Link,
-              {
-                href: offer.link,
-                className:
-                  'bg-yellow-500 hover:bg-yellow-600 text-black py-2 px-4 rounded-md font-medium inline-block transition-colors',
-                rel: 'nofollow',
-              },
-              'Claim Offer',
-            ),
-          ],
-        ),
-        React.createElement(
-          'p',
-          { className: 'text-sm text-gray-600' },
-          offer.description,
-        ),
-      ]),
-    ],
-  );
+const BettingOffers = () => {
+  return (
+    <section>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">
+        Best Betting Offers for El Clásico
+      </h2>
 
-const BettingOffers = (): React.ReactElement =>
-  React.createElement('section', null, [
-    React.createElement(
-      'h2',
-      { className: 'text-2xl font-bold text-gray-800 mb-4', key: 'title' },
-      'Best Betting Offers for El Clásico',
-    ),
-    React.createElement(
-      'div',
-      {
-        className: 'grid grid-cols-1 md:grid-cols-2 gap-4',
-        key: 'offers',
-      },
-      bettingOffers.map((offer) =>
-        React.createElement(OfferCard, { key: offer.id, offer }),
-      ),
-    ),
-    React.createElement(
-      'div',
-      {
-        className: 'bg-blue-50 p-4 rounded-lg mt-4',
-        key: 'disclaimer',
-      },
-      React.createElement(
-        'p',
-        {
-          className: 'text-sm text-blue-800 flex items-center',
-        },
-        [
-          React.createElement('i', {
-            className: 'bx bx-info-circle mr-2 text-xl',
-            key: 'icon',
-          }),
-          'Gambling is forbidden to minors under 18 years of age. Gamble responsibly. OddsSite compares odds from ADM (formerly AAMS) authorized bookmakers.',
-        ],
-      ),
-    ),
-  ]);
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {bettingOffers.map((offer) => (
+          <OfferCard key={offer.id} offer={offer} />
+        ))}
+      </div>
+
+      <div className="bg-blue-50 p-4 rounded-lg mt-4">
+        <p className="text-sm text-blue-800 flex items-center">
+          <i className="bx bx-info-circle mr-2 text-xl"></i>
+          Gambling is forbidden to minors under 18 years of age. Gamble
+          responsibly. OddsSite compares odds from ADM (formerly AAMS)
+          authorized bookmakers.
+        </p>
+      </div>
+    </section>
+  );
+};
+
+const OfferCard = ({ offer }: { offer: BettingOffer }) => (
+  <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-green-600 text-white p-4">
+      <h3 className="font-semibold text-lg">{offer.title}</h3>
+    </div>
+    <div className="p-4">
+      <div className="flex items-center justify-between mb-3">
+        <Image
+          src={offer.image}
+          alt={offer.alt}
+          width={offer.width}
+          height={32}
+          className="h-8 w-auto"
+        />
+        <Link
+          href={offer.link}
+          className="bg-yellow-500 hover:bg-yellow-600 text-black py-2 px-4 rounded-md font-medium inline-block transition-colors"
+          rel="nofollow"
+        >
+          Claim Offer
+        </Link>
+      </div>
+      <p className="text-sm text-gray-600">{offer.description}</p>
+    </div>
+  </div>
+);
 
 export default BettingOffers;

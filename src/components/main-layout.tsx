@@ -7,23 +7,17 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  return React.createElement(
-    'div',
-    { className: 'container mx-auto px-4 pt-6 lg:flex' },
-    React.createElement(
-      'div',
-      { className: 'hidden lg:block' },
-      React.createElement(LeftSidebar, null),
-    ),
-    React.createElement(
-      'main',
-      { className: 'flex-1 bg-white p-4 lg:p-6 mt-5 rounded-lg shadow' },
-      children,
-    ),
-    React.createElement(
-      'div',
-      { className: 'hidden lg:block' },
-      React.createElement(RightSidebar, null),
-    ),
+  return (
+    <div className="container mx-auto px-4 pt-6 lg:flex">
+      <div className="hidden lg:block">
+        <LeftSidebar />
+      </div>
+      <main className="flex-1 bg-white p-4 lg:p-6 mt-5 rounded-lg shadow">
+        {children}
+      </main>
+      <div className="hidden lg:block">
+        <RightSidebar />
+      </div>
+    </div>
   );
 }

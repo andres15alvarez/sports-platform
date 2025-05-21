@@ -1,6 +1,6 @@
 import React from 'react';
 import Breadcrumb from '../../breadcrumb';
-import Hero from '../../hero';
+import Hero from './hero';
 import MatchOverview from './match-overview';
 // import AnalysisTabs from './analysis-tabs';
 import FanOpinion from './fan-opinion';
@@ -14,18 +14,16 @@ const breadcrumbItems = [
   { label: 'Barcelona vs Real Madrid Analysis' },
 ];
 
-const DesktopContent = (): React.ReactElement => {
-  return React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(Breadcrumb, { items: breadcrumbItems }),
-    React.createElement(Hero, null),
-    React.createElement(MatchOverview, null),
-    // React.createElement(AnalysisTabs, null),
-    React.createElement(FanOpinion, null),
-    React.createElement(RelatedContent, null),
-    React.createElement(BettingOffers, null),
+export default function DesktopContent() {
+  return (
+    <>
+      <Breadcrumb items={breadcrumbItems} />
+      <Hero />
+      <MatchOverview />
+      {/* <AnalysisTabs /> */}
+      <FanOpinion />
+      <RelatedContent />
+      <BettingOffers />
+    </>
   );
-};
-
-export default DesktopContent;
+}
