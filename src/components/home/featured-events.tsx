@@ -1,17 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import useGames, { Game } from '@/src/hooks/basketball/useGames';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 const FeaturedEvents: React.FC = () => {
-  const { games, loading, error } = useGames({
+  const [params] = useState({
     timezone: 'America/New_York',
     league: '12',
     season: '2024-2025',
   });
+  const { games, loading, error } = useGames(params);
 
   const upcomingGames = games
     .filter((g: Game) => g.status.long === 'Not Started')
