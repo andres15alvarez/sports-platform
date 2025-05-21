@@ -1,9 +1,24 @@
 import { useEffect, useState } from 'react';
 import { fetchFootballData } from '../../services/footballApi';
+import { Game, League, Teams } from '../basketball/useGames';
+import { OddValue } from '../basketball/useOdds';
 
-interface FootballOdd {
+export type FootballOdd = {
   id: number;
-}
+  fixture: {
+    date: string;
+  };
+  game: Game;
+  bookmakers: {
+    bets: {
+      values: OddValue[];
+      name: string;
+    }[];
+    name: string;
+  }[];
+  league: League;
+  teams: Teams;
+};
 
 const useFootballOdds = ({
   league,

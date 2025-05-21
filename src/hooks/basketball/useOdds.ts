@@ -2,16 +2,22 @@ import { useEffect, useState } from 'react';
 import { fetchBasketballData } from '../../services/basketballApi';
 import { Game, League } from './useGames';
 
+export type OddValue = {
+  odd: string;
+  index: number;
+  value: string;
+};
+
 export type Odd = {
   id: number;
   game: Game;
   bookmakers: {
     bets: {
-      values: number[]
-    }[]
-  }[]
+      values: OddValue[];
+    }[];
+  }[];
   league: League;
-}
+};
 
 const useOdds = ({ league, season }: { league: string; season: string }) => {
   const [odds, setOdds] = useState<Odd[] | null>(null);

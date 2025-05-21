@@ -3,34 +3,36 @@ import { fetchBasketballData } from '../../services/basketballApi';
 
 export type League = {
   id: number;
+  name: string;
+  country: string;
+  logo: string;
+  flag: string;
+};
+
+export type Teams = {
+  home: {
+    id: number;
     name: string;
-    country: string;
     logo: string;
-    flag: string;
-}
+    winner: boolean | null;
+  };
+  away: {
+    id: number;
+    name: string;
+    logo: string;
+    winner: boolean | null;
+  };
+};
 
 export type Game = {
   id: number;
   league: League;
   status: {
-    long: string
+    long: string;
     short: string;
   };
   date: string;
-  teams: {
-    home: {
-      id: number;
-      name: string;
-      logo: string;
-      winner: boolean | null;
-    };
-    away: {
-      id: number;
-      name: string;
-      logo: string;
-      winner: boolean | null;
-    };
-  },
+  teams: Teams;
   venue: string;
   scores: {
     home: {
@@ -42,7 +44,7 @@ export type Game = {
       quarter: number[];
     };
   };
-}
+};
 
 const useGames = (params: {
   timezone: string;
