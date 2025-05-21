@@ -10,8 +10,8 @@ const Footer: React.FC = () => {
           <div className="hidden lg:block">
             <h3 className="text-lg font-bold mb-4">OddsSite</h3>
             <p className="text-sm">
-              Your complete portal for sports odds, expert predictions, and comparison of the best
-              Italian and European bookmakers.
+              Your complete portal for sports odds, expert predictions, and
+              comparison of the best Italian and European bookmakers.
             </p>
             <div className="flex space-x-4 mt-4">
               <a
@@ -43,7 +43,9 @@ const Footer: React.FC = () => {
 
           {/* Popular Sports Links */}
           <div>
-            <h3 className="text-base lg:text-lg font-bold mb-4">Popular Sports</h3>
+            <h3 className="text-base lg:text-lg font-bold mb-4">
+              Popular Sports
+            </h3>
             <ul className="space-y-2 text-xs lg:text-sm">
               <li>
                 <Link href="/sport/football" className="hover:text-yellow-300">
@@ -56,7 +58,10 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/sport/basketball" className="hover:text-yellow-300">
+                <Link
+                  href="/sport/basketball"
+                  className="hover:text-yellow-300"
+                >
                   Basketball
                 </Link>
               </li>
@@ -66,7 +71,10 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/sport/volleyball" className="hover:text-yellow-300 hidden lg:block">
+                <Link
+                  href="/sport/volleyball"
+                  className="hover:text-yellow-300 hidden lg:block"
+                >
                   Volleyball
                 </Link>
               </li>
@@ -78,27 +86,42 @@ const Footer: React.FC = () => {
             <h3 className="text-base lg:text-lg font-bold mb-4">Top Leagues</h3>
             <ul className="space-y-2 text-xs lg:text-sm">
               <li>
-                <Link href="/football/serie-a" className="hover:text-yellow-300">
+                <Link
+                  href="/football/serie-a"
+                  className="hover:text-yellow-300"
+                >
                   Serie A
                 </Link>
               </li>
               <li>
-                <Link href="/football/premier-league" className="hover:text-yellow-300">
+                <Link
+                  href="/football/premier-league"
+                  className="hover:text-yellow-300"
+                >
                   Premier League
                 </Link>
               </li>
               <li>
-                <Link href="/football/champions-league" className="hover:text-yellow-300">
+                <Link
+                  href="/football/champions-league"
+                  className="hover:text-yellow-300"
+                >
                   Champions League
                 </Link>
               </li>
               <li>
-                <Link href="/football/bundesliga" className="hover:text-yellow-300 hidden lg:block">
+                <Link
+                  href="/football/bundesliga"
+                  className="hover:text-yellow-300 hidden lg:block"
+                >
                   Bundesliga
                 </Link>
               </li>
               <li>
-                <Link href="/football/la-liga" className="hover:text-yellow-300">
+                <Link
+                  href="/football/la-liga"
+                  className="hover:text-yellow-300"
+                >
                   La Liga
                 </Link>
               </li>
@@ -120,7 +143,10 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/terms-conditions" className="hover:text-yellow-300">
+                <Link
+                  href="/terms-conditions"
+                  className="hover:text-yellow-300"
+                >
                   Terms and Conditions
                 </Link>
               </li>
@@ -130,7 +156,10 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/responsible-gambling" className="hover:text-yellow-300">
+                <Link
+                  href="/responsible-gambling"
+                  className="hover:text-yellow-300"
+                >
                   Responsible Gambling
                 </Link>
               </li>
@@ -168,27 +197,40 @@ const Footer: React.FC = () => {
         {/* Footer Bottom Section */}
         <div className="border-t border-green-700 mt-6 pt-6 text-center text-xs lg:text-sm">
           <p>
-            &copy; 2025 OddsSite. All rights reserved. Gambling is forbidden to minors under 18 years
-            of age. Gamble responsibly.
+            &copy; 2025 OddsSite. All rights reserved. Gambling is forbidden to
+            minors under 18 years of age. Gamble responsibly.
           </p>
           <p className="mt-2 hidden lg:block">
-            OddsSite compares odds from ADM (formerly AAMS) authorized bookmakers.
+            OddsSite compares odds from ADM (formerly AAMS) authorized
+            bookmakers.
           </p>
         </div>
         <div className="flex justify-center text-xs mt-2 mb-12 space-x-2 lg:hidden">
-          <Link href="/about-us" className="cursor-pointer hover:text-yellow-300">
+          <Link
+            href="/about-us"
+            className="cursor-pointer hover:text-yellow-300"
+          >
             About
           </Link>
           <span>|</span>
-          <Link href="/terms-conditions" className="cursor-pointer hover:text-yellow-300">
+          <Link
+            href="/terms-conditions"
+            className="cursor-pointer hover:text-yellow-300"
+          >
             Terms
           </Link>
           <span>|</span>
-          <Link href="/privacy-policy" className="cursor-pointer hover:text-yellow-300">
+          <Link
+            href="/privacy-policy"
+            className="cursor-pointer hover:text-yellow-300"
+          >
             Privacy
           </Link>
           <span>|</span>
-          <Link href="/responsible-gambling" className="cursor-pointer hover:text-yellow-300">
+          <Link
+            href="/responsible-gambling"
+            className="cursor-pointer hover:text-yellow-300"
+          >
             Responsible Gambling
           </Link>
         </div>

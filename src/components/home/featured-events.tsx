@@ -8,18 +8,19 @@ import { es } from 'date-fns/locale';
 
 const FeaturedEvents: React.FC = () => {
   const { games, loading, error } = useGames({
-    timezone: 'America/New_York', 
-    league: '12', 
-    season: '2024-2025', 
+    timezone: 'America/New_York',
+    league: '12',
+    season: '2024-2025',
   });
 
- const upcomingGames = games
+  const upcomingGames = games
     .filter((g: Game) => g.status.long === 'Not Started')
     .slice(0, 4);
 
   if (loading) return <p>Cargando partidos...</p>;
   if (error) return <p>{error}</p>;
-  if (upcomingGames.length === 0) return <p>No hay próximos juegos disponibles.</p>;
+  if (upcomingGames.length === 0)
+    return <p>No hay próximos juegos disponibles.</p>;
 
   return (
     <section className="my-6">
@@ -33,7 +34,9 @@ const FeaturedEvents: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {upcomingGames?.map((game: Game) => {
           const gameDate = new Date(game.date);
-          const formattedDate = format(gameDate, "dd/MM/yyyy - HH:mm", { locale: es });
+          const formattedDate = format(gameDate, 'dd/MM/yyyy - HH:mm', {
+            locale: es,
+          });
 
           return (
             <FeaturedEventCard
@@ -41,7 +44,7 @@ const FeaturedEvents: React.FC = () => {
               league={game.league.name}
               dateTime={formattedDate}
               matchTitle={`${game.teams.home.name} vs ${game.teams.away.name}`}
-              location={game.venue|| 'Not available'}
+              location={game.venue || 'Not available'}
             />
           );
         })}

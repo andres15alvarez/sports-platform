@@ -1,7 +1,6 @@
-import React, { ReactNode } from "react";
-import LeftSidebar from "./home/left-sidebar";
-import RightSidebar from "./home/right-sidebar";
-
+import React, { ReactNode } from 'react';
+import LeftSidebar from './home/left-sidebar';
+import RightSidebar from './home/right-sidebar';
 
 type MainLayoutProps = {
   children: ReactNode;

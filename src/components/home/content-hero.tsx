@@ -89,7 +89,11 @@ export default function HeroCarousel() {
     <div className="hero-carousel-container w-full relative overflow-hidden mb-6 rounded-lg">
       <div className="hero-carousel relative h-[300px] md:h-[250px]">
         {slides.map((slide, index) => (
-          <HeroSlide key={slide.id} slide={slide} isActive={index === current} />
+          <HeroSlide
+            key={slide.id}
+            slide={slide}
+            isActive={index === current}
+          />
         ))}
       </div>
 
@@ -108,11 +112,21 @@ function HeroSlide({ slide, isActive }: HeroSlideProps) {
   return (
     <div
       className={`slide w-full h-full absolute transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-0'}`}
-      style={{ backgroundImage: `url(${slide.bgImage})`, backgroundSize: 'cover', backgroundPosition: 'top' }}
+      style={{
+        backgroundImage: `url(${slide.bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'top',
+      }}
     >
       <div className="slide-content absolute bottom-0 left-0 p-4 md:p-6 text-white bg-black/50 max-w-full w-full h-full">
-        <span className={`${slide.tagColor} font-bold px-2 py-1 mb-2 inline-block text-sm`}>{slide.tag}</span>
-        <h2 className="text-xl md:text-3xl font-bold mb-1 md:mb-2">{slide.title}</h2>
+        <span
+          className={`${slide.tagColor} font-bold px-2 py-1 mb-2 inline-block text-sm`}
+        >
+          {slide.tag}
+        </span>
+        <h2 className="text-xl md:text-3xl font-bold mb-1 md:mb-2">
+          {slide.title}
+        </h2>
         <p className="mb-2 md:mb-4 text-sm md:text-base">{slide.description}</p>
         <a
           href={slide.buttonLink}
@@ -125,7 +139,13 @@ function HeroSlide({ slide, isActive }: HeroSlideProps) {
   );
 }
 
-function HeroControls({ slides, currentSlide, prevSlide, nextSlide, goToSlide }: HeroControlsProps) {
+function HeroControls({
+  slides,
+  currentSlide,
+  prevSlide,
+  nextSlide,
+  goToSlide,
+}: HeroControlsProps) {
   return (
     <>
       <button

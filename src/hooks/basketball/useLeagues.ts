@@ -7,7 +7,6 @@ interface League {
   logo: string;
 }
 
-
 const useLeagues = () => {
   const [leagues, setLeagues] = useState<League[]>([]);
   const [loading, setLoading] = useState(true);

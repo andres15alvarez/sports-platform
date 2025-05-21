@@ -9,7 +9,7 @@ interface BreadcrumbItem {
 
 const breadcrumbItems: BreadcrumbItem[] = [
   { label: 'Home', href: '/' },
-  { label: 'Odds and Predictions' }
+  { label: 'Odds and Predictions' },
 ];
 
 const Text: React.FC = () => {
@@ -25,10 +25,15 @@ const Text: React.FC = () => {
           The Best Sports Odds and Predictions
         </h2>
         <p className="mb-4 text-xs sm:text-sm">
-          Welcome to OddsSite, your complete portal for updated sports odds, expert predictions, and comparison of the best Italian bookmakers. Find the most convenient odds for football, tennis, basketball, and other sports events.
+          Welcome to OddsSite, your complete portal for updated sports odds,
+          expert predictions, and comparison of the best Italian bookmakers.
+          Find the most convenient odds for football, tennis, basketball, and
+          other sports events.
         </p>
         <p className="mb-4 text-xs sm:text-sm">
-          Our expert analyses will help you make informed decisions on your bets, while our odds comparison tools allow you to always find the best value.
+          Our expert analyses will help you make informed decisions on your
+          bets, while our odds comparison tools allow you to always find the
+          best value.
         </p>
       </section>
 
@@ -37,7 +42,10 @@ const Text: React.FC = () => {
           <h2 className="text-xl font-semibold text-green-700">
             Today&apos;s Sports Predictions
           </h2>
-          <a href="/all-predictions" className="text-green-600 hover:text-green-800 flex items-center">
+          <a
+            href="/all-predictions"
+            className="text-green-600 hover:text-green-800 flex items-center"
+          >
             See all <i className="bx bx-chevron-right ml-1"></i>
           </a>
         </div>
@@ -47,7 +55,10 @@ const Text: React.FC = () => {
           <h2 className="text-md whitespace-nowrap font-semibold text-green-700">
             Today&apos;s Sports Predictions
           </h2>
-          <a href="/all-predictions" className="text-green-600 hover:text-green-800 flex items-center text-sm">
+          <a
+            href="/all-predictions"
+            className="text-green-600 hover:text-green-800 flex items-center text-sm"
+          >
             See all <i className="bx bx-chevron-right ml-1"></i>
           </a>
         </div>
