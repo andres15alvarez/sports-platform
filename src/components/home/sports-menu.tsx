@@ -3,14 +3,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
+type MenuKey = 'football' | 'baseball' | 'tennis';
+
 export default function SportsMenu() {
-  const [open, setOpen] = useState({
+  const [open, setOpen] = useState<Record<MenuKey, boolean>>({
     football: false,
     baseball: false,
     tennis: false,
   });
 
-  const toggleMenu = (menu: keyof typeof open) => {
+  const toggleMenu = (menu: MenuKey) => {
     setOpen((prev) => ({ ...prev, [menu]: !prev[menu] }));
   };
 
@@ -30,9 +32,7 @@ export default function SportsMenu() {
           ></i>
         </button>
         {open.football && (
-          <ul
-            className={`ml-4 mt-2 space-y-1 text-sm ${open.football ? '' : 'hidden'}`}
-          >
+          <ul className="ml-4 mt-2 space-y-1 text-sm">
             <li className="flex items-center space-x-2 hover:text-yellow-300">
               <Image
                 src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/280px-Premier_League_Logo.svg.png"
@@ -84,10 +84,7 @@ export default function SportsMenu() {
           ></i>
         </button>
         {open.baseball && (
-          <ul
-            id="baseballMenu"
-            className={`ml-4 mt-2 space-y-1 text-sm ${open.baseball ? '' : 'hidden'}`}
-          >
+          <ul id="baseballMenu" className="ml-4 mt-2 space-y-1 text-sm">
             <li className="flex items-center space-x-2 hover:text-yellow-300">
               <Image
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Major_League_Baseball_logo.svg/200px-Major_League_Baseball_logo.svg.png"
@@ -139,10 +136,7 @@ export default function SportsMenu() {
           ></i>
         </button>
         {open.tennis && (
-          <ul
-            id="tennisMenu"
-            className={`ml-4 mt-2 space-y-1 text-sm ${open.tennis ? '' : 'hidden'}`}
-          >
+          <ul id="tennisMenu" className="ml-4 mt-2 space-y-1 text-sm">
             <li className="flex items-center space-x-2 hover:text-yellow-300">
               <Image
                 src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3f/ATP_Tour_logo.svg/250px-ATP_Tour_logo.svg.png"

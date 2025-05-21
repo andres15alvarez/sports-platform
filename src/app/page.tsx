@@ -1,13 +1,21 @@
-'use client';
+import React from 'react';
+//import Footer from "@/components/footer";
+//import Header from "@/components/header";
+import Content from '../components/home/content';
+//import MainLayout from "@/components/main-layout";
+//import MobileNav from "@/components/mobile-nav";
 
-export default function Home() {
+const Home: React.FC = () => {
   return (
-    <main className="p-6 space-y-6 max-w-4xl mx-auto">
-      <header className="space-y-1">
-        <h1 className="text-4xl font-bold tracking-tight text-green-900">
-          Basketball Data
-        </h1>
-      </header>
-    </main>
+    <div className="bg-gray-100">
+      {/* <Header /> */}
+      {/* <MobileNav /> */}
+      {/* <MainLayout> */}
+      <Content />
+      {/* </MainLayout> */}
+      {/* <Footer /> */}
+    </div>
   );
-}
+};
+
+export default Home;

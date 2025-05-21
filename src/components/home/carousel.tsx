@@ -1,8 +1,16 @@
 'use client';
 import { useState } from 'react';
 
+interface Slide {
+  title: string;
+  subtitle: string;
+  odds: string;
+  link: string;
+  logo: string;
+}
+
 export default function Carousel() {
-  const slides = [
+  const slides: Slide[] = [
     {
       title: 'Team A vs Team B',
       subtitle: 'Champions League',
@@ -26,7 +34,7 @@ export default function Carousel() {
     },
   ];
 
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState<number>(0);
 
   const nextSlide = () => setCurrent((current + 1) % slides.length);
   const prevSlide = () =>
@@ -38,7 +46,9 @@ export default function Carousel() {
         {slides.map((slide, index) => (
           <div
             key={index}
-            className={`slide absolute inset-0 transition-opacity duration-700 ${index === current ? 'opacity-100' : 'opacity-0'}`}
+            className={`slide absolute inset-0 transition-opacity duration-700 ${
+              index === current ? 'opacity-100' : 'opacity-0'
+            }`}
           >
             <div className="flex flex-col justify-between bg-white rounded-xl shadow-xl p-6 h-full hover:shadow-2xl">
               <a

@@ -1,10 +1,11 @@
 'use client';
 
+import React from 'react';
 import Image from 'next/image';
-import SportsMenu from './sports-menu';
 import Link from 'next/link';
+import SportsMenu from './sports-menu';
 
-export default function LeftSidebar() {
+const LeftSidebar: React.FC = () => {
   return (
     <aside
       className="w-56 bg-gradient-to-b from-green-900 to-green-800 text-white h-screen sticky top-16 p-4 shadow-lg"
@@ -62,4 +63,6 @@ export default function LeftSidebar() {
       <SportsMenu />
     </aside>
   );
-}
+};
+
+export default LeftSidebar;
