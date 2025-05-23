@@ -1,7 +1,6 @@
 import React from 'react';
 import PreviewSection from '../../preview';
 
-// === Types ===
 interface InfoItem {
   label: string;
   value: string;
@@ -28,8 +27,6 @@ interface TableColumn {
   label: string;
   bold?: boolean;
 }
-
-// === Static Data ===
 
 const previewContent: string[] = [
   "The football world turns its attention to Camp Nou on May 4th as Barcelona hosts arch-rivals Real Madrid in another electrifying El Clásico. With only three points separating the teams in the La Liga title race, this match could prove decisive in determining this season's champion.",
@@ -117,7 +114,6 @@ const columns: TableColumn[] = [
   { key: 'pts', label: 'PTS', bold: true },
 ];
 
-// === Component ===
 const MatchPreview: React.FC = () => {
   return (
     <PreviewSection

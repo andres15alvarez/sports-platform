@@ -1,14 +1,23 @@
 import React from 'react';
 
 interface Column {
-  key: string;
+  key: keyof TeamRow;
   label: string;
   bold?: boolean;
 }
 
 interface TeamRow {
-  [key: string]: string | number | boolean | undefined;
-  highlight?: boolean;
+  rank: number;
+  name: string;
+  played: number;
+  won: number;
+  draw: number;
+  lost: number;
+  gf: number;
+  ga: number;
+  gd: string;
+  pts: number;
+  highlight: boolean;
 }
 
 interface InfoItem {

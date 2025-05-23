@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface Stat {
   label: string;
@@ -78,7 +79,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-sm">
       <div className="flex items-center p-3 border-b border-gray-100">
-        <img
+        <Image
           src={player.flag}
           alt={player.nationality}
           className="w-6 h-4 mr-2"

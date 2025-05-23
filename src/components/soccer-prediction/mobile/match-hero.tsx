@@ -2,7 +2,6 @@ import React from 'react';
 import Hero from '../../hero';
 import Info from '../common/publication-info';
 
-// Types
 interface Team {
   name: string;
   logo: string;
@@ -12,7 +11,7 @@ interface Team {
 interface MatchInfo {
   name: string;
   rank: string;
-  logo: string | null;
+  logo: string | undefined;
 }
 
 interface Odds {
@@ -28,7 +27,6 @@ interface MatchData {
   odds: Odds[];
 }
 
-// Static match data
 const matchData: MatchData = {
   title:
     'Barcelona FC vs Real Madrid Prediction: El Clásico Statistical Analysis and Betting Tips',
@@ -45,7 +43,7 @@ const matchData: MatchData = {
   matchInfo: {
     name: 'VS',
     rank: 'Matchday 34',
-    logo: null,
+    logo: undefined,
   },
   odds: [
     { label: 'Home Win (1)', value: '2.25' },
@@ -54,7 +52,6 @@ const matchData: MatchData = {
   ],
 };
 
-// Component
 const MatchHero: React.FC = () => {
   return (
     <Hero match={matchData}>
