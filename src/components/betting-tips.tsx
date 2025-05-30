@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 
-interface BettingMarketOption {
+interface MarketOption {
   name: string;
   odds: string;
   bgColor: string;
@@ -8,7 +8,7 @@ interface BettingMarketOption {
 
 interface BettingMarket {
   name: string;
-  options: BettingMarketOption[];
+  options: MarketOption[];
 }
 
 interface ValueBet {
@@ -17,7 +17,7 @@ interface ValueBet {
   description: string;
 }
 
-interface BookmakerOdd {
+interface BookmakerOdds {
   bookmaker: string;
   [key: string]: string;
 }
@@ -27,21 +27,21 @@ interface Column {
   label: string;
 }
 
-interface BettingTrend {
+interface TeamTrend {
   name: string;
   trends: string[];
 }
 
-interface BettingTipsSectionProps {
+interface Props {
   bettingMarkets: BettingMarket[];
   valueBets: ValueBet[];
-  bookmakerOdds: BookmakerOdd[];
-  bettingTrends: BettingTrend[];
+  bookmakerOdds: BookmakerOdds[];
+  bettingTrends: TeamTrend[];
   columns: Column[];
   expertPickChart: ReactNode;
 }
 
-const BettingTipsSection: React.FC<BettingTipsSectionProps> = ({
+const BettingTipsSection: React.FC<Props> = ({
   bettingMarkets,
   valueBets,
   bookmakerOdds,
@@ -59,8 +59,8 @@ const BettingTipsSection: React.FC<BettingTipsSectionProps> = ({
         <div className="bg-gray-50 p-4 rounded-lg">
           <h3 className="font-bold text-lg mb-3">Popular Betting Markets</h3>
           <div className="space-y-3">
-            {bettingMarkets.map((market, index) => (
-              <BettingMarket key={index} market={market} />
+            {bettingMarkets.map((market, i) => (
+              <BettingMarket key={i} market={market} />
             ))}
           </div>
         </div>
@@ -70,18 +70,17 @@ const BettingTipsSection: React.FC<BettingTipsSectionProps> = ({
             Value Bets & Special Markets
           </h3>
           <div className="space-y-3">
-            {valueBets.map((bet, index) => (
-              <ValueBet key={index} bet={bet} />
+            {valueBets.map((bet, i) => (
+              <ValueBet key={i} bet={bet} />
             ))}
           </div>
 
-          <Table bookmakerOdds={bookmakerOdds} columns={columns} />
+          <OddsTable bookmakerOdds={bookmakerOdds} columns={columns} />
         </div>
       </div>
 
       <BettingTrends bettingTrends={bettingTrends} />
 
-      {/* Experts' Picks Chart */}
       <div className="mt-4 pt-3 border-t border-gray-200">
         <h4 className="font-semibold mb-2">Experts Picks</h4>
         <div className="bg-white rounded-lg p-4 shadow-sm">
@@ -92,112 +91,87 @@ const BettingTipsSection: React.FC<BettingTipsSectionProps> = ({
   );
 };
 
-interface BettingMarketProps {
-  market: BettingMarket;
-}
-
-const BettingMarket: React.FC<BettingMarketProps> = ({ market }) => {
-  return (
-    <div className="bg-white p-3 rounded shadow-sm">
-      <div className="flex justify-between items-center mb-2">
-        <span className="font-medium">{market.name}</span>
-      </div>
-      <div
-        className={`grid ${market.options.length > 2 ? 'grid-cols-3' : 'grid-cols-2'} gap-2`}
-      >
-        {market.options.map((option, index) => (
-          <div
-            key={index}
-            className={`bg-${option.bgColor} p-2 rounded text-center`}
-          >
-            <div className="text-sm font-medium mb-1">{option.name}</div>
-            <div className="text-lg font-bold text-green-700">
-              {option.odds}
-            </div>
-          </div>
-        ))}
-      </div>
+const BettingMarket: React.FC<{ market: BettingMarket }> = ({ market }) => (
+  <div className="bg-white p-3 rounded shadow-sm">
+    <div className="flex justify-between items-center mb-2">
+      <span className="font-medium">{market.name}</span>
     </div>
-  );
-};
-
-interface ValueBetProps {
-  bet: ValueBet;
-}
-
-const ValueBet: React.FC<ValueBetProps> = ({ bet }) => {
-  return (
-    <div className="bg-white p-3 rounded shadow-sm">
-      <div className="flex justify-between items-center">
-        <span className="font-medium text-green-700">{bet.name}</span>
-        <span className="text-lg font-bold text-green-700">{bet.odds}</span>
-      </div>
-      <p className="text-sm text-gray-600 mt-1">{bet.description}</p>
+    <div
+      className={`grid ${market.options.length > 2 ? 'grid-cols-3' : 'grid-cols-2'} gap-2`}
+    >
+      {market.options.map((option, i) => (
+        <div key={i} className={`bg-${option.bgColor} p-2 rounded text-center`}>
+          <div className="text-sm font-medium mb-1">{option.name}</div>
+          <div className="text-lg font-bold text-green-700">{option.odds}</div>
+        </div>
+      ))}
     </div>
-  );
-};
+  </div>
+);
 
-interface TableProps {
-  bookmakerOdds: BookmakerOdd[];
+const ValueBet: React.FC<{ bet: ValueBet }> = ({ bet }) => (
+  <div className="bg-white p-3 rounded shadow-sm">
+    <div className="flex justify-between items-center">
+      <span className="font-medium text-green-700">{bet.name}</span>
+      <span className="text-lg font-bold text-green-700">{bet.odds}</span>
+    </div>
+    <p className="text-sm text-gray-600 mt-1">{bet.description}</p>
+  </div>
+);
+
+const OddsTable: React.FC<{
+  bookmakerOdds: BookmakerOdds[];
   columns: Column[];
-}
-
-export const Table: React.FC<TableProps> = ({ bookmakerOdds, columns }) => {
-  return (
-    <div className="mt-4 pt-3 border-t border-gray-200">
-      <h4 className="font-semibold mb-2">Bookmaker Odds Comparison</h4>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr className="bg-green-600 text-white text-left">
-              <th className="py-2 px-3 text-sm">Bookmaker</th>
-              {columns.map((col, index) => (
-                <th key={index} className="py-2 px-3 text-sm text-center">
-                  {col.label}
-                </th>
+}> = ({ bookmakerOdds, columns }) => (
+  <div className="mt-4 pt-3 border-t border-gray-200">
+    <h4 className="font-semibold mb-2">Bookmaker Odds Comparison</h4>
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr className="bg-green-600 text-white text-left">
+            <th className="py-2 px-3 text-sm">Bookmaker</th>
+            {columns.map((col, i) => (
+              <th key={i} className="py-2 px-3 text-sm text-center">
+                {col.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="text-sm">
+          {bookmakerOdds.map((odds, i) => (
+            <tr key={i} className={i % 2 === 0 ? '' : 'bg-green-50'}>
+              <td className="py-2 px-3 font-medium">{odds.bookmaker}</td>
+              {columns.map((col, j) => (
+                <td key={j} className="py-2 px-3 text-center">
+                  {odds[col.key]}
+                </td>
               ))}
             </tr>
-          </thead>
-          <tbody className="text-sm">
-            {bookmakerOdds.map((odds, index) => (
-              <tr key={index} className={index % 2 === 0 ? '' : 'bg-green-50'}>
-                <td className="py-2 px-3 font-medium">{odds.bookmaker}</td>
-                {columns.map((col, i) => (
-                  <td key={i} className="py-2 px-3 text-center">
-                    {odds[col.key]}
-                  </td>
-                ))}
-              </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
+
+const BettingTrends: React.FC<{ bettingTrends: TeamTrend[] }> = ({
+  bettingTrends,
+}) => (
+  <div className="bg-gray-50 p-4 rounded-lg">
+    <h3 className="font-bold text-lg mb-3">Key Betting Trends</h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {bettingTrends.map((team, i) => (
+        <div key={i}>
+          <h4 className="font-semibold mb-2">{team.name} Betting Trends</h4>
+          <ul className="list-disc pl-4 space-y-2 text-sm">
+            {team.trends.map((trend, j) => (
+              <li key={j}>{trend}</li>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </ul>
+        </div>
+      ))}
     </div>
-  );
-};
-
-interface BettingTrendsProps {
-  bettingTrends: BettingTrend[];
-}
-
-const BettingTrends: React.FC<BettingTrendsProps> = ({ bettingTrends }) => {
-  return (
-    <div className="bg-gray-50 p-4 rounded-lg">
-      <h3 className="font-bold text-lg mb-3">Key Betting Trends</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {bettingTrends.map((team, index) => (
-          <div key={index}>
-            <h4 className="font-semibold mb-2">{team.name} Betting Trends</h4>
-            <ul className="list-disc pl-4 space-y-2 text-sm">
-              {team.trends.map((trend, trendIndex) => (
-                <li key={trendIndex}>{trend}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+  </div>
+);
 
 export default BettingTipsSection;

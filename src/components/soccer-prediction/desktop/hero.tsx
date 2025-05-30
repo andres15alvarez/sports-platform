@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Info from '../common/publication-info';
+import Image from 'next/image';
 
 type TeamCardProps = {
   name: string;
@@ -66,7 +67,7 @@ const MatchHeader = () => (
 
 const HeroImageOverlay = () => (
   <div className="relative hidden lg:block rounded-xl overflow-hidden mb-6">
-    <img
+    <Image
       src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       alt="El Clásico: Barcelona vs Real Madrid"
       className="w-full h-48 object-cover opacity-60"
@@ -100,7 +101,12 @@ const TeamCard = ({
   color,
 }: TeamCardProps) => (
   <Link href={link} className="block text-center">
-    <img src={image} alt={name} className="h-24 mx-auto mb-3" loading="lazy" />
+    <Image
+      src={image}
+      alt={name}
+      className="h-24 mx-auto mb-3"
+      loading="lazy"
+    />
     <h3 className={`text-xl font-bold ${color}`}>{name}</h3>
     <p className="text-sm text-gray-600">
       Position: {position} ({points} pts)
@@ -183,7 +189,7 @@ const BookmakerTable = () => {
             <tr className="text-black">
               <td className="py-3 px-4 border-b ">
                 <div className="flex items-center">
-                  <img
+                  <Image
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Bet365_Logo.svg/442px-Bet365_Logo.svg.png"
                     alt="Bet365"
                     className="h-6 mr-2"
@@ -213,7 +219,7 @@ const BookmakerTable = () => {
             <tr className="text-black">
               <td className="py-3 px-4 border-b">
                 <div className="flex items-center">
-                  <img
+                  <Image
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/William_Hill_logo.png/250px-William_Hill_logo.png"
                     alt="William Hill"
                     className="h-6 mr-2"
@@ -243,7 +249,7 @@ const BookmakerTable = () => {
             <tr className="text-black">
               <td className="py-3 px-4 border-b">
                 <div className="flex items-center">
-                  <img
+                  <Image
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Unibet-Logo-white.jpg/250px-Unibet-Logo-white.jpg"
                     alt="Unibet"
                     className="h-6 mr-2"

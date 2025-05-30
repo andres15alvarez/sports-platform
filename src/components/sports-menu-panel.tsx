@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
   const [expanded, setExpanded] = useState('');
@@ -24,7 +25,7 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
         </h2>
         <ul className="space-y-3 text-white">
           <li className="flex items-center space-x-2 hover:text-yellow-300">
-            <img
+            <Image
               src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg"
               className="h-5 w-5"
               alt="Serie A"
@@ -32,7 +33,7 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
             <Link href="#">Serie A</Link>
           </li>
           <li className="flex items-center space-x-2 hover:text-yellow-300">
-            <img
+            <Image
               src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/280px-Premier_League_Logo.svg.png"
               className="h-5 w-5"
               alt="Premier League"
@@ -40,7 +41,7 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
             <Link href="#">Premier League</Link>
           </li>
           <li className="flex items-center space-x-2 hover:text-yellow-300">
-            <img
+            <Image
               src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/UEFA_Champions_League.svg/240px-UEFA_Champions_League.svg.png"
               className="h-5 w-5"
               alt="Champions League"
@@ -149,7 +150,11 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
                     key={link.label}
                     className="flex items-center space-x-2 hover:text-yellow-300"
                   >
-                    <img src={link.icon} className="h-4 w-4" alt={link.label} />
+                    <Image
+                      src={link.icon}
+                      className="h-4 w-4"
+                      alt={link.label}
+                    />
                     <Link href={link.href}>{link.label}</Link>
                   </li>
                 ))}

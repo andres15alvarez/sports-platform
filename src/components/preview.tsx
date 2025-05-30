@@ -1,42 +1,28 @@
 import React from 'react';
 
-interface Column {
-  key: keyof TeamRow;
+interface MatchDetail {
+  label: string;
+  value: string;
+}
+
+interface Column<RowType> {
+  key: keyof RowType;
   label: string;
   bold?: boolean;
 }
 
-interface TeamRow {
-  rank: number;
-  name: string;
-  played: number;
-  won: number;
-  draw: number;
-  lost: number;
-  gf: number;
-  ga: number;
-  gd: string;
-  pts: number;
-  highlight: boolean;
-}
-
-interface InfoItem {
-  label: string;
-  value: string | number;
-}
-
-interface PreviewSectionProps {
+interface PreviewSectionProps<RowType extends { highlight?: boolean }> {
   content: string[];
   keyFactors: string[];
-  matchInfo: InfoItem[][];
-  tableData: TeamRow[];
-  columns: Column[];
+  matchInfo: MatchDetail[][];
+  tableData: RowType[];
+  columns: Column<RowType>[];
   titleOne?: string;
   titleTwo?: string;
   titleThree?: string;
 }
 
-const PreviewSection: React.FC<PreviewSectionProps> = ({
+const PreviewSection = <RowType extends { highlight?: boolean }>({
   content,
   keyFactors,
   matchInfo,
@@ -44,15 +30,15 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
   columns,
   titleOne = 'Key Match Factors',
   titleTwo = 'Match Information',
-  titleThree = 'Current La Liga Standings',
-}) => {
+  titleThree = 'Current Standings',
+}: PreviewSectionProps<RowType>) => {
   return (
     <section id="match-preview" className="mb-8 text-black">
       <h2 className="text-xl font-bold text-green-800 border-b border-gray-200 pb-2 mb-4">
         Match Preview
       </h2>
 
-      <div className="grid grid-cols-1  gap-6 mb-4">
+      <div className="grid grid-cols-1 gap-6 mb-4">
         <div className="space-y-4">
           {content.map((paragraph, index) => (
             <p key={index}>{paragraph}</p>
@@ -62,7 +48,11 @@ const PreviewSection: React.FC<PreviewSectionProps> = ({
       </div>
 
       <MatchInfo info={matchInfo} titleTwo={titleTwo} />
-      <LeagueTable data={tableData} titleThree={titleThree} columns={columns} />
+      <LeagueTable<RowType>
+        data={tableData}
+        columns={columns}
+        titleThree={titleThree}
+      />
     </section>
   );
 };
@@ -87,7 +77,7 @@ const KeyMatchFactors: React.FC<KeyMatchFactorsProps> = ({
 );
 
 interface MatchInfoProps {
-  info: InfoItem[][];
+  info: MatchDetail[][];
   titleTwo: string;
 }
 
@@ -109,17 +99,17 @@ const MatchInfo: React.FC<MatchInfoProps> = ({ info, titleTwo }) => (
   </div>
 );
 
-interface LeagueTableProps {
-  data: TeamRow[];
+interface LeagueTableProps<RowType extends { highlight?: boolean }> {
+  data: RowType[];
+  columns: Column<RowType>[];
   titleThree: string;
-  columns: Column[];
 }
 
-const LeagueTable: React.FC<LeagueTableProps> = ({
+const LeagueTable = <RowType extends { highlight?: boolean }>({
   data,
-  titleThree,
   columns,
-}) => (
+  titleThree,
+}: LeagueTableProps<RowType>) => (
   <div className="bg-gray-50 p-4 rounded-lg">
     <h3 className="font-bold text-lg mb-3">{titleThree}</h3>
     <div className="overflow-x-auto">
@@ -127,7 +117,10 @@ const LeagueTable: React.FC<LeagueTableProps> = ({
         <thead>
           <tr className="bg-green-600 text-white text-left">
             {columns.map((col) => (
-              <th key={col.key} className="py-2 px-3 text-sm text-center">
+              <th
+                key={String(col.key)}
+                className="py-2 px-3 text-sm text-center"
+              >
                 {col.label}
               </th>
             ))}
@@ -141,7 +134,7 @@ const LeagueTable: React.FC<LeagueTableProps> = ({
             >
               {columns.map((col) => (
                 <td
-                  key={col.key}
+                  key={String(col.key)}
                   className={`py-2 px-3 text-center ${
                     col.bold
                       ? 'font-bold'
@@ -150,7 +143,7 @@ const LeagueTable: React.FC<LeagueTableProps> = ({
                         : ''
                   }`}
                 >
-                  {team[col.key]}
+                  {String(team[col.key])}
                 </td>
               ))}
             </tr>
