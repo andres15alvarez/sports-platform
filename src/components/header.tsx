@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
+import Image from 'next/image';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -92,7 +93,7 @@ export default function Header() {
               className="flex items-center text-green-700 hover:text-yellow-500 focus:outline-none text-sm"
               aria-label="Change language"
             >
-              <img
+              <Image
                 src={`https://flagcdn.com/${lang == 'en' ? 'gb' : 'es'}.svg`}
                 alt="English"
                 className="h-4 w-auto mr-1"
@@ -107,7 +108,7 @@ export default function Header() {
                   hrefLang="es"
                   className="flex block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
                 >
-                  <img
+                  <Image
                     src="https://flagcdn.com/es.svg"
                     alt="Spanish"
                     className="h-4 w-auto mr-1"
@@ -121,7 +122,7 @@ export default function Header() {
                   hrefLang="en"
                   className="flex block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
                 >
-                  <img
+                  <Image
                     src="https://flagcdn.com/gb.svg"
                     alt="English"
                     className="h-4 w-auto mr-1"

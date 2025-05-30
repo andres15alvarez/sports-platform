@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { ReactNode } from 'react';
 
@@ -88,7 +89,7 @@ const Hero = ({ match, children }: HeroProps) => {
             {[homeTeam, matchInfo, awayTeam].map((item, idx) => (
               <div key={idx} className="flex flex-col items-center w-2/5">
                 {item.logo && (
-                  <img
+                  <Image
                     src={item.logo}
                     alt={item.name + ' logo'}
                     className="w-16 h-16 mb-2"

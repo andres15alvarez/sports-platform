@@ -1,5 +1,5 @@
 import React from 'react';
-import KeyPlayersChart from '../../charts/mobile/top-score-comparison';
+import KeyPlayersChart from '../../charts/soccer-prediction/mobile/top-score-comparison';
 import KeyPlayersSection from '../../key-players';
 
 interface Stat {

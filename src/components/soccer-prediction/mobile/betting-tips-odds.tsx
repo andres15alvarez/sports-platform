@@ -1,6 +1,6 @@
 import React from 'react';
 import BettingTipsSection from '../../betting-tips';
-import ExpertPredictionsChart from '../../charts/mobile/expert-picks';
+import ExpertPredictionsChart from '../../charts/soccer-prediction/mobile/expert-picks';
 
 type BettingOption = {
   name: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import MatchStatsComparisonChart from '../../charts/mobile/h2h-summary';
-import RadarComparisonChart from '../../charts/mobile/team-performance-com';
+import MatchStatsComparisonChart from '../../charts/soccer-prediction/mobile/h2h-summary';
+import RadarComparisonChart from '../../charts/soccer-prediction/mobile/team-performance-com';
 import HeadToHeadSection from '../../head-to-head';
 
 interface Match {
