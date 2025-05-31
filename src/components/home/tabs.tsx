@@ -22,29 +22,6 @@ interface MatchData {
 
 // Datos Desktop
 
-// const seriesADesktop: MatchData[] = [
-//   {
-//     match: 'Inter - Milan',
-//     date: '04/27 20:45',
-//     probability: '42%  28%  30%',
-//     prediction: '1',
-//     result: '
-
-// const premierDesktop: MatchData[] = [
-//  {
-//  match: 'Liverpool - Man City',
-//  date: '04/27 18:30',
-//  probability: '35%  35%  30%',
-//  prediction: 'X',
-//  result: '1-1',
-//  odds: '2.50  3.40  2.80',
-//  greenOddsIndex: 1,
-//  leagueLogo:
-//    'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
-//  leagueName: 'Premier',
-// },
-// ];
-
 const atpDesktop: MatchData[] = [
   {
     match: 'Djokovic - Alcaraz',
@@ -72,45 +49,6 @@ const wtaDesktop: MatchData[] = [
     leagueLogo:
       'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/WTA_2025.svg/330px-WTA_2025.svg.png',
     leagueName: 'Rome',
-  },
-];
-
-//const nbaDesktop: MatchData[] = [
-//{
-//match: 'Lakers - Celtics',
-//date: '04/27 02:30',
-//probability: '48%  52%',
-//prediction: '2',
-//result: '98-105',
-//odds: '2.10  1.75',
-//greenOddsIndex: 1,
-//leagueLogo: 'https://upload.wikimedia.org/wikipedia/en/0/03/National_Basketball_Association_logo.svg',
-//leagueName: 'NBA',
-//},
-//{
-// match: 'Bucks - Heat',
-//date: '04/27 23:00',
-//probability: '65%  35%',
-//prediction: '1',
-//result: '112-103',
-//odds: '1.45  2.75',
-//greenOddsIndex: 0,
-//leagueLogo: 'https://upload.wikimedia.org/wikipedia/en/0/03/National_Basketball_Association_logo.svg',
-//leagueName: 'NBA',
-//},
-//];
-
-const euroleagueDesktop: MatchData[] = [
-  {
-    match: 'Olympiacos - Real Madrid',
-    date: '04/27 20:00',
-    probability: '55%  45%',
-    prediction: '1',
-    result: '83-74',
-    odds: '1.70  2.15',
-    leagueLogo:
-      'https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/Olympiacos_FC_crest.svg/250px-Olympiacos_FC_crest.svg.png',
-    leagueName: 'Euroleague',
   },
 ];
 
@@ -251,22 +189,13 @@ const desktopCol: TableColumn[] = [
   { key: 'odds', label: 'Odds' },
 ];
 
-//const desktopMonacoCol: TableColumn[] = [
-//{ key: 'driver', label: 'Driver' },
-//{ key: 'date', label: 'Date' },
-//{ key: 'probability', label: 'Prob. %' },
-//{ key: 'prediction', label: 'Prediction' },
-//{ key: 'result', label: 'Result' },
-//{ key: 'odds', label: 'Odds' },
-//];
-
 const mobileCol: TableColumn[] = [
   { key: 'match', label: 'Match' },
   { key: 'prediction', label: 'Pred' },
   { key: 'odds', label: 'Odds' },
 ];
 
-type TabType = 'football' | 'tennis' | 'basketball' | 'f1';
+type TabType = 'football' | 'basketball' | 'tennis' | 'f1';
 
 const Tabs: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('football');
@@ -403,73 +332,6 @@ const Tabs: React.FC = () => {
       };
     }) ?? [];
 
-  ////CODIGO REPETIDO, ARREGLAR LUEGO
-
-  const { odds: brazilFootballOdds } = useFootballOdds({
-    league: '73',
-    season: '2025',
-  });
-
-  const brazilLeagueData: MatchData[] =
-    brazilFootballOdds?.map((item: FootballOdd) => {
-      const fixture = item.fixture;
-      const league = item.league || {};
-
-      const homeTeam = item.teams?.home?.name ?? 'Home';
-      const awayTeam = item.teams?.away?.name ?? 'Away';
-
-      const date = new Date(fixture.date).toLocaleString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-
-      const result = '-';
-
-      const bookmaker =
-        item.bookmakers?.find((b) => b.name === 'Bwin') || item.bookmakers?.[0];
-      const matchWinnerBet = bookmaker?.bets?.find(
-        (b) => b.name === 'Match Winner',
-      );
-      const matchWinnerValues = matchWinnerBet?.values ?? [];
-
-      let prediction = '?';
-      let probability = '?';
-      let greenOddsIndex: number | undefined = undefined;
-
-      if (matchWinnerValues.length) {
-        const oddsWithIndex = matchWinnerValues.map(
-          (v: OddValue, i: number) => ({ ...v, index: i }),
-        );
-        const best = oddsWithIndex.reduce(
-          (
-            min: { odd: string; index: number; value: string },
-            curr: { odd: string; index: number; value: string },
-          ) => (parseFloat(curr.odd) < parseFloat(min.odd) ? curr : min),
-        );
-
-        prediction =
-          best.value === 'Home' ? '1' : best.value === 'Away' ? '2' : 'X';
-        probability = (100 / parseFloat(best.odd)).toFixed(0) + '%';
-        greenOddsIndex = best.index;
-      }
-
-      const oddsString = matchWinnerValues.map((v) => v.odd).join(' ');
-
-      return {
-        match: `${homeTeam} - ${awayTeam}`,
-        date,
-        prediction,
-        probability,
-        result,
-        odds: oddsString,
-        greenOddsIndex,
-        leagueLogo: league.logo ?? '',
-        leagueName: league.name ?? '',
-      };
-    }) ?? [];
-
   return (
     <>
       <div className="mb-4 border-b border-gray-200 ">
@@ -492,18 +354,6 @@ const Tabs: React.FC = () => {
           <li className="mr-1 lg:mr-2">
             <button
               className={`inline-block p-4 border-b-2 ${
-                activeTab === 'tennis'
-                  ? 'border-green-600 text-green-600'
-                  : 'border-transparent hover:text-gray-600 hover:border-gray-300'
-              } rounded-t-lg`}
-              onClick={() => handleTabClick('tennis')}
-            >
-              Tennis
-            </button>
-          </li>
-          <li className="mr-1 lg:mr-2">
-            <button
-              className={`inline-block p-4 border-b-2 ${
                 activeTab === 'basketball'
                   ? 'border-green-600 text-green-600'
                   : 'border-transparent hover:text-gray-600 hover:border-gray-300'
@@ -511,6 +361,18 @@ const Tabs: React.FC = () => {
               onClick={() => handleTabClick('basketball')}
             >
               Basketball
+            </button>
+          </li>
+          <li className="mr-1 lg:mr-2">
+            <button
+              className={`inline-block p-4 border-b-2 ${
+                activeTab === 'tennis'
+                  ? 'border-green-600 text-green-600'
+                  : 'border-transparent hover:text-gray-600 hover:border-gray-300'
+              } rounded-t-lg`}
+              onClick={() => handleTabClick('tennis')}
+            >
+              Tennis
             </button>
           </li>
           <li className="mr-1 lg:mr-2">
@@ -597,14 +459,6 @@ const Tabs: React.FC = () => {
               />
             </div>
 
-            <div className="mb-6 hidden lg:block">
-              <Table
-                title={'Copa Do Brazil'}
-                bookmakerOdds={brazilLeagueData}
-                columns={desktopCol}
-              />
-            </div>
-
             <div className="mb-6 lg:hidden">
               <Table
                 title={'Premier League'}
@@ -619,6 +473,65 @@ const Tabs: React.FC = () => {
                 className="inline-block bg-green-600  hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
               >
                 View all football predictions
+              </a>
+            </div>
+          </>
+        )}
+        {activeTab === 'basketball' && (
+          <>
+            <div id="football-content" className="sport-content">
+              <div className="bg-gray-50 rounded-lg p-2 mb-4 overflow-x-auto whitespace-nowrap">
+                <div className="flex space-x-2">
+                  <a
+                    href="#"
+                    className="bg-green-600  text-white px-3 py-1 rounded-md text-xs font-medium lg:inline-block"
+                  >
+                    Match Winner
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-white hover:bg-green-50 text-gray-700 px-3 py-1 rounded-md text-xs border border-gray-200 inline-block"
+                  >
+                    Point Spread
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-white  hover:bg-green-50 text-gray-700 px-3 py-1 rounded-md text-xs border border-gray-200 lg:inline-block"
+                  >
+                    Over/Under
+                  </a>
+
+                  <a
+                    href="#"
+                    className="bg-white hidden lg:inline-block hover:bg-green-50  text-gray-700 px-3 py-1 rounded-md text-xs border border-gray-200 "
+                  >
+                    Team Totals
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="mb-6 hidden lg:block">
+              <Table
+                title={'NBA'}
+                bookmakerOdds={parsedData}
+                columns={desktopCol}
+              />
+            </div>
+
+            <div className="mb-6 lg:hidden">
+              <Table
+                title={'NBA'}
+                bookmakerOdds={nbaMobile}
+                columns={mobileCol}
+              />
+            </div>
+
+            <div className="text-center mt-4">
+              <a
+                href="/football-predictions"
+                className="inline-block bg-green-600  hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
+              >
+                View all basketball predictions
               </a>
             </div>
           </>
@@ -685,73 +598,6 @@ const Tabs: React.FC = () => {
                 className="inline-block bg-green-600  hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
               >
                 View all tennis predictions
-              </a>
-            </div>
-          </>
-        )}
-        {activeTab === 'basketball' && (
-          <>
-            <div id="football-content" className="sport-content">
-              <div className="bg-gray-50 rounded-lg p-2 mb-4 overflow-x-auto whitespace-nowrap">
-                <div className="flex space-x-2">
-                  <a
-                    href="#"
-                    className="bg-green-600  text-white px-3 py-1 rounded-md text-xs font-medium lg:inline-block"
-                  >
-                    Match Winner
-                  </a>
-                  <a
-                    href="#"
-                    className="bg-white hover:bg-green-50 text-gray-700 px-3 py-1 rounded-md text-xs border border-gray-200 inline-block"
-                  >
-                    Point Spread
-                  </a>
-                  <a
-                    href="#"
-                    className="bg-white  hover:bg-green-50 text-gray-700 px-3 py-1 rounded-md text-xs border border-gray-200 lg:inline-block"
-                  >
-                    Over/Under
-                  </a>
-
-                  <a
-                    href="#"
-                    className="bg-white hidden lg:inline-block hover:bg-green-50  text-gray-700 px-3 py-1 rounded-md text-xs border border-gray-200 "
-                  >
-                    Team Totals
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className="mb-6 hidden lg:block">
-              <Table
-                title={'NBA'}
-                bookmakerOdds={parsedData}
-                columns={desktopCol}
-              />
-            </div>
-
-            <div className="mb-6 lg:hidden">
-              <Table
-                title={'NBA'}
-                bookmakerOdds={nbaMobile}
-                columns={mobileCol}
-              />
-            </div>
-
-            <div className="mb-6 hidden lg:block">
-              <Table
-                title={'Euroleague'}
-                bookmakerOdds={euroleagueDesktop}
-                columns={desktopCol}
-              />
-            </div>
-
-            <div className="text-center mt-4">
-              <a
-                href="/football-predictions"
-                className="inline-block bg-green-600  hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
-              >
-                View all basketball predictions
               </a>
             </div>
           </>

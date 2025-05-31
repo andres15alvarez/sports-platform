@@ -1,27 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import React, { useState } from 'react';
-import useGames, { Game } from '@/src/hooks/basketball/useGames';
+import React from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import useUpcomingGames from '@/src/hooks/basketball/useUpcomingGames';
 
 const FeaturedEvents: React.FC = () => {
-  const [params] = useState({
-    timezone: 'America/New_York',
-    league: '12',
-    season: '2024-2025',
-  });
-  const { games, loading, error } = useGames(params);
-
-  const upcomingGames = games
-    .filter((g: Game) => g.status.long === 'Not Started')
-    .slice(0, 4);
-
-  if (loading) return <p>Cargando partidos...</p>;
-  if (error) return <p>{error}</p>;
-  if (upcomingGames.length === 0)
-    return <p>No hay próximos juegos disponibles.</p>;
+  const { upcomingGames, loading, error } = useUpcomingGames();
 
   return (
     <section className="my-6">
@@ -29,11 +15,22 @@ const FeaturedEvents: React.FC = () => {
         Featured Sports Events
       </h2>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-600">{error}</p>}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {upcomingGames?.map((game: Game) => {
+        {loading && (
+          <p className="col-span-2 text-center text-gray-500">Loading...</p>
+        )}
+
+        {error && (
+          <p className="col-span-2 text-center text-red-600">{error}</p>
+        )}
+
+        {!loading && !error && upcomingGames.length === 0 && (
+          <p className="col-span-2 text-center text-gray-500">
+            There are no upcoming games available.
+          </p>
+        )}
+
+        {upcomingGames.map((game) => {
           const gameDate = new Date(game.date);
           const formattedDate = format(gameDate, 'dd/MM/yyyy - HH:mm', {
             locale: es,

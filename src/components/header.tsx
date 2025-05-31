@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
+import Image from 'next/image';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -92,10 +93,12 @@ export default function Header() {
               className="flex items-center text-green-700 hover:text-yellow-500 focus:outline-none text-sm"
               aria-label="Change language"
             >
-              <img
-                src={`https://flagcdn.com/${lang == 'en' ? 'gb' : 'es'}.svg`}
-                alt="English"
-                className="h-4 w-auto mr-1"
+              <Image
+                src={`https://flagcdn.com/${lang === 'en' ? 'gb' : 'es'}.svg`}
+                alt="Language flag"
+                width={16}
+                height={12}
+                className="mr-1"
               />
               <span className="hidden sm:inline">{lang.toUpperCase()}</span>
               <i className="bx bx-chevron-down ml-1 text-lg"></i>
@@ -105,12 +108,14 @@ export default function Header() {
                 <Link
                   href="/?lang=es"
                   hrefLang="es"
-                  className="flex block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
+                  className="flex px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
                 >
-                  <img
+                  <Image
                     src="https://flagcdn.com/es.svg"
                     alt="Spanish"
-                    className="h-4 w-auto mr-1"
+                    width={16}
+                    height={12}
+                    className="mr-1"
                   />
                   ES
                 </Link>
@@ -119,12 +124,14 @@ export default function Header() {
                 <Link
                   href="/"
                   hrefLang="en"
-                  className="flex block px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
+                  className="flex px-3 py-1 text-green-700 hover:bg-green-50 text-sm"
                 >
-                  <img
+                  <Image
                     src="https://flagcdn.com/gb.svg"
                     alt="English"
-                    className="h-4 w-auto mr-1"
+                    width={16}
+                    height={12}
+                    className="mr-1"
                   />
                   EN
                 </Link>
@@ -136,7 +143,9 @@ export default function Header() {
 
       {/* Mobile Navigation */}
       <nav
-        className={`${mobileMenuOpen ? 'max-h-[300px]' : 'max-h-0'} overflow-hidden transition-max-height duration-300 bg-white border-t border-green-600 lg:hidden`}
+        className={`${
+          mobileMenuOpen ? 'max-h-[300px]' : 'max-h-0'
+        } overflow-hidden transition-max-height duration-300 bg-white border-t border-green-600 lg:hidden`}
         aria-label="Mobile menu"
       >
         <div className="px-4 pt-2 pb-4 space-y-2">
