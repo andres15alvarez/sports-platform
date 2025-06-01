@@ -106,7 +106,7 @@ const TeamCard = ({
     <Image
       src={image}
       alt={name}
-      width={96} // 24 * 4 (h-24 = 6rem = 96px)
+      width={96}
       height={96}
       className="mx-auto mb-3"
       loading="lazy"

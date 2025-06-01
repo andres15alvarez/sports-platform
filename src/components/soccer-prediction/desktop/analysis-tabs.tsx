@@ -1,14 +1,14 @@
 'use client';
-import BarcelonaRadarChart from '../../charts/desktop/barcelona-radar';
-import GoalComparisonChart from '../../charts/desktop/goal-comparison';
-import HorizontalBarChart from '../../charts/desktop/goal-scored';
-import BarChart from '../../charts/desktop/goals-timings';
-import PieChart from '../../charts/desktop/historical-matchup-summary';
-import PointsLineChart from '../../charts/desktop/last-ten-match-performance';
-import MatchResultChart from '../../charts/desktop/match-result-probability';
-import GoalsContributionComparison from '../../charts/desktop/player-goal-contribution';
-import PointsProgressionChart from '../../charts/desktop/points-accumulation';
-import RealMadridRadarChart from '../../charts/desktop/real-madrid';
+import BarcelonaRadarChart from '../../charts/soccer-prediction/desktop/barcelona-radar';
+import GoalComparisonChart from '../../charts/soccer-prediction/desktop/goal-comparison';
+import HorizontalBarChart from '../../charts/soccer-prediction/desktop/goal-scored';
+import BarChart from '../../charts/soccer-prediction/desktop/goals-timings';
+import PieChart from '../../charts/soccer-prediction/desktop/historical-matchup-summary';
+import PointsLineChart from '../../charts/soccer-prediction/desktop/last-ten-match-performance';
+import MatchResultChart from '../../charts/soccer-prediction/desktop/match-result-probability';
+import GoalsContributionComparison from '../../charts/soccer-prediction/desktop/player-goal-contribution';
+import PointsProgressionChart from '../../charts/soccer-prediction/desktop/points-accumulation';
+import RealMadridRadarChart from '../../charts/soccer-prediction/desktop/real-madrid';
 
 import Image from 'next/image';
 import React, { useState } from 'react';

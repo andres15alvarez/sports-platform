@@ -94,11 +94,9 @@ export default function Header() {
               aria-label="Change language"
             >
               <Image
-                src={`https://flagcdn.com/${lang === 'en' ? 'gb' : 'es'}.svg`}
+                src={`https://flagcdn.com/${lang == 'en' ? 'gb' : 'es'}.svg`}
                 alt="Language flag"
-                width={16}
-                height={12}
-                className="mr-1"
+                className="h-4 w-auto mr-1"
               />
               <span className="hidden sm:inline">{lang.toUpperCase()}</span>
               <i className="bx bx-chevron-down ml-1 text-lg"></i>
