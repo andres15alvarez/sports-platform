@@ -14,11 +14,6 @@ import TeamFormAnalysis from '@/src/components/basket-prediction/team-form-analy
 import Breadcrumb from '@/src/components/breadcrumb';
 import ExpertPrediction from '@/src/components/expert-prediction-card';
 
-import Footer from '@/src/components/footer';
-import Header from '@/src/components/header';
-import MainLayout from '@/src/components/main-layout';
-import MobileNav from '@/src/components/mobile-nav';
-
 type BreadcrumbItem = {
   label: string;
   href?: string;
@@ -33,32 +28,27 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const Page: React.FC = () => {
   return (
-    <div className="bg-gray-100">
-      <Header />
-      <MobileNav />
-      <MainLayout>
-        <Breadcrumb items={breadcrumbItems} />
-        <GameHero />
-        <Tabs />
-        <ExpertPrediction
-          title="Expert Prediction"
-          prediction="Boston Celtics to win and Over 219.5 points"
-          tag="Top Pick"
-          odds="3.40"
-        />
-        <article className="prose max-w-none mb-8 text-black">
-          <GamePreview />
-          <TeamFormAnalysis />
-          <HeadToHeadSatatics />
-          <KeyPlayer />
-          <ProjectedLineups />
-          <BettingTipsOdds />
-          <ExpertPredictionVerdict />
-        </article>
-        <Cards />
-      </MainLayout>
-      <Footer />
-    </div>
+    <>
+      <Breadcrumb items={breadcrumbItems} />
+      <GameHero />
+      <Tabs />
+      <ExpertPrediction
+        title="Expert Prediction"
+        prediction="Boston Celtics to win and Over 219.5 points"
+        tag="Top Pick"
+        odds="3.40"
+      />
+      <article className="prose max-w-none mb-8 text-black">
+        <GamePreview />
+        <TeamFormAnalysis />
+        <HeadToHeadSatatics />
+        <KeyPlayer />
+        <ProjectedLineups />
+        <BettingTipsOdds />
+        <ExpertPredictionVerdict />
+      </article>
+      <Cards />
+    </>
   );
 };
 
