@@ -14,11 +14,6 @@ import TeamFormAnalysis from '@/src/components/baseball-prediction/team-form-ana
 import Breadcrumb from '@/src/components/breadcrumb';
 import ExpertPrediction from '@/src/components/expert-prediction-card';
 
-import Footer from '@/src/components/footer';
-import Header from '@/src/components/header';
-import MainLayout from '@/src/components/main-layout';
-import MobileNav from '@/src/components/mobile-nav';
-
 type BreadcrumbItem = {
   label: string;
   href?: string;
@@ -35,9 +30,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 const Page: React.FC = () => {
   return (
     <div className="bg-gray-100">
-      <Header />
-      <MobileNav />
-      <MainLayout>
+      <>
         <Breadcrumb items={breadcrumbItems} />
         <GameHero />
         <Tabs />
@@ -57,8 +50,7 @@ const Page: React.FC = () => {
           <ExpertPredictionVerdict />
         </article>
         <Cards />
-      </MainLayout>
-      <Footer />
+      </>
     </div>
   );
 };
