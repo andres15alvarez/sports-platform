@@ -82,7 +82,9 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
         <Image
           src={player.flag}
           alt={player.nationality}
-          className="w-6 h-4 mr-2"
+          width={24}
+          height={16}
+          className="mr-2"
         />
         <span className="font-semibold">{player.name}</span>
         <span

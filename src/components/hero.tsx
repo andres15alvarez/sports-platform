@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { ReactNode } from 'react';
-import Image from 'next/image';
 
 interface TeamInfo {
   name: string;
@@ -96,7 +95,6 @@ const Hero = ({ match, children }: HeroProps) => {
                     width={64}
                     height={64}
                     className="mb-2"
-                    loading="lazy"
                     priority={idx === 0}
                   />
                 )}

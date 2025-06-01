@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       'images.seeklogo.com',
       'www.citypng.com',
       'sportslogos.net',
+      'flagcdn.com',
     ],
 
     dangerouslyAllowSVG: true,

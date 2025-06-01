@@ -96,7 +96,9 @@ export default function Header() {
               <Image
                 src={`https://flagcdn.com/${lang == 'en' ? 'gb' : 'es'}.svg`}
                 alt="Language flag"
-                className="h-4 w-auto mr-1"
+                width={16}
+                height={12}
+                className="mr-1"
               />
               <span className="hidden sm:inline">{lang.toUpperCase()}</span>
               <i className="bx bx-chevron-down ml-1 text-lg"></i>
