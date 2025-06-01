@@ -53,11 +53,6 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/sport/tennis" className="hover:text-yellow-300">
-                  Tennis
-                </Link>
-              </li>
-              <li>
                 <Link
                   href="/sport/basketball"
                   className="hover:text-yellow-300"
@@ -66,16 +61,8 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/sport/formula-1" className="hover:text-yellow-300">
-                  Formula 1
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/sport/volleyball"
-                  className="hover:text-yellow-300 hidden lg:block"
-                >
-                  Volleyball
+                <Link href="/sport/baseball" className="hover:text-yellow-300">
+                  Baseball
                 </Link>
               </li>
             </ul>
