@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Sport {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  leagues League[]
+}
+
+model League {
+  id           Int       @id @default(autoincrement())
+  leagueId     Int
+  name         String
+  type         String?
+  logo         String?
+  country      String
+  countryCode  String?
+  countryFlag  String?
+  sportId      Int
+  sport        Sport     @relation(fields: [sportId], references: [id])
+  seasons      Season[]
+
+  @@unique([leagueId, sportId])
+}
+
+model Season {
+  id        Int      @id @default(autoincrement())
+  season    String   
+  start     DateTime
+  end       DateTime
+  leagueId  Int
+  league    League   @relation(fields: [leagueId], references: [id])
+  coverage  Json?
+
+  @@unique([leagueId, season])
+}

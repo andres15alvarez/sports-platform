@@ -66,12 +66,14 @@ const MatchHeader = () => (
 );
 
 const HeroImageOverlay = () => (
-  <div className="relative hidden lg:block rounded-xl overflow-hidden mb-6">
+  <div className="relative hidden lg:block rounded-xl overflow-hidden mb-6 h-48">
     <Image
       src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
       alt="El Clásico: Barcelona vs Real Madrid"
-      className="w-full h-48 object-cover opacity-60"
-      loading="lazy"
+      className="object-cover opacity-60"
+      fill
+      sizes="100vw"
+      priority={false}
     />
     <div className="absolute inset-0 bg-gradient-to-r from-blue-900 to-red-900 opacity-70"></div>
     <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center px-4 text-center">
@@ -104,7 +106,9 @@ const TeamCard = ({
     <Image
       src={image}
       alt={name}
-      className="h-24 mx-auto mb-3"
+      width={96}
+      height={96}
+      className="mx-auto mb-3"
       loading="lazy"
     />
     <h3 className={`text-xl font-bold ${color}`}>{name}</h3>
@@ -192,7 +196,9 @@ const BookmakerTable = () => {
                   <Image
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Bet365_Logo.svg/442px-Bet365_Logo.svg.png"
                     alt="Bet365"
-                    className="h-6 mr-2"
+                    width={24}
+                    height={24}
+                    className="mr-2"
                     loading="lazy"
                   />
                   <span>Bet365</span>
@@ -222,7 +228,9 @@ const BookmakerTable = () => {
                   <Image
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/William_Hill_logo.png/250px-William_Hill_logo.png"
                     alt="William Hill"
-                    className="h-6 mr-2"
+                    width={24}
+                    height={24}
+                    className="mr-2"
                     loading="lazy"
                   />
                   <span>William Hill</span>
@@ -252,7 +260,9 @@ const BookmakerTable = () => {
                   <Image
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Unibet-Logo-white.jpg/250px-Unibet-Logo-white.jpg"
                     alt="Unibet"
-                    className="h-6 mr-2"
+                    width={24}
+                    height={24}
+                    className="mr-2"
                     loading="lazy"
                   />
                   <span>Unibet</span>

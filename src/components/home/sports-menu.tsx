@@ -5,13 +5,18 @@ import { useState } from 'react';
 import useLeagues from '@/src/hooks/basketball/useLeagues';
 import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
 
-type MenuKey = 'football' | 'baseball' | 'tennis' | 'basketball';
+import {
+  basketballLeagues as basketballIds,
+  footballLeagues as footballIds,
+} from '@/src/config/leagues';
+
+type MenuKey = 'football' | 'baseball' | 'basketball'; // | 'tennis'
 
 export default function SportsMenu() {
   const [open, setOpen] = useState<Record<MenuKey, boolean>>({
     football: false,
     baseball: false,
-    tennis: false,
+    //tennis: false,
     basketball: false,
   });
 
@@ -43,32 +48,30 @@ export default function SportsMenu() {
         </button>
         {open.football && (
           <ul className="ml-4 mt-2 space-y-1 text-sm">
-            {footballLoading && (
-              <li className="text-gray-400">Cargando ligas...</li>
-            )}
-            {footballError && <li className="text-red-400">{footballError}</li>}
             {!footballLoading &&
               !footballError &&
-              footballLeagues.slice(0, 10).map((league) => (
-                <li
-                  key={league.id}
-                  className="flex items-center space-x-2 hover:text-yellow-300"
-                >
-                  <Image
-                    src={league.logo || ''}
-                    alt={league.name}
-                    width={16}
-                    height={16}
-                    unoptimized
-                  />
-                  <Link
-                    href={`/football/${league.id}`}
-                    title={`${league.name} Odds`}
+              footballLeagues
+                .filter((league) => footballIds.includes(league.id))
+                .map((league) => (
+                  <li
+                    key={league.id}
+                    className="flex items-center space-x-2 hover:text-yellow-300"
                   >
-                    {league.name}
-                  </Link>
-                </li>
-              ))}
+                    <Image
+                      src={league.logo || ''}
+                      alt={league.name}
+                      width={16}
+                      height={16}
+                      unoptimized
+                    />
+                    <Link
+                      href={`/football/${league.id}`}
+                      title={`${league.name}`}
+                    >
+                      {league.name}
+                    </Link>
+                  </li>
+                ))}
           </ul>
         )}
       </div>
@@ -128,7 +131,7 @@ export default function SportsMenu() {
         )}
       </div>
 
-      {/* Tennis */}
+      {/* Tennis 
       <div>
         <button
           onClick={() => toggleMenu('tennis')}
@@ -181,7 +184,8 @@ export default function SportsMenu() {
             </li>
           </ul>
         )}
-      </div>
+      </div>*/}
+
       {/* Basketball */}
       <div className="mb-4">
         <button
@@ -197,30 +201,30 @@ export default function SportsMenu() {
         </button>
         {open.basketball && (
           <ul className="ml-4 mt-2 space-y-1 text-sm">
-            {loading && <li className="text-gray-400">Cargando ligas...</li>}
-            {error && <li className="text-red-400">{error}</li>}
             {!loading &&
               !error &&
-              leagues.slice(0, 10).map((league) => (
-                <li
-                  key={league.id}
-                  className="flex items-center space-x-2 hover:text-yellow-300"
-                >
-                  <Image
-                    src={league.logo || '/default-basket-logo.png'}
-                    alt={league.name}
-                    width={16}
-                    height={16}
-                    unoptimized
-                  />
-                  <Link
-                    href={`/basketball/${league.id}`}
-                    title={`${league.name} Odds`}
+              leagues
+                .filter((league) => basketballIds.includes(league.id))
+                .map((league) => (
+                  <li
+                    key={league.id}
+                    className="flex items-center space-x-2 hover:text-yellow-300"
                   >
-                    {league.name}
-                  </Link>
-                </li>
-              ))}
+                    <Image
+                      src={league.logo || '/default-basket-logo.png'}
+                      alt={league.name}
+                      width={16}
+                      height={16}
+                      unoptimized
+                    />
+                    <Link
+                      href={`/basketball/${league.id}`}
+                      title={`${league.name}`}
+                    >
+                      {league.name}
+                    </Link>
+                  </li>
+                ))}
           </ul>
         )}
       </div>

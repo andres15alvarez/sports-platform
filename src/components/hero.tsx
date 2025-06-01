@@ -37,11 +37,11 @@ const Hero = ({ match, children }: HeroProps) => {
 
   return (
     <>
-      <h1 className="text-2xl font-bold mb-2 text-black ">{title}</h1>
+      <h1 className="text-2xl font-bold mb-2 text-black">{title}</h1>
       {children}
 
       <div className="bg-gray-50 rounded-xl p-4 md:p-6 mb-8 shadow-sm">
-        <div className="flex items-center space-x-3 mb-4 ">
+        <div className="flex items-center space-x-3 mb-4">
           <span className="text-sm font-medium text-gray-700">Share:</span>
           {[
             {
@@ -91,9 +91,11 @@ const Hero = ({ match, children }: HeroProps) => {
                 {item.logo && (
                   <Image
                     src={item.logo}
-                    alt={item.name + ' logo'}
-                    className="w-16 h-16 mb-2"
-                    loading="lazy"
+                    alt={`${item.name} logo`}
+                    width={64}
+                    height={64}
+                    className="mb-2"
+                    priority={idx === 0}
                   />
                 )}
                 <h3 className="font-bold text-center text-black">
@@ -101,7 +103,13 @@ const Hero = ({ match, children }: HeroProps) => {
                 </h3>
                 <div className="flex mt-1">
                   <span
-                    className={` ${item.rank === '5th in Western Conference' ? 'bg-yellow-100 text-yellow-800' : item.rank === 'NBA Playoffs' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}  text-xs px-2 py-1 rounded`}
+                    className={`${
+                      item.rank === '5th in Western Conference'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : item.rank === 'NBA Playoffs'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-green-100 text-green-800'
+                    } text-xs px-2 py-1 rounded`}
                   >
                     {item.rank}
                   </span>

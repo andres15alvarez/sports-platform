@@ -27,7 +27,8 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
           <li className="flex items-center space-x-2 hover:text-yellow-300">
             <Image
               src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg"
-              className="h-5 w-5"
+              width={20}
+              height={20}
               alt="Serie A"
             />
             <Link href="#">Serie A</Link>
@@ -35,7 +36,8 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
           <li className="flex items-center space-x-2 hover:text-yellow-300">
             <Image
               src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/280px-Premier_League_Logo.svg.png"
-              className="h-5 w-5"
+              width={20}
+              height={20}
               alt="Premier League"
             />
             <Link href="#">Premier League</Link>
@@ -43,7 +45,8 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
           <li className="flex items-center space-x-2 hover:text-yellow-300">
             <Image
               src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/UEFA_Champions_League.svg/240px-UEFA_Champions_League.svg.png"
-              className="h-5 w-5"
+              width={20}
+              height={20}
               alt="Champions League"
             />
             <Link href="#">Champions League</Link>
@@ -152,7 +155,8 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
                   >
                     <Image
                       src={link.icon}
-                      className="h-4 w-4"
+                      width={16}
+                      height={16}
                       alt={link.label}
                     />
                     <Link href={link.href}>{link.label}</Link>
