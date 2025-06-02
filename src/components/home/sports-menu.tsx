@@ -10,13 +10,12 @@ import {
   footballLeagues as footballIds,
 } from '@/src/config/leagues';
 
-type MenuKey = 'football' | 'baseball' | 'basketball'; // | 'tennis'
+type MenuKey = 'football' | 'baseball' | 'basketball';
 
 export default function SportsMenu() {
   const [open, setOpen] = useState<Record<MenuKey, boolean>>({
     football: false,
     baseball: false,
-    //tennis: false,
     basketball: false,
   });
 
@@ -130,62 +129,6 @@ export default function SportsMenu() {
           </ul>
         )}
       </div>
-
-      {/* Tennis 
-      <div>
-        <button
-          onClick={() => toggleMenu('tennis')}
-          className="w-full flex cursor-pointer justify-between items-center text-white font-semibold focus:outline-none"
-        >
-          <span className="flex items-center gap-2">
-            <i className="bx bx-tennis-ball text-lg"></i>Tennis
-          </span>
-          <i
-            className={`bx ${open.tennis ? 'bx-chevron-up' : 'bx-chevron-down'}`}
-          ></i>
-        </button>
-        {open.tennis && (
-          <ul id="tennisMenu" className="ml-4 mt-2 space-y-1 text-sm">
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/en/thumb/3/3f/ATP_Tour_logo.svg/250px-ATP_Tour_logo.svg.png"
-                alt="ATP Tour"
-                width={16}
-                height={16}
-                unoptimized
-              />
-              <Link href="#" title="ATP Tour Odds">
-                ATP Tour
-              </Link>
-            </li>
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/WTA_logo_2010.svg/408px-WTA_logo_2010.svg.png"
-                alt="WTA Tour"
-                width={16}
-                height={16}
-                unoptimized
-              />
-              <Link href="#" title="WTA Tour Odds">
-                WTA Tour
-              </Link>
-            </li>
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/fr/5/59/Le_Grand_Slam_Logo.png"
-                alt="Grand Slams"
-                width={16}
-                height={16}
-                unoptimized
-              />
-              <Link href="#" title="Grand Slams Odds">
-                Grand Slams
-              </Link>
-            </li>
-          </ul>
-        )}
-      </div>*/}
-
       {/* Basketball */}
       <div className="mb-4">
         <button
