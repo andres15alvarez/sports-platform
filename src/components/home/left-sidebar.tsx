@@ -11,9 +11,9 @@ import { popularFootballLeagues } from '@/src/config/leagues';
 const LeftSidebar: React.FC = () => {
   const { leagues, loading, error } = useFootballLeagues();
 
-  const popularLeagues = leagues?.filter((league) =>
-    popularFootballLeagues.includes(league.id),
-  );
+  const popularLeagues =
+    leagues?.filter((league) => popularFootballLeagues.includes(league.id)) ||
+    [];
 
   return (
     <aside
@@ -25,10 +25,13 @@ const LeftSidebar: React.FC = () => {
         <h2 className="text-lg font-bold border-b border-yellow-400 pb-2">
           Popular Leagues in Europa
         </h2>
-        <ul className="mt-4 space-y-3">
-          {!loading &&
-            !error &&
-            popularLeagues.map((league) => (
+        {error && <p className="text-red-500">Error al cargar ligas.</p>}
+        {!loading && !error && (
+          <ul className="mt-4 space-y-3">
+            {popularLeagues.length === 0 && (
+              <li>No hay ligas populares disponibles.</li>
+            )}
+            {popularLeagues.map((league) => (
               <li
                 key={league.id}
                 className="flex items-center justify-center space-x-2 hover:text-yellow-300"
@@ -48,7 +51,8 @@ const LeftSidebar: React.FC = () => {
                 </Link>
               </li>
             ))}
-        </ul>
+          </ul>
+        )}
       </div>
 
       {/* All Sports */}
