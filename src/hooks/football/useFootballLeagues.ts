@@ -21,7 +21,7 @@ const useFootballLeagues = () => {
     const fetchLeagues = async () => {
       try {
         const res = await fetchFootballData('leagues');
-        console.log('Football Leagues Data:', res);
+        //console.log('Football Leagues Data:', res);
         if (res?.response) {
           const mappedLeagues = res.response.map((item: League) => ({
             id: item.league.id,

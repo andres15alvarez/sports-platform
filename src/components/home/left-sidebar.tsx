@@ -5,15 +5,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import SportsMenu from './sports-menu';
 
-import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
+import useLeagues from '@/src/hooks/useLeagues';
 import { popularFootballLeagues } from '@/src/config/leagues';
 
 const LeftSidebar: React.FC = () => {
-  const { leagues, loading, error } = useFootballLeagues();
-
-  const popularLeagues =
-    leagues?.filter((league) => popularFootballLeagues.includes(league.id)) ||
-    [];
+  const { leagues, loading, error } = useLeagues(
+    popularFootballLeagues,
+    'football',
+  );
 
   return (
     <aside
@@ -28,10 +27,10 @@ const LeftSidebar: React.FC = () => {
         {error && <p className="text-red-500">Error al cargar ligas.</p>}
         {!loading && !error && (
           <ul className="mt-4 space-y-3">
-            {popularLeagues.length === 0 && (
+            {leagues.length === 0 && (
               <li>No hay ligas populares disponibles.</li>
             )}
-            {popularLeagues.map((league) => (
+            {leagues.map((league) => (
               <li
                 key={league.id}
                 className="flex items-center justify-center space-x-2 hover:text-yellow-300"

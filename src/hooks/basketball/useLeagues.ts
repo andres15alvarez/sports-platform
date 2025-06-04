@@ -16,7 +16,7 @@ const useLeagues = () => {
     const fetchLeagues = async () => {
       try {
         const res = await fetchBasketballData('leagues');
-        console.log('Leagues Data:', res);
+        //console.log('Leagues Data:', res);
         if (res?.response) {
           setLeagues(res.response);
         } else {
