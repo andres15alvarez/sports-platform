@@ -92,7 +92,7 @@ const useBaseballOdds = ({
           season,
         });
 
-        console.log('Datos de odds recibidos baseball:', res);
+        //console.log('Datos de odds recibidos baseball:', res);
 
         if (res?.response && res.response.length > 0) {
           setOdds(res.response);
