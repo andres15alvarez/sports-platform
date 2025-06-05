@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { League } from '@prisma/client';
 
 export default function useLeagues(leagueIds: number[], sportName: string) {
@@ -6,7 +6,7 @@ export default function useLeagues(leagueIds: number[], sportName: string) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const leagueIdsKey = useMemo(() => leagueIds.join(','), [leagueIds]);
+  //const leagueIdsKey = useMemo(() => leagueIds.join(','), [leagueIds]);
 
   useEffect(() => {
     if (!sportName || leagueIds.length === 0) {
@@ -19,6 +19,8 @@ export default function useLeagues(leagueIds: number[], sportName: string) {
     const fetchLeagues = async () => {
       setLoading(true);
       setError(null);
+
+      const leagueIdsKey = leagueIds.join(',');
 
       try {
         const res = await fetch(
@@ -42,7 +44,7 @@ export default function useLeagues(leagueIds: number[], sportName: string) {
     };
 
     fetchLeagues();
-  }, [leagueIdsKey, sportName]);
+  }, [leagueIds, sportName]);
 
   return { leagues, loading, error };
 }
