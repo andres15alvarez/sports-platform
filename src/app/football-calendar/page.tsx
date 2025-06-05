@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface Team {
@@ -715,18 +715,4 @@ const FixturesPageContent: React.FC = () => {
   );
 };
 
-const FixturesPage: React.FC = () => {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
-        </div>
-      }
-    >
-      <FixturesPageContent />
-    </Suspense>
-  );
-};
-
-export default FixturesPage;
+export default FixturesPageContent;
