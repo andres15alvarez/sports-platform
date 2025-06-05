@@ -1,7 +1,14 @@
+'use client';
+
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import Carousel from './carousel';
+
+import useOdds from '@/src/hooks/basketball/useOdds';
+import useBaseballOdds from '@/src/hooks/baseball/useBaseballOdds';
+import useFootballOdds from '@/src/hooks/football/useFootballOdds';
+
+import { MatchData } from '@/src/types/odds';
 
 type Offer = {
   name: string;
@@ -9,11 +16,6 @@ type Offer = {
   logo: string;
   link: string;
   odds: string;
-};
-
-type Prediction = {
-  id: number;
-  text: string;
 };
 
 const offers: Offer[] = [
@@ -54,15 +56,41 @@ const offers: Offer[] = [
   },
 ];
 
-const predictions: Prediction[] = [
-  { id: 1, text: 'Manchester United vs Chelsea: Both Teams to Score' },
-  { id: 2, text: 'Real Madrid vs Barcelona: Over 3.5 Goals' },
-  { id: 3, text: 'Juventus vs AC Milan: Juventus Win' },
-  { id: 4, text: 'Bayern Munich vs Dortmund: Both Teams to Score' },
-  { id: 5, text: 'Paris Saint-Germain vs Lyon: Over 2.5 Goals' },
-];
-
 const RightSidebar: React.FC = () => {
+  //// LIGAS Y TEMPORADAS
+  const { odds: oddsBasket1 } = useOdds({ league: '12', season: '2024-2025' });
+  const { odds: oddsBasket2 } = useOdds({ league: '117', season: '2024-2025' });
+  const { odds: oddsBase1 } = useBaseballOdds({ league: '1', season: '2025' });
+  const { odds: oddsBase2 } = useBaseballOdds({ league: '21', season: '2025' });
+  const { odds: oddsFoot1 } = useFootballOdds({ league: '71', season: '2025' });
+  const { odds: oddsFoot2 } = useFootballOdds({
+    league: '909',
+    season: '2025',
+  });
+
+  const getLatestGames = (
+    oddsArray: MatchData[] | null | undefined,
+  ): MatchData[] => {
+    if (!oddsArray) return [];
+    return oddsArray
+      .filter((o) => o?.game?.status?.short !== 'FT')
+      .sort((a, b) => (b?.game?.timestamp || 0) - (a?.game?.timestamp || 0))
+      .slice(0, 2);
+  };
+
+  const basketballGames: MatchData[] = getLatestGames([
+    ...(oddsBasket1 || []),
+    ...(oddsBasket2 || []),
+  ]);
+  const baseballGames: MatchData[] = getLatestGames([
+    ...(oddsBase1 || []),
+    ...(oddsBase2 || []),
+  ]);
+  const footballGames: MatchData[] = getLatestGames([
+    ...(oddsFoot1 || []),
+    ...(oddsFoot2 || []),
+  ]);
+
   return (
     <aside
       className="w-64 bg-white h-full p-4 rounded-lg shadow"
@@ -71,7 +99,6 @@ const RightSidebar: React.FC = () => {
       <h2 className="text-green-700 font-semibold mb-6">Most Visited Events</h2>
 
       <Carousel />
-
       {/* Top Bookmaker Offers */}
       <div className="mt-6 space-y-4">
         <h2 className="text-green-700 font-semibold">Top Bookmaker Offers</h2>
@@ -110,16 +137,50 @@ const RightSidebar: React.FC = () => {
             Latest Predictions
           </h2>
           <ul className="space-y-1 text-black">
-            {predictions.map((prediction) => (
-              <li key={prediction.id}>
-                <Link
-                  href={`/prediction/${prediction.id}`}
-                  className="block hover:bg-green-50 transition-colors rounded px-3 py-2"
-                >
-                  {prediction.text}
-                </Link>
+            {basketballGames.map((o, i) => (
+              <li
+                key={`basket-${i}`}
+                className="block hover:bg-green-50 transition-colors rounded px-3 py-2"
+              >
+                🏀 {o?.game?.teams?.home?.name} vs {o?.game?.teams?.away?.name}:{' '}
+                <span className="italic text-green-800">
+                  Win{' '}
+                  {o?.bookmakers?.[0]?.bets?.[0]?.values?.[0]?.value || 'N/A'}
+                </span>
               </li>
             ))}
+
+            {baseballGames.map((o, i) => (
+              <li
+                key={`base-${i}`}
+                className="block hover:bg-green-50 transition-colors rounded px-3 py-2"
+              >
+                ⚾ {o?.game?.teams?.home?.name} vs {o?.game?.teams?.away?.name}:{' '}
+                <span className="italic text-green-800">
+                  Win{' '}
+                  {o?.bookmakers?.[0]?.bets?.[0]?.values?.[0]?.value || 'N/A'}
+                </span>
+              </li>
+            ))}
+
+            {footballGames.map((o, i) => {
+              const homeTeam = o?.teams?.home?.name || 'Home';
+              const awayTeam = o?.teams?.away?.name || 'Away';
+              const prediction =
+                o?.bookmakers?.[0]?.bets?.[0]?.values?.[0]?.value || 'N/A';
+
+              return (
+                <li
+                  key={`foot-${i}`}
+                  className="block hover:bg-green-50 transition-colors rounded px-3 py-2"
+                >
+                  ⚽ {homeTeam} vs {awayTeam}:{' '}
+                  <span className="italic text-green-800">
+                    Win {prediction}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

@@ -1,19 +1,18 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import useTranslation from 'next-translate/useTranslation';
 import Image from 'next/image';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { t, lang } = useTranslation('common');
-  const results = t('results');
-  const odds = t('odds');
-  const predictions = t('predictions');
-  const bookmarkers = t('bookmarkers');
-  const promos = t('promos');
-  const tools = t('tools');
-  const login = t('login');
+  const lang = 'en';
+  const results = 'results';
+  const odds = 'odds';
+  const predictions = 'predictions';
+  const bookmarkers = 'bookmarkers';
+  const promos = 'promos';
+  const tools = 'tools';
+  const login = 'login';
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow-lg border-b-4 border-green-600 z-50">
@@ -100,7 +99,7 @@ export default function Header() {
                 height={12}
                 className="mr-1"
               />
-              <span className="hidden sm:inline">{lang.toUpperCase()}</span>
+              <span className="hidden sm:inline">EN</span>
               <i className="bx bx-chevron-down ml-1 text-lg"></i>
             </button>
             <ul className="absolute right-0 mt-1 w-24 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none group-hover:pointer-events-auto">

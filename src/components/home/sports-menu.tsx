@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { useState } from 'react';
 import useLeagues from '@/src/hooks/basketball/useLeagues';
 import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
+import useBaseballLeagues from '@/src/hooks/baseball/useBaseballLeagues';
 
 import {
   basketballLeagues as basketballIds,
   footballLeagues as footballIds,
-} from '@/src/config/leagues';
+  baseballLeagues as baseballLeaguesIds,
+} from '@/src/config/leaguesData';
 
 type MenuKey = 'football' | 'baseball' | 'basketball';
 
@@ -25,6 +27,12 @@ export default function SportsMenu() {
     loading: footballLoading,
     error: footballError,
   } = useFootballLeagues();
+
+  const {
+    leagues: baseballLeagues,
+    loading: baseballLoading,
+    error: baseballError,
+  } = useBaseballLeagues();
 
   const toggleMenu = (menu: MenuKey) => {
     setOpen((prev) => ({ ...prev, [menu]: !prev[menu] }));
@@ -89,46 +97,35 @@ export default function SportsMenu() {
           ></i>
         </button>
         {open.baseball && (
-          <ul id="baseballMenu" className="ml-4 mt-2 space-y-1 text-sm">
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Major_League_Baseball_logo.svg/200px-Major_League_Baseball_logo.svg.png"
-                alt="MLB"
-                width={16}
-                height={16}
-                unoptimized
-              />
-              <Link href="/baseball-prediction" title="MLB Odds">
-                MLB
-              </Link>
-            </li>
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/NPB_logo.svg/250px-NPB_logo.svg.png"
-                alt="NPB"
-                width={16}
-                height={16}
-                unoptimized
-              />
-              <Link href="/basket-prediction" title="NPB Odds">
-                NPB
-              </Link>
-            </li>
-            <li className="flex items-center space-x-2 hover:text-yellow-300">
-              <Image
-                src="https://upload.wikimedia.org/wikipedia/fr/8/85/MiLB_logo.png?20110810101641"
-                alt="MiLB"
-                width={16}
-                height={16}
-                unoptimized
-              />
-              <Link href="#" title="MiLB Odds">
-                MiLB
-              </Link>
-            </li>
+          <ul className="ml-4 mt-2 space-y-1 text-sm">
+            {!baseballLoading &&
+              !baseballError &&
+              baseballLeagues
+                .filter((league) => baseballLeaguesIds.includes(league.id))
+                .map((league) => (
+                  <li
+                    key={league.id}
+                    className="flex items-center space-x-2 hover:text-yellow-300"
+                  >
+                    <Image
+                      src={league.logo || ''}
+                      alt={league.name}
+                      width={16}
+                      height={16}
+                      unoptimized
+                    />
+                    <Link
+                      href={`/baseball/${league.id}`}
+                      title={`${league.name}`}
+                    >
+                      {league.name}
+                    </Link>
+                  </li>
+                ))}
           </ul>
         )}
       </div>
+
       {/* Basketball */}
       <div className="mb-4">
         <button

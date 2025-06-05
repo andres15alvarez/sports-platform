@@ -6,7 +6,7 @@ import Link from 'next/link';
 import SportsMenu from './sports-menu';
 
 import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
-import { popularFootballLeagues } from '@/src/config/leagues';
+import { popularFootballLeagues } from '@/src/config/leaguesData';
 
 const LeftSidebar: React.FC = () => {
   const { leagues, loading, error } = useFootballLeagues();

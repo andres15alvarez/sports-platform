@@ -1,33 +1,24 @@
-export const basketballLeagues = [
-  12, // NBA
-  120, // EuroLeague
-  117, // Liga ACB
-  31, // CBA China
-  116, // NCAA
-  26, // LNB
-  82, // VTB United
-  1, // NBL Australia
-  91, // KBL Korea
-  40, // BBL Germany
-];
+export const footballLeagues = process.env.NEXT_PUBLIC_FOOTBALL_LEAGUES
+  ? process.env.NEXT_PUBLIC_FOOTBALL_LEAGUES.split(',').map((id) =>
+      Number(id.trim()),
+    )
+  : [];
 
-export const footballLeagues = [
-  39, // Premier League
-  140, // La Liga España
-  135, // Serie A Italia
-  78, // Bundesliga
-  61, // Ligue 1 Francia
-  2, // UEFA Champions League
-  3, // UEFA Europa League
-  71, // Serie A Brazil
-  128, // Liga profesional Argentina
-  88, // Eredivise
-];
+export const popularFootballLeagues = process.env
+  .NEXT_PUBLIC_POPULAR_FOOTBALL_LEAGUES
+  ? process.env.NEXT_PUBLIC_POPULAR_FOOTBALL_LEAGUES.split(',').map((id) =>
+      Number(id.trim()),
+    )
+  : [];
 
-export const popularFootballLeagues = [
-  39, // Premier League
-  140, // La Liga España
-  135, // Serie A Italia
-  78, // Bundesliga
-  61, // Ligue 1 Francia
-];
+export const basketballLeagues = process.env.NEXT_PUBLIC_BASKETBALL_LEAGUES
+  ? process.env.NEXT_PUBLIC_BASKETBALL_LEAGUES.split(',').map((id) =>
+      Number(id.trim()),
+    )
+  : [];
+
+export const baseballLeagues = process.env.NEXT_PUBLIC_BASEBALL_LEAGUES
+  ? process.env.NEXT_PUBLIC_BASEBALL_LEAGUES.split(',').map((id) =>
+      Number(id.trim()),
+    )
+  : [];

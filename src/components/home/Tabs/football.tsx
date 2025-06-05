@@ -42,11 +42,11 @@ const mobileCol: TableColumn[] = [
 
 const FootballTab: React.FC = () => {
   const { odds: footballOdds } = useFootballOdds({
-    league: '3',
-    season: '2024',
+    league: '71',
+    season: '2025',
   });
 
-  const europaLeagueData: MatchData[] =
+  const footballLeagueData: MatchData[] =
     footballOdds?.map((item: FootballOdd) => {
       const fixture = item.fixture;
       const league = item.league || {};
@@ -133,21 +133,6 @@ const FootballTab: React.FC = () => {
     },
   ];
 
-  const premierMobile: MatchData[] = [
-    {
-      match: 'Liverpool - Man City',
-      date: '04/27 18:30',
-      probability: '35%  35%  30%',
-      prediction: 'X',
-      result: '1-1',
-      odds: '3.40',
-      greenOddsIndex: 0,
-      leagueLogo:
-        'https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg',
-      leagueName: 'Premier',
-    },
-  ];
-
   return (
     <>
       <div className="bg-gray-50 rounded-lg p-2 mb-4 overflow-x-auto whitespace-nowrap">
@@ -178,8 +163,8 @@ const FootballTab: React.FC = () => {
 
       <div className="mb-6 hidden lg:block">
         <Table
-          title={'UEFA Europa League'}
-          bookmakerOdds={europaLeagueData}
+          title={'Campeonato Brasileño de Serie A'}
+          bookmakerOdds={footballLeagueData}
           columns={desktopCol}
         />
       </div>
@@ -192,17 +177,9 @@ const FootballTab: React.FC = () => {
         />
       </div>
 
-      <div className="mb-6 lg:hidden">
-        <Table
-          title={'Premier League'}
-          bookmakerOdds={premierMobile}
-          columns={mobileCol}
-        />
-      </div>
-
       <div className="text-center mt-4">
         <a
-          href="/football-predictions"
+          href="/football-prediction"
           className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
         >
           View all football predictions

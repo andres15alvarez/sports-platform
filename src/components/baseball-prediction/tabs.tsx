@@ -1,3 +1,5 @@
+'use client';
+
 import StickySectionTabs from '../sticky-tabs';
 import React from 'react';
 
