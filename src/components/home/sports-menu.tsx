@@ -2,13 +2,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import useLeagues from '@/src/hooks/useLeagues';
+import useLeagues from '@/src/hooks/basketball/useLeagues';
+import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
+import useBaseballLeagues from '@/src/hooks/baseball/useBaseballLeagues';
 
 import {
   basketballLeagues as basketballIds,
   footballLeagues as footballIds,
-  baseballLeagues as baseballIds,
-} from '@/src/config/leagues';
+  baseballLeagues as baseballLeaguesIds,
+} from '@/src/config/leaguesData';
 
 type MenuKey = 'football' | 'baseball' | 'basketball';
 
@@ -19,23 +21,18 @@ export default function SportsMenu() {
     basketball: false,
   });
 
+  const { leagues, loading, error } = useLeagues();
   const {
     leagues: footballLeagues,
     loading: footballLoading,
     error: footballError,
-  } = useLeagues(footballIds, 'football');
+  } = useFootballLeagues();
 
   const {
     leagues: baseballLeagues,
     loading: baseballLoading,
     error: baseballError,
-  } = useLeagues(baseballIds, 'baseball');
-
-  const {
-    leagues: basketballLeagues,
-    loading: basketballLoading,
-    error: basketballError,
-  } = useLeagues(basketballIds, 'basketball');
+  } = useBaseballLeagues();
 
   const toggleMenu = (menu: MenuKey) => {
     setOpen((prev) => ({ ...prev, [menu]: !prev[menu] }));
@@ -60,23 +57,28 @@ export default function SportsMenu() {
           <ul className="ml-4 mt-2 space-y-1 text-sm">
             {!footballLoading &&
               !footballError &&
-              footballLeagues.map((league) => (
-                <li
-                  key={league.id}
-                  className="flex items-center space-x-2 hover:text-yellow-300"
-                >
-                  <Image
-                    src={league.logo || ''}
-                    alt={league.name}
-                    width={16}
-                    height={16}
-                    unoptimized
-                  />
-                  <Link href={`/football/${league.id}`} title={league.name}>
-                    {league.name}
-                  </Link>
-                </li>
-              ))}
+              footballLeagues
+                .filter((league) => footballIds.includes(league.id))
+                .map((league) => (
+                  <li
+                    key={league.id}
+                    className="flex items-center space-x-2 hover:text-yellow-300"
+                  >
+                    <Image
+                      src={league.logo || ''}
+                      alt={league.name}
+                      width={16}
+                      height={16}
+                      unoptimized
+                    />
+                    <Link
+                      href={`/football/${league.id}`}
+                      title={`${league.name}`}
+                    >
+                      {league.name}
+                    </Link>
+                  </li>
+                ))}
           </ul>
         )}
       </div>
@@ -95,26 +97,31 @@ export default function SportsMenu() {
           ></i>
         </button>
         {open.baseball && (
-          <ul id="baseballMenu" className="ml-4 mt-2 space-y-1 text-sm">
+          <ul className="ml-4 mt-2 space-y-1 text-sm">
             {!baseballLoading &&
               !baseballError &&
-              baseballLeagues.map((league) => (
-                <li
-                  key={league.id}
-                  className="flex items-center space-x-2 hover:text-yellow-300"
-                >
-                  <Image
-                    src={league.logo || ''}
-                    alt={league.name}
-                    width={16}
-                    height={16}
-                    unoptimized
-                  />
-                  <Link href={`/baseball/${league.id}`} title={league.name}>
-                    {league.name}
-                  </Link>
-                </li>
-              ))}
+              baseballLeagues
+                .filter((league) => baseballLeaguesIds.includes(league.id))
+                .map((league) => (
+                  <li
+                    key={league.id}
+                    className="flex items-center space-x-2 hover:text-yellow-300"
+                  >
+                    <Image
+                      src={league.logo || ''}
+                      alt={league.name}
+                      width={16}
+                      height={16}
+                      unoptimized
+                    />
+                    <Link
+                      href={`/baseball/${league.id}`}
+                      title={`${league.name}`}
+                    >
+                      {league.name}
+                    </Link>
+                  </li>
+                ))}
           </ul>
         )}
       </div>
@@ -134,25 +141,30 @@ export default function SportsMenu() {
         </button>
         {open.basketball && (
           <ul className="ml-4 mt-2 space-y-1 text-sm">
-            {!basketballLoading &&
-              !basketballError &&
-              basketballLeagues.map((league) => (
-                <li
-                  key={league.id}
-                  className="flex items-center space-x-2 hover:text-yellow-300"
-                >
-                  <Image
-                    src={league.logo || '/default-basket-logo.png'}
-                    alt={league.name}
-                    width={16}
-                    height={16}
-                    unoptimized
-                  />
-                  <Link href={`/basketball/${league.id}`} title={league.name}>
-                    {league.name}
-                  </Link>
-                </li>
-              ))}
+            {!loading &&
+              !error &&
+              leagues
+                .filter((league) => basketballIds.includes(league.id))
+                .map((league) => (
+                  <li
+                    key={league.id}
+                    className="flex items-center space-x-2 hover:text-yellow-300"
+                  >
+                    <Image
+                      src={league.logo || '/default-basket-logo.png'}
+                      alt={league.name}
+                      width={16}
+                      height={16}
+                      unoptimized
+                    />
+                    <Link
+                      href={`/basketball/${league.id}`}
+                      title={`${league.name}`}
+                    >
+                      {league.name}
+                    </Link>
+                  </li>
+                ))}
           </ul>
         )}
       </div>

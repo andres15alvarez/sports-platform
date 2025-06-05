@@ -5,13 +5,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import SportsMenu from './sports-menu';
 
-import useLeagues from '@/src/hooks/useLeagues';
-import { popularFootballLeagues } from '@/src/config/leagues';
+import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
+import { popularFootballLeagues } from '@/src/config/leaguesData';
 
 const LeftSidebar: React.FC = () => {
-  const { leagues, loading, error } = useLeagues(
-    popularFootballLeagues,
-    'football',
+  const { leagues, loading, error } = useFootballLeagues();
+
+  const popularLeagues = leagues?.filter((league) =>
+    popularFootballLeagues.includes(league.id),
   );
 
   return (
@@ -24,13 +25,10 @@ const LeftSidebar: React.FC = () => {
         <h2 className="text-lg font-bold border-b border-yellow-400 pb-2">
           Popular Leagues in Europa
         </h2>
-        {error && <p className="text-red-500">Error al cargar ligas.</p>}
-        {!loading && !error && (
-          <ul className="mt-4 space-y-3">
-            {leagues.length === 0 && (
-              <li>No hay ligas populares disponibles.</li>
-            )}
-            {leagues.map((league) => (
+        <ul className="mt-4 space-y-3">
+          {!loading &&
+            !error &&
+            popularLeagues.map((league) => (
               <li
                 key={league.id}
                 className="flex items-center justify-center space-x-2 hover:text-yellow-300"
@@ -50,8 +48,7 @@ const LeftSidebar: React.FC = () => {
                 </Link>
               </li>
             ))}
-          </ul>
-        )}
+        </ul>
       </div>
 
       {/* All Sports */}
