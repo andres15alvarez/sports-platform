@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 
 interface Team {
@@ -70,14 +70,17 @@ interface Fixture {
 
 type ViewType = 'all' | 'finished' | 'upcoming' | 'live';
 
-const FixturesPage: React.FC = () => {
+const FixturesPageContent: React.FC = () => {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState(71); // Serie A Brazil
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0],
-  );
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return new Date().toISOString().split('T')[0];
+    }
+    return new Date().toISOString().split('T')[0];
+  });
   const [viewType, setViewType] = useState<ViewType>('all');
   const [selectedFixture, setSelectedFixture] = useState<Fixture | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -104,27 +107,37 @@ const FixturesPage: React.FC = () => {
         const currentYear = new Date().getFullYear();
         const season = selectedLeague === 1 ? 2022 : currentYear;
 
+        const apiKey = process.env.NEXT_PUBLIC_API_KEYY;
+        if (!apiKey) {
+          throw new Error('API key not configured');
+        }
+
         const response = await fetch(
           `https://v3.football.api-sports.io/fixtures?league=${selectedLeague}&date=${selectedDate}&season=${season}`,
           {
             method: 'GET',
             headers: {
-              'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+              'x-rapidapi-key': apiKey,
               'x-rapidapi-host': 'v3.football.api-sports.io',
             },
           },
         );
 
-        if (!response.ok) throw new Error('Error fetching data');
+        if (!response.ok) {
+          throw new Error(`Error fetching data: ${response.status}`);
+        }
 
         const data = await response.json();
-        if (data.response) {
+        if (data.response && Array.isArray(data.response)) {
           setFixtures(data.response);
+        } else if (data.errors && Object.keys(data.errors).length > 0) {
+          setError('API Error: ' + JSON.stringify(data.errors));
         } else {
           setError('No matches found for this date.');
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        console.error('Fetch error:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error occurred');
       } finally {
         setLoading(false);
       }
@@ -188,17 +201,42 @@ const FixturesPage: React.FC = () => {
   };
 
   const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      });
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return 'Invalid time';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
   };
 
   const changeDate = (days: number) => {
-    const date = new Date(selectedDate);
-    date.setDate(date.getDate() + days);
-    setSelectedDate(date.toISOString().split('T')[0]);
+    try {
+      const date = new Date(selectedDate);
+      date.setDate(date.getDate() + days);
+      setSelectedDate(date.toISOString().split('T')[0]);
+    } catch (error) {
+      console.error('Error changing date:', error);
+    }
   };
 
   const filteredFixtures = fixtures.filter((fixture) => {
@@ -231,8 +269,9 @@ const FixturesPage: React.FC = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Error: {error}
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-lg">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
         </div>
       </div>
     );
@@ -267,6 +306,7 @@ const FixturesPage: React.FC = () => {
               <button
                 onClick={() => changeDate(-1)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Previous day"
               >
                 <svg
                   className="w-5 h-5"
@@ -291,6 +331,7 @@ const FixturesPage: React.FC = () => {
               <button
                 onClick={() => changeDate(1)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Next day"
               >
                 <svg
                   className="w-5 h-5"
@@ -483,6 +524,7 @@ const FixturesPage: React.FC = () => {
                   <button
                     onClick={() => setShowModal(false)}
                     className="text-gray-400 hover:text-gray-600"
+                    aria-label="Close modal"
                   >
                     <svg
                       className="w-6 h-6"
@@ -554,14 +596,7 @@ const FixturesPage: React.FC = () => {
                             {formatTime(selectedFixture.fixture.date)}
                           </p>
                           <p className="text-sm text-gray-600 mt-1">
-                            {new Date(
-                              selectedFixture.fixture.date,
-                            ).toLocaleDateString('es-ES', {
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                            })}
+                            {formatDate(selectedFixture.fixture.date)}
                           </p>
                         </div>
                       ) : (
@@ -677,6 +712,20 @@ const FixturesPage: React.FC = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const FixturesPage: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      }
+    >
+      <FixturesPageContent />
+    </Suspense>
   );
 };
 

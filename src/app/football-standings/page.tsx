@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Image from 'next/image';
 
 interface Team {
@@ -63,58 +63,14 @@ interface LeagueData {
   };
 }
 
-const fetchStandings = async (
-  selectedLeague: number,
-  selectedSeason: number,
-  setLeagueInfo: React.Dispatch<
-    React.SetStateAction<LeagueData['league'] | null>
-  >,
-  setStandings: React.Dispatch<React.SetStateAction<Standing[]>>,
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setError: React.Dispatch<React.SetStateAction<string | null>>,
-) => {
-  setLoading(true);
-  setError(null);
-  try {
-    const response = await fetch(
-      `https://v3.football.api-sports.io/standings?league=${selectedLeague}&season=${selectedSeason}`,
-      {
-        method: 'GET',
-        headers: {
-          'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-          'x-rapidapi-host': 'v3.football.api-sports.io',
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error('Error al obtener los datos');
-    }
-
-    const data = await response.json();
-
-    if (data.response && data.response.length > 0) {
-      const leagueData: LeagueData = data.response[0];
-      setLeagueInfo(leagueData.league);
-      setStandings(leagueData.league.standings.flat());
-    } else {
-      setError('No se encontraron datos para esta liga/temporada');
-    }
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Error desconocido');
-  } finally {
-    setLoading(false);
-  }
-};
-
-const StandingsPage: React.FC = () => {
+const StandingsPageContent: React.FC = () => {
   const [standings, setStandings] = useState<Standing[]>([]);
   const [leagueInfo, setLeagueInfo] = useState<LeagueData['league'] | null>(
     null,
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedLeague, setSelectedLeague] = useState(71); // Serie A Brazil por defecto
+  const [selectedLeague, setSelectedLeague] = useState(71); // Serie A Brazil
   const [selectedSeason, setSelectedSeason] = useState(2025);
 
   // Ligas
@@ -128,15 +84,64 @@ const StandingsPage: React.FC = () => {
     { id: 128, name: 'Liga Profesional', country: 'Argentina' },
   ];
 
+  const fetchStandings = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_API_KEYY;
+      if (!apiKey) {
+        throw new Error('API key not configured');
+      }
+
+      const response = await fetch(
+        `https://v3.football.api-sports.io/standings?league=${selectedLeague}&season=${selectedSeason}`,
+        {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-key': apiKey,
+            'x-rapidapi-host': 'v3.football.api-sports.io',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error fetching data: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (
+        data.response &&
+        Array.isArray(data.response) &&
+        data.response.length > 0
+      ) {
+        const leagueData: LeagueData = data.response[0];
+        setLeagueInfo(leagueData.league);
+
+        if (
+          leagueData.league.standings &&
+          Array.isArray(leagueData.league.standings)
+        ) {
+          setStandings(leagueData.league.standings.flat());
+        } else {
+          setError('Invalid standings data structure');
+        }
+      } else if (data.errors && Object.keys(data.errors).length > 0) {
+        setError('API Error: ' + JSON.stringify(data.errors));
+      } else {
+        setError('No data was found for this league/season.');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchStandings(
-      selectedLeague,
-      selectedSeason,
-      setLeagueInfo,
-      setStandings,
-      setLoading,
-      setError,
-    );
+    fetchStandings();
   }, [selectedLeague, selectedSeason]);
 
   const getFormColor = (result: string) => {
@@ -154,11 +159,13 @@ const StandingsPage: React.FC = () => {
 
   const getStatusColor = (description: string | null) => {
     if (!description) return '';
-    if (description.includes('Champions League'))
+    const lowerDesc = description.toLowerCase();
+    if (lowerDesc.includes('champions league'))
       return 'border-l-4 border-blue-600';
-    if (description.includes('Europa League'))
+    if (lowerDesc.includes('europa league'))
       return 'border-l-4 border-orange-500';
-    if (description.includes('Relegation')) return 'border-l-4 border-red-600';
+    if (lowerDesc.includes('relegation') || lowerDesc.includes('descenso'))
+      return 'border-l-4 border-red-600';
     return 'border-l-4 border-gray-300';
   };
 
@@ -173,8 +180,9 @@ const StandingsPage: React.FC = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          Error: {error}
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-lg">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
         </div>
       </div>
     );
@@ -211,9 +219,9 @@ const StandingsPage: React.FC = () => {
                 onChange={(e) => setSelectedSeason(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value={2024}>2024/2025</option>
-                <option value={2023}>2023/2024</option>
-                <option value={2022}>2022/2023</option>
+                <option value={2025}>2024/2025</option>
+                <option value={2024}>2023/2024</option>
+                <option value={2023}>2022/2023</option>
               </select>
             </div>
           </div>
@@ -283,71 +291,89 @@ const StandingsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {standings.map((standing) => (
-                  <tr
-                    key={standing.team.id}
-                    className={`hover:bg-gray-50 ${getStatusColor(standing.description)}`}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {standing.rank}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <Image
-                          src={standing.team.logo}
-                          alt={standing.team.name}
-                          width={32}
-                          height={32}
-                          className="object-contain mr-3"
-                          unoptimized
-                        />
-                        <span className="text-sm font-medium text-gray-900">
-                          {standing.team.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {standing.all.played}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {standing.all.win}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {standing.all.draw}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {standing.all.lose}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {standing.all.goals.for}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {standing.all.goals.against}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
-                      {standing.goalsDiff > 0 ? '+' : ''}
-                      {standing.goalsDiff}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-gray-900">
-                      {standing.points}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex justify-center space-x-1">
-                        {standing.form
-                          ?.split('')
-                          .slice(-5)
-                          .map((result, index) => (
-                            <div
-                              key={index}
-                              className={`w-6 h-6 rounded-full ${getFormColor(result)} flex items-center justify-center text-white text-xs font-bold`}
-                            >
-                              {result}
-                            </div>
-                          ))}
-                      </div>
+                {standings.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={11}
+                      className="px-6 py-4 text-center text-gray-500"
+                    >
+                      No standings data available
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  standings.map((standing, index) => (
+                    <tr
+                      key={`${standing.team.id}-${index}`}
+                      className={`hover:bg-gray-50 ${getStatusColor(standing.description)}`}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {standing.rank}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <Image
+                            src={standing.team.logo}
+                            alt={standing.team.name}
+                            width={32}
+                            height={32}
+                            className="object-contain mr-3"
+                            unoptimized
+                          />
+                          <span className="text-sm font-medium text-gray-900">
+                            {standing.team.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {standing.all.played}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {standing.all.win}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {standing.all.draw}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {standing.all.lose}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {standing.all.goals.for}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {standing.all.goals.against}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                        {standing.goalsDiff > 0 ? '+' : ''}
+                        {standing.goalsDiff}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-bold text-gray-900">
+                        {standing.points}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex justify-center space-x-1">
+                          {standing.form
+                            ?.split('')
+                            .slice(-5)
+                            .map((result, index) => (
+                              <div
+                                key={index}
+                                className={`w-6 h-6 rounded-full ${getFormColor(result)} flex items-center justify-center text-white text-xs font-bold`}
+                                title={
+                                  result === 'W'
+                                    ? 'Win'
+                                    : result === 'D'
+                                      ? 'Draw'
+                                      : 'Loss'
+                                }
+                              >
+                                {result}
+                              </div>
+                            )) || <span className="text-gray-400">-</span>}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -374,6 +400,20 @@ const StandingsPage: React.FC = () => {
         */}
       </div>
     </div>
+  );
+};
+
+const StandingsPage: React.FC = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        </div>
+      }
+    >
+      <StandingsPageContent />
+    </Suspense>
   );
 };
 
