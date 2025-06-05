@@ -63,6 +63,50 @@ interface LeagueData {
   };
 }
 
+const fetchStandings = async (
+  selectedLeague: number,
+  selectedSeason: number,
+  setLeagueInfo: React.Dispatch<
+    React.SetStateAction<LeagueData['league'] | null>
+  >,
+  setStandings: React.Dispatch<React.SetStateAction<Standing[]>>,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setError: React.Dispatch<React.SetStateAction<string | null>>,
+) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const response = await fetch(
+      `https://v3.football.api-sports.io/standings?league=${selectedLeague}&season=${selectedSeason}`,
+      {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+          'x-rapidapi-host': 'v3.football.api-sports.io',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Error al obtener los datos');
+    }
+
+    const data = await response.json();
+
+    if (data.response && data.response.length > 0) {
+      const leagueData: LeagueData = data.response[0];
+      setLeagueInfo(leagueData.league);
+      setStandings(leagueData.league.standings.flat());
+    } else {
+      setError('No se encontraron datos para esta liga/temporada');
+    }
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Error desconocido');
+  } finally {
+    setLoading(false);
+  }
+};
+
 const StandingsPage: React.FC = () => {
   const [standings, setStandings] = useState<Standing[]>([]);
   const [leagueInfo, setLeagueInfo] = useState<LeagueData['league'] | null>(
@@ -85,46 +129,15 @@ const StandingsPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    fetchStandings();
+    fetchStandings(
+      selectedLeague,
+      selectedSeason,
+      setLeagueInfo,
+      setStandings,
+      setLoading,
+      setError,
+    );
   }, [selectedLeague, selectedSeason]);
-
-  const fetchStandings = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(
-        `https://v3.football.api-sports.io/standings?league=${selectedLeague}&season=${selectedSeason}`,
-        {
-          method: 'GET',
-          headers: {
-            'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-            'x-rapidapi-host': 'v3.football.api-sports.io',
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error('Error al obtener los datos');
-      }
-
-      const data = await response.json();
-
-      if (data.response && data.response.length > 0) {
-        const leagueData: LeagueData = data.response[0];
-        setLeagueInfo(leagueData.league);
-        // La API puede devolver múltiples grupos, tomamos el primero o todos
-        const allStandings = leagueData.league.standings.flat();
-        setStandings(allStandings);
-      } else {
-        setError('No se encontraron datos para esta liga/temporada');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getFormColor = (result: string) => {
     switch (result) {
