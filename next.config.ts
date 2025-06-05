@@ -1,11 +1,7 @@
-import nextTranslate from 'next-translate-plugin';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  webpack(config, options) {
-    return config;
-  },
   images: {
     domains: [
       'images.unsplash.com',
@@ -27,4 +23,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextTranslate(nextConfig);
+export default nextConfig;
