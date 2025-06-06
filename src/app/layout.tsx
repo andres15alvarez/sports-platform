@@ -18,8 +18,60 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Oddsides',
-  description: 'Oddsides - Compare Betting Odds',
+  title: {
+    template: '%s | Sports Platform',
+    default: 'Sports Platform - Soccer, Basketball & Baseball',
+  },
+  description:
+    'Your ultimate sports platform for soccer, basketball, and baseball matches, results, standings, and live scores.',
+  keywords: [
+    'sports',
+    'soccer',
+    'basketball',
+    'baseball',
+    'matches',
+    'results',
+    'standings',
+  ],
+  authors: [{ name: 'Your Company' }],
+  creator: 'Your Company',
+  publisher: 'Sports Platform',
+  metadataBase: new URL('https://your-sports-platform.com'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      en: '/en',
+      es: '/es',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://your-sports-platform.com',
+    siteName: 'Sports Platform',
+    title: 'Sports Platform - Live Sports Updates',
+    description:
+      'Get live updates for soccer, basketball, and baseball matches.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Sports Platform',
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
