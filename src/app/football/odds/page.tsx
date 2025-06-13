@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 // Tipo para el odd como viene de la API
 interface OddResponse {
@@ -368,22 +369,24 @@ const Page: React.FC = () => {
                     </div>
                   </div>
                   {league.odds.length > 0 && (
-                    <button className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center space-x-1">
-                      <span>View More</span>
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </button>
+                    <Link href={`/football/${league.id}/odds`}>
+                      <button className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center space-x-1">
+                        <span>View More</span>
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
+                    </Link>
                   )}
                 </div>
               </div>
@@ -531,7 +534,7 @@ const Page: React.FC = () => {
                     {league.odds.length > 3 && (
                       <div className="mt-6 text-center">
                         <a
-                          href={`/football/71/odds-details`}
+                          href={`/football/${league.id}/odds`}
                           className="inline-block bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
                         >
                           {league.expanded

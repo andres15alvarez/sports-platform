@@ -22,6 +22,10 @@ export const footballLeagues = [
   71, // Serie A Brazil
   128, // Liga profesional Argentina
   88, // Eredivise
+  239, // Primera A Colombia
+  240, // Primera B Colombia
+  268, // Uruguay
+  281, // Peru
 ];
 
 export const popularFootballLeagues = [

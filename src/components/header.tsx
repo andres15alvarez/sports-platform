@@ -10,12 +10,10 @@ export default function Header() {
   const odds = 'odds';
   const predictions = 'predictions';
   const bookmarkers = 'bookmarkers';
-  const promos = 'promos';
-  const tools = 'tools';
-  const login = 'login';
+  const calendars = 'calendars';
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white shadow-lg border-b-4 border-green-600 z-50">
+    <header className="fixed top-0 left-0 py-2 w-full bg-white shadow-lg border-b-4 border-green-600 z-50">
       <div className="container mx-auto flex items-center justify-between px-4 py-2">
         {/* Logo and Menu Button */}
         <div className="flex items-center space-x-3">
@@ -44,48 +42,28 @@ export default function Header() {
           className="hidden lg:flex space-x-6 text-green-700 font-medium"
           aria-label="Main navigation"
         >
-          <a href="#" title="Sports results in real time">
+          <Link href="/footabll/results" title="Sports results in real time">
             {results}
-          </a>
-          <a href="#" title="Odds from the best bookmakers">
+          </Link>
+          <Link href="/football/odds" title="Odds from the best bookmakers">
             {odds}
-          </a>
+          </Link>
           <a href="/soccer-prediction" title="Expert sports predictions">
             {predictions}
           </a>
           <a href="#" title="Reviews of the best bookmakers">
             {bookmarkers}
           </a>
-          <a href="#" title="Exclusive promotions and bonuses">
-            {promos}
-          </a>
-          <a href="#" title="Tools for bettors">
-            {tools}
-          </a>
+          <Link
+            href="/football/calendars"
+            title="Exclusive promotions and bonuses"
+          >
+            {calendars}
+          </Link>
         </nav>
 
         {/* Actions */}
         <div className="flex items-center space-x-3">
-          {/* Promo Button */}
-          <button
-            className="hidden lg:block animate-pulse bg-green-100 hover:bg-green-200 p-2 rounded-full border border-green-600 focus:outline-none"
-            aria-label="Exclusive promotions"
-          >
-            <i className="bx bx-gift text-yellow-400 text-xl"></i>
-          </button>
-          {/* Login Button */}
-          <button className="hidden lg:block bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md font-medium focus:outline-none border-2 border-yellow-400 text-sm">
-            {login}
-          </button>
-          {/* Favorites Button */}
-          <button
-            className="hidden lg:block text-green-700 hover:text-yellow-500 focus:outline-none"
-            title="Add to favorites"
-            aria-label="Add to favorites"
-          >
-            <i className="bx bx-heart text-xl"></i>
-          </button>
-
           {/* Language Selector */}
           <div className="relative group">
             <button
@@ -154,12 +132,12 @@ export default function Header() {
           >
             {results}
           </a>
-          <a
-            href="#"
+          <Link
+            href="/football/odds"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
             {odds}
-          </a>
+          </Link>
           <a
             href="/soccer-prediction"
             className="block text-green-700 hover:text-yellow-500 font-medium"
@@ -172,18 +150,12 @@ export default function Header() {
           >
             {bookmarkers}
           </a>
-          <a
-            href="#"
+          <Link
+            href="/football/calendars"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
-            {promos}
-          </a>
-          <a
-            href="#"
-            className="block text-green-700 hover:text-yellow-500 font-medium"
-          >
-            {tools}
-          </a>
+            {calendars}
+          </Link>
         </div>
       </nav>
     </header>
