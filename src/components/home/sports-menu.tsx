@@ -132,6 +132,10 @@ export default function SportsMenu() {
 
     const data = sportData[sport];
 
+    if (!data) {
+      return null;
+    }
+
     return (
       <div id="sportsMenu">
         {/* League Navigation Links - Only show if on a specific league page */}
@@ -209,14 +213,14 @@ export default function SportsMenu() {
                       className="flex items-center space-x-2 hover:text-yellow-300"
                     >
                       <Image
-                        src={league.logo || ''}
+                        src={league.logo || '/default-logo.png'}
                         alt={league.name}
                         width={16}
                         height={16}
                         unoptimized
                       />
                       <Link
-                        href={`/${data.path}/${league.id}/${currentPageType}`}
+                        href={`/${data.path}/${league.id}${currentPageType ? `/${currentPageType}` : ''}`}
                         title={`${league.name}`}
                       >
                         {league.name}
@@ -258,7 +262,7 @@ export default function SportsMenu() {
                     className="flex items-center space-x-2 hover:text-yellow-300"
                   >
                     <Image
-                      src={league.logo || ''}
+                      src={league.logo || '/default-logo.png'}
                       alt={league.name}
                       width={16}
                       height={16}
@@ -301,7 +305,7 @@ export default function SportsMenu() {
                     className="flex items-center space-x-2 hover:text-yellow-300"
                   >
                     <Image
-                      src={league.logo || ''}
+                      src={league.logo || '/default-logo.png'}
                       alt={league.name}
                       width={16}
                       height={16}
