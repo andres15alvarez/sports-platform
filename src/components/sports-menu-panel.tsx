@@ -1,17 +1,113 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+
+import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
+import useLeagues from '@/src/hooks/basketball/useLeagues';
+import useBaseballLeagues from '@/src/hooks/baseball/useBaseballLeagues';
+
+import {
+  footballLeagues as footballLeagueIds,
+  basketballLeagues as basketballLeagueIds,
+  baseballLeagues as baseballLeagueIds,
+} from '@/src/config/leaguesData';
 
 const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
+  const pathname = usePathname();
   const [expanded, setExpanded] = useState('');
+
+  const {
+    leagues: footballLeagues,
+    loading: footballLoading,
+    error: footballError,
+  } = useFootballLeagues();
+  const {
+    leagues: basketballLeagues,
+    loading: basketballLoading,
+    error: basketballError,
+  } = useLeagues();
+  const {
+    leagues: baseballLeagues,
+    loading: baseballLoading,
+    error: baseballError,
+  } = useBaseballLeagues();
 
   const toggleSubmenu = (menuId: string) => {
     setExpanded(expanded === menuId ? '' : menuId);
   };
 
+  const getCurrentSportAndLeague = () => {
+    if (!pathname) return { sport: null, leagueId: null };
+    const segments = pathname.split('/').filter(Boolean);
+    const sport = segments[0] as 'football' | 'basketball' | 'baseball' | null;
+    const leagueId = segments[1] || null;
+    return { sport, leagueId };
+  };
+
+  const { sport, leagueId } = getCurrentSportAndLeague();
+
+  useEffect(() => {
+    if (sport) setExpanded(sport);
+  }, [sport]);
+
+  const isOnLeagueSpecificPage = () => {
+    if (!sport || !leagueId || !pathname) return false;
+    const segments = pathname.split('/').filter(Boolean);
+    return (
+      segments.length >= 3 &&
+      ['odds', 'calendar', 'calendars', 'standings'].includes(segments[2])
+    );
+  };
+
+  const getCurrentPageType = () => {
+    if (!pathname) return null;
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length >= 3) {
+      const pageType = segments[2];
+      if (pageType === 'odds') return 'odds';
+      if (pageType === 'calendar' || pageType === 'calendars')
+        return 'calendar';
+      if (pageType === 'standings') return 'standings';
+    }
+    return null;
+  };
+
+  const currentPageType = getCurrentPageType();
+
   if (!isOpen) return null;
+
+  const sportsConfig = {
+    football: {
+      leagues: footballLeagues,
+      loading: footballLoading,
+      error: footballError,
+      icon: 'bx-football',
+      label: 'Football',
+      ids: footballLeagueIds,
+      path: 'football',
+    },
+    basketball: {
+      leagues: basketballLeagues,
+      loading: basketballLoading,
+      error: basketballError,
+      icon: 'bx-basketball',
+      label: 'Basketball',
+      ids: basketballLeagueIds,
+      path: 'basketball',
+    },
+    baseball: {
+      leagues: baseballLeagues,
+      loading: baseballLoading,
+      error: baseballError,
+      icon: 'bx-baseball',
+      label: 'Baseball',
+      ids: baseballLeagueIds,
+      path: 'baseball',
+    },
+  };
 
   return (
     <div
@@ -19,153 +115,111 @@ const SportsMenuPanel = ({ isOpen }: { isOpen: boolean }) => {
         isOpen ? 'translate-y-0' : 'translate-y-full'
       }`}
     >
+      {/* League Navigation */}
+      {sport && leagueId && isOnLeagueSpecificPage() && (
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-white border-b border-yellow-400 pb-2 mb-3">
+            League Navigation
+          </h2>
+          <ul className="space-y-2 text-white">
+            <li>
+              <Link
+                href={`/${sport}/${leagueId}/odds`}
+                className={`flex items-center space-x-2 py-2 px-3 rounded hover:bg-green-700 transition-colors ${
+                  currentPageType === 'odds'
+                    ? 'bg-green-700 text-yellow-300'
+                    : ''
+                }`}
+              >
+                <i className="bx bx-money" />
+                <span>Odds</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/${sport}/${leagueId}/calendar`}
+                className={`flex items-center space-x-2 py-2 px-3 rounded hover:bg-green-700 transition-colors ${
+                  currentPageType === 'calendar'
+                    ? 'bg-green-700 text-yellow-300'
+                    : ''
+                }`}
+              >
+                <i className="bx bx-calendar" />
+                <span>Calendar</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`/${sport}/${leagueId}/standings`}
+                className={`flex items-center space-x-2 py-2 px-3 rounded hover:bg-green-700 transition-colors ${
+                  currentPageType === 'standings'
+                    ? 'bg-green-700 text-yellow-300'
+                    : ''
+                }`}
+              >
+                <i className="bx bx-trophy" />
+                <span>Standings</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+
       <div className="mb-4">
         <h2 className="text-lg font-bold text-white border-b border-yellow-400 pb-2 mb-3">
-          Popular Leagues
+          {sport ? sportsConfig[sport]?.label || 'Sports' : 'All Sports'}
         </h2>
-        <ul className="space-y-3 text-white">
-          <li className="flex items-center space-x-2 hover:text-yellow-300">
-            <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg"
-              width={20}
-              height={20}
-              alt="Serie A"
-            />
-            <Link href="#">Serie A</Link>
-          </li>
-          <li className="flex items-center space-x-2 hover:text-yellow-300">
-            <Image
-              src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/280px-Premier_League_Logo.svg.png"
-              width={20}
-              height={20}
-              alt="Premier League"
-            />
-            <Link href="#">Premier League</Link>
-          </li>
-          <li className="flex items-center space-x-2 hover:text-yellow-300">
-            <Image
-              src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/UEFA_Champions_League.svg/240px-UEFA_Champions_League.svg.png"
-              width={20}
-              height={20}
-              alt="Champions League"
-            />
-            <Link href="#">Champions League</Link>
-          </li>
-        </ul>
-      </div>
 
-      <div>
-        <h2 className="text-lg font-bold text-white border-b border-yellow-400 pb-2 mb-3">
-          All Sports
-        </h2>
-        {[
-          {
-            id: 'football',
-            icon: 'bx-football',
-            label: 'Football',
-            links: [
-              {
-                href: '#',
-                label: 'Premier League',
-                icon: 'https://upload.wikimedia.org/wikipedia/en/thumb/f/f2/Premier_League_Logo.svg/280px-Premier_League_Logo.svg.png',
-              },
-              {
-                href: '#',
-                label: 'Serie A',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg',
-              },
-              {
-                href: '#',
-                label: 'La Liga',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/LaLiga_EA_Sports_2023_Vertical_Logo.svg/250px-LaLiga_EA_Sports_2023_Vertical_Logo.svg.png',
-              },
-            ],
-          },
-          {
-            id: 'tennis',
-            icon: 'bx-tennis-ball',
-            label: 'Tennis',
-            links: [
-              {
-                href: '#',
-                label: 'ATP Tour',
-                icon: 'https://upload.wikimedia.org/wikipedia/en/thumb/3/3f/ATP_Tour_logo.svg/250px-ATP_Tour_logo.svg.png',
-              },
-              {
-                href: '#',
-                label: 'WTA Tour',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/WTA_logo_2010.svg/408px-WTA_logo_2010.svg.png',
-              },
-            ],
-          },
-          {
-            id: 'basketball',
-            icon: 'bx-basketball',
-            label: 'Basketball',
-            links: [
-              {
-                href: '#',
-                label: 'NBA',
-                icon: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/03/National_Basketball_Association_logo.svg/120px-National_Basketball_Association_logo.svg.png',
-              },
-              {
-                href: '#',
-                label: 'Euroleague',
-                icon: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d9/Turkish_Airlines_EuroLeague.svg/330px-Turkish_Airlines_EuroLeague.svg.png',
-              },
-            ],
-          },
-          {
-            id: 'f1',
-            icon: 'bx-car',
-            label: 'Formula 1',
-            links: [
-              {
-                href: '#',
-                label: 'Grand Prix',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/F1_%28registered_trademark%29.svg/120px-F1_%28registered_trademark%29.svg.png',
-              },
-              {
-                href: '#',
-                label: 'Drivers',
-                icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/F1_%28registered_trademark%29.svg/120px-F1_%28registered_trademark%29.svg.png',
-              },
-            ],
-          },
-        ].map((sport) => (
-          <div key={sport.id}>
-            <button
-              onClick={() => toggleSubmenu(sport.id)}
-              className="w-full flex justify-between items-center text-white font-semibold"
-            >
-              <span className="flex items-center space-x-2">
-                <i className={`bx ${sport.icon} text-xl`} />
-                <span>{sport.label}</span>
-              </span>
-              <i
-                className={`bx ${expanded === sport.id ? 'bx-chevron-up' : 'bx-chevron-down'}`}
-              />
-            </button>
-            {expanded === sport.id && (
-              <ul className="ml-4 mt-2 space-y-2 text-sm text-white">
-                {sport.links.map((link) => (
-                  <li
-                    key={link.label}
-                    className="flex items-center space-x-2 hover:text-yellow-300"
-                  >
-                    <Image
-                      src={link.icon}
-                      width={16}
-                      height={16}
-                      alt={link.label}
-                    />
-                    <Link href={link.href}>{link.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        ))}
+        {Object.entries(sportsConfig)
+          .filter(([key]) => !sport || key === sport)
+          .map(([key, config]) => {
+            const { leagues, loading, error, icon, label, ids, path } = config;
+
+            return (
+              <div key={key} className="mb-4">
+                <button
+                  onClick={() => toggleSubmenu(key)}
+                  className="w-full flex justify-between items-center text-white font-semibold"
+                >
+                  <span className="flex items-center space-x-2">
+                    <i className={`bx ${icon} text-xl`} />
+                    <span>{label}</span>
+                  </span>
+                  <i
+                    className={`bx ${
+                      expanded === key ? 'bx-chevron-up' : 'bx-chevron-down'
+                    }`}
+                  />
+                </button>
+
+                {expanded === key && (
+                  <ul className="ml-4 mt-2 space-y-2 text-sm text-white">
+                    {!loading &&
+                      !error &&
+                      leagues
+                        .filter((league) => ids.includes(league.id))
+                        .map((league) => (
+                          <li
+                            key={league.id}
+                            className="flex items-center space-x-2 hover:text-yellow-300"
+                          >
+                            <Image
+                              src={league.logo || '/default-logo.png'}
+                              width={16}
+                              height={16}
+                              alt={league.name}
+                              unoptimized
+                            />
+                            <Link href={`/${path}/${league.id}`}>
+                              {league.name}
+                            </Link>
+                          </li>
+                        ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
       </div>
     </div>
   );

@@ -232,8 +232,6 @@ const Page: React.FC = () => {
 
         const oddsData = await oddsResponse.json();
 
-        console.log('Odds Data:', oddsData);
-
         if (!oddsData.response || oddsData.response.length === 0) {
           setOdds([]);
           setLoading(false);

@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import SportsMenuPanel from './sports-menu-panel';
 
 const MobileNav = () => {
   const [isSportsMenuOpen, setIsSportsMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (isSportsMenuOpen) {
@@ -18,6 +20,32 @@ const MobileNav = () => {
       document.body.classList.remove('overflow-hidden');
     };
   }, [isSportsMenuOpen]);
+
+  // Get current sport from URL
+  const getCurrentSport = () => {
+    if (!pathname) return 'football';
+    const pathSegments = pathname.split('/').filter(Boolean);
+    if (pathSegments.length === 0) return 'football';
+
+    const sport = pathSegments[0];
+    if (sport === 'basketball') return 'basketball';
+    if (sport === 'baseball') return 'baseball';
+    return 'football';
+  };
+
+  const currentSport = getCurrentSport();
+
+  // Get sport icon
+  const getSportIcon = () => {
+    switch (currentSport) {
+      case 'basketball':
+        return 'bx-basketball';
+      case 'baseball':
+        return 'bx-baseball';
+      default:
+        return 'bx-football';
+    }
+  };
 
   return (
     <>
@@ -34,7 +62,7 @@ const MobileNav = () => {
           onClick={() => setIsSportsMenuOpen((prev) => !prev)}
           className="flex flex-col items-center justify-center text-white px-2 py-1"
         >
-          <i className="bx bx-football text-xl"></i>
+          <i className={`${getSportIcon()} text-xl`}></i>
           <span className="text-xs mt-1">Sports</span>
         </button>
 
