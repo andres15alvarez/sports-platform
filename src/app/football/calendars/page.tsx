@@ -93,9 +93,15 @@ const FixturesPageContent: React.FC = () => {
     { id: 135, name: 'Serie A', country: 'Italy' },
     { id: 61, name: 'Ligue 1', country: 'France' },
     { id: 71, name: 'Série A', country: 'Brazil' },
+    { id: 88, name: 'Eredivisie', country: 'Netherlands' },
+    { id: 239, name: 'Primera A', country: 'Colombia' },
+    { id: 240, name: 'Primera B', country: 'Colombia' },
+    { id: 268, name: 'Primera Division', country: 'Uruguay' },
+    { id: 281, name: 'Primera Division', country: 'Peru' },
     { id: 128, name: 'Liga Profesional', country: 'Argentina' },
     { id: 1, name: 'World Cup', country: 'World' },
     { id: 2, name: 'UEFA Champions League', country: 'World' },
+    { id: 3, name: 'UEFA Europa League', country: 'World' },
   ];
 
   useEffect(() => {

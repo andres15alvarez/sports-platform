@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
 
 // Tipos
 interface OddResponse {
@@ -78,14 +79,25 @@ interface LeagueInfo {
   season: number;
 }
 
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
 const Page: React.FC = () => {
   const [selectedBetType, setSelectedBetType] = useState('Match Winner');
   const [odds, setOdds] = useState<OddWithTeams[]>([]);
+  const [tableData, setTableData] = useState<MatchData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null);
+  const params = useParams<{ leagueId: string }>();
 
-  const leagueId = 71; // Brazil Serie A
+  const leagueId = params?.leagueId || 71; // Brazil Serie A
   const season = 2025;
 
   const betTypes = [
@@ -123,122 +135,7 @@ const Page: React.FC = () => {
     { key: 'odds', label: 'Odds' },
   ];
 
-  useEffect(() => {
-    fetchLeagueOdds();
-  }, []);
-
-  const fetchLeagueOdds = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const oddsResponse = await fetch(
-        `https://v3.football.api-sports.io/odds?league=${leagueId}&season=${season}`,
-        {
-          headers: {
-            'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-            'x-rapidapi-host': 'v3.football.api-sports.io',
-          },
-        },
-      );
-
-      if (!oddsResponse.ok) throw new Error('Failed to fetch odds');
-
-      const oddsData = await oddsResponse.json();
-
-      if (!oddsData.response || oddsData.response.length === 0) {
-        setOdds([]);
-        setLoading(false);
-        return;
-      }
-
-      const oddsResults: OddResponse[] = oddsData.response;
-
-      const filteredOddsResults = oddsResults.filter(
-        (odd) => odd.league.id === leagueId,
-      );
-
-      if (filteredOddsResults.length > 0) {
-        setLeagueInfo(filteredOddsResults[0].league);
-      }
-
-      const sortedOdds = filteredOddsResults.sort(
-        (a, b) => a.fixture.timestamp - b.fixture.timestamp,
-      );
-
-      const fixtureIds = [...new Set(sortedOdds.map((odd) => odd.fixture.id))];
-      const teamsMap = new Map<number, TeamsInfo>();
-
-      const batchSize = 10;
-      for (let i = 0; i < fixtureIds.length; i += batchSize) {
-        const batch = fixtureIds.slice(i, i + batchSize);
-
-        const batchPromises = batch.map(async (fixtureId) => {
-          try {
-            const response = await fetch(
-              `https://v3.football.api-sports.io/fixtures?id=${fixtureId}`,
-              {
-                headers: {
-                  'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-                  'x-rapidapi-host': 'v3.football.api-sports.io',
-                },
-              },
-            );
-
-            if (!response.ok) return null;
-
-            const data = await response.json();
-            if (data.response && data.response[0]) {
-              return {
-                fixtureId,
-                teams: data.response[0].teams,
-              };
-            }
-            return null;
-          } catch (err) {
-            console.error(`Error fetching fixture ${fixtureId}:`, err);
-            return null;
-          }
-        });
-
-        const results = await Promise.all(batchPromises);
-
-        results.forEach((result) => {
-          if (result) {
-            teamsMap.set(result.fixtureId, result.teams);
-          }
-        });
-
-        if (i + batchSize < fixtureIds.length) {
-          await new Promise((resolve) => setTimeout(resolve, 200));
-        }
-      }
-
-      // Combine odds with team information
-      const oddsWithTeams: OddWithTeams[] = sortedOdds.map((odd) => ({
-        ...odd,
-        teams: teamsMap.get(odd.fixture.id),
-      }));
-
-      setOdds(oddsWithTeams);
-    } catch (err) {
-      console.error('Error:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const processOddsData = (): MatchData[] => {
+  const processOddsData = (odds: OddWithTeams[]) => {
     return odds.map((item) => {
       const fixture = item.fixture;
       const league = item.league || {};
@@ -314,6 +211,117 @@ const Page: React.FC = () => {
       };
     });
   };
+
+  useEffect(() => {
+    const fetchLeagueOdds = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const oddsResponse = await fetch(
+          `https://v3.football.api-sports.io/odds?league=${leagueId}&season=${season}`,
+          {
+            headers: {
+              'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+              'x-rapidapi-host': 'v3.football.api-sports.io',
+            },
+          },
+        );
+
+        if (!oddsResponse.ok) throw new Error('Failed to fetch odds');
+
+        const oddsData = await oddsResponse.json();
+
+        console.log('Odds Data:', oddsData);
+
+        if (!oddsData.response || oddsData.response.length === 0) {
+          setOdds([]);
+          setLoading(false);
+          return;
+        }
+
+        const oddsResults: OddResponse[] = oddsData.response;
+
+        if (oddsResults.length > 0) {
+          setLeagueInfo(oddsResults[0].league);
+        }
+
+        const sortedOdds = oddsResults.sort(
+          (a, b) => a.fixture.timestamp - b.fixture.timestamp,
+        );
+
+        const fixtureIds = [
+          ...new Set(sortedOdds.map((odd) => odd.fixture.id)),
+        ];
+        const teamsMap = new Map<number, TeamsInfo>();
+
+        const batchSize = 10;
+        for (let i = 0; i < fixtureIds.length; i += batchSize) {
+          const batch = fixtureIds.slice(i, i + batchSize);
+
+          const batchPromises = batch.map(async (fixtureId) => {
+            try {
+              const response = await fetch(
+                `https://v3.football.api-sports.io/fixtures?id=${fixtureId}`,
+                {
+                  headers: {
+                    'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+                    'x-rapidapi-host': 'v3.football.api-sports.io',
+                  },
+                },
+              );
+
+              if (!response.ok) return null;
+
+              const data = await response.json();
+              if (data.response && data.response[0]) {
+                return {
+                  fixtureId,
+                  teams: data.response[0].teams,
+                };
+              }
+              return null;
+            } catch (err) {
+              console.error(`Error fetching fixture ${fixtureId}:`, err);
+              return null;
+            }
+          });
+
+          const results = await Promise.all(batchPromises);
+
+          results.forEach((result) => {
+            if (result) {
+              teamsMap.set(result.fixtureId, result.teams);
+            }
+          });
+
+          if (i + batchSize < fixtureIds.length) {
+            await new Promise((resolve) => setTimeout(resolve, 200));
+          }
+        }
+
+        // Combine odds with team information
+        const oddsWithTeams: OddWithTeams[] = sortedOdds.map((odd) => ({
+          ...odd,
+          teams: teamsMap.get(odd.fixture.id),
+        }));
+        setOdds(oddsWithTeams);
+      } catch (err) {
+        console.error('Error:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLeagueOdds();
+  }, []);
+
+  useEffect(() => {
+    if (odds.length > 0) {
+      const processedData = processOddsData(odds);
+      setTableData(processedData);
+    }
+  }, [odds, selectedBetType]);
 
   const Table: React.FC<{ columns: TableColumn[]; data: MatchData[] }> = ({
     columns,
@@ -418,8 +426,6 @@ const Page: React.FC = () => {
       </div>
     );
   }
-
-  const tableData = processOddsData();
 
   return (
     <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
