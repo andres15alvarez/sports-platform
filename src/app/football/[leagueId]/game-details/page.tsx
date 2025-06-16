@@ -488,7 +488,7 @@ const Page: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading match analysis...</p>
@@ -499,7 +499,7 @@ const Page: React.FC = () => {
 
   if (error || !fixtureData) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-white">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           Error loading match data
         </div>
@@ -535,7 +535,7 @@ const Page: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-4 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-4 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Breadcrumb */}
         <div className="text-sm text-gray-600 mb-4">

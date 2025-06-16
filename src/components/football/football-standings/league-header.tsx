@@ -7,8 +7,8 @@ interface LeagueHeaderProps {
 }
 
 export const LeagueHeader: React.FC<LeagueHeaderProps> = ({ leagueInfo }) => (
-  <div className="mb-4 bg-green-50 rounded-xl px-4 py-3 ">
-    <div className="flex items-center gap-x-3">
+  <div className="mb-4 bg-green-50 rounded-xl px-6 py-6 ">
+    <div className="flex items-center gap-x-4">
       <Image
         src={leagueInfo.logo}
         alt={leagueInfo.name}

@@ -248,7 +248,7 @@ const FixturesPageContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-white">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
       </div>
     );
@@ -256,7 +256,7 @@ const FixturesPageContent: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center min-h-screen bg-white">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-lg">
           <p className="font-bold">Error</p>
           <p>{error}</p>
@@ -266,7 +266,7 @@ const FixturesPageContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Toolbar */}
         <div className="mb-6 bg-white rounded-lg shadow p-4">
