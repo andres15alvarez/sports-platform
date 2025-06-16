@@ -42,18 +42,21 @@ export default function Header() {
           className="hidden lg:flex space-x-6 text-green-700 font-medium"
           aria-label="Main navigation"
         >
-          <Link href="/footabll/results" title="Sports results in real time">
+          <Link href="/football/results" title="Sports results in real time">
             {results}
           </Link>
           <Link href="/football/odds" title="Odds from the best bookmakers">
             {odds}
           </Link>
-          <a href="/soccer-prediction" title="Expert sports predictions">
+          <Link href="/soccer-prediction" title="Expert sports predictions">
             {predictions}
-          </a>
-          <a href="#" title="Reviews of the best bookmakers">
+          </Link>
+          <Link
+            href="/football/bookmarkers"
+            title="Reviews of the best bookmakers"
+          >
             {bookmarkers}
-          </a>
+          </Link>
           <Link
             href="/football/calendars"
             title="Exclusive promotions and bonuses"
@@ -126,30 +129,30 @@ export default function Header() {
         aria-label="Mobile menu"
       >
         <div className="px-4 pt-2 pb-4 space-y-2">
-          <a
-            href="/news"
+          <Link
+            href="/football/results"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
             {results}
-          </a>
+          </Link>
           <Link
             href="/football/odds"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
             {odds}
           </Link>
-          <a
+          <Link
             href="/soccer-prediction"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
             {predictions}
-          </a>
-          <a
-            href="#"
+          </Link>
+          <Link
+            href="/football/bookmarkers"
             className="block text-green-700 hover:text-yellow-500 font-medium"
           >
             {bookmarkers}
-          </a>
+          </Link>
           <Link
             href="/football/calendars"
             className="block text-green-700 hover:text-yellow-500 font-medium"
