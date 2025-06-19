@@ -5,6 +5,7 @@ import useBaseballOdds, {
   Odd,
   OddValue,
 } from '@/src/hooks/baseball/useBaseballOdds';
+import Link from 'next/link';
 
 interface MatchData {
   match: string;
@@ -135,12 +136,12 @@ const BaseballTab: React.FC = () => {
       </div>
 
       <div className="text-center mt-4">
-        <a
+        <Link
           href="/baseball-predictions"
           className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
         >
           View all baseball predictions
-        </a>
+        </Link>
       </div>
     </>
   );

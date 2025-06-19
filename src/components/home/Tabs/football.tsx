@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Table } from '../table';
+import Link from 'next/link';
 
 import useFootballOdds, {
   FootballOdd,
@@ -178,12 +179,12 @@ const FootballTab: React.FC = () => {
       </div>
 
       <div className="text-center mt-4">
-        <a
+        <Link
           href="/football-prediction"
           className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
         >
           View all football predictions
-        </a>
+        </Link>
       </div>
     </>
   );

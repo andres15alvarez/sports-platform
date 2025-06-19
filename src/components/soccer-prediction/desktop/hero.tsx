@@ -214,12 +214,12 @@ const BookmakerTable = () => {
                 3.25
               </td>
               <td className="py-3 px-4 border-b text-center">
-                <a
+                <Link
                   href="/redirect/bet365/barcelona-real-madrid"
                   className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-medium"
                 >
                   Bet Now
-                </a>
+                </Link>
               </td>
             </tr>
             <tr className="text-black">
@@ -246,12 +246,12 @@ const BookmakerTable = () => {
                 3.30
               </td>
               <td className="py-3 px-4 border-b text-center">
-                <a
+                <Link
                   href="/redirect/william-hill/barcelona-real-madrid"
                   className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-medium"
                 >
                   Bet Now
-                </a>
+                </Link>
               </td>
             </tr>
             <tr className="text-black">
@@ -278,12 +278,12 @@ const BookmakerTable = () => {
                 3.20
               </td>
               <td className="py-3 px-4 border-b text-center">
-                <a
+                <Link
                   href="/redirect/unibet/barcelona-real-madrid"
                   className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-medium"
                 >
                   Bet Now
-                </a>
+                </Link>
               </td>
             </tr>
             <tr className="text-black">
@@ -298,12 +298,12 @@ const BookmakerTable = () => {
                 3.30
               </td>
               <td className="py-3 px-4 text-center">
-                <a
+                <Link
                   href="/best-odds/barcelona-real-madrid"
                   className="text-green-600 hover:underline text-sm font-medium"
                 >
                   View All
-                </a>
+                </Link>
               </td>
             </tr>
           </tbody>

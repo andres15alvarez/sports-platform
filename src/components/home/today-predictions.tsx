@@ -1,5 +1,6 @@
 import React from 'react';
 import Tabs from './tabs';
+import Link from 'next/link';
 
 const TodayPredictions: React.FC = () => {
   return (
@@ -8,12 +9,12 @@ const TodayPredictions: React.FC = () => {
         <h2 className="text-xl font-semibold text-green-700">
           Today&apos;s Sports Predictions
         </h2>
-        <a
+        <Link
           href="/all-predictions"
           className="text-green-600 hover:text-green-800 flex items-center"
         >
           See all <i className="bx bx-chevron-right ml-1"></i>
-        </a>
+        </Link>
       </div>
 
       {/* Sport Tabs - Mobile (Scrollable) */}
@@ -21,12 +22,12 @@ const TodayPredictions: React.FC = () => {
         <h2 className="text-md whitespace-nowrap font-semibold text-green-700">
           Today&apos;s Sports Predictions
         </h2>
-        <a
+        <Link
           href="/all-predictions"
           className="text-green-600 hover:text-green-800 flex items-center text-sm"
         >
           See all <i className="bx bx-chevron-right ml-1"></i>
-        </a>
+        </Link>
       </div>
 
       <Tabs />
