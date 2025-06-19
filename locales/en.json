@@ -1,6 +1,110 @@
 {
   "Home": {
     "title": "Sports Odds and Predictions in Real Time | OddsSite",
-    "about": "Welcome to OddsSite, your complete portal for updated sports odds, expert predictions, and comparison of the best Italian bookmakers. Find the most convenient odds for football, tennis, basketball, and other sports events."
+    "about": "Welcome to OddsSite, your complete portal for updated sports odds, expert predictions, and comparison of the best Italian bookmakers. Find the most convenient odds for football, tennis, basketball, and other sports events.",
+    "expertAnalysis": "Our expert analyses will help you make informed decisions on your bets, while our odds comparison tools allow you to always find the best value."
+  },
+  "TodayPredictions": {
+    "sectionTitle": "Today's Sports Predictions",
+    "seeAll": "See all"
+  },
+  "Tabs": {
+    "football": "Football",
+    "basketball": "Basketball",
+    "baseball": "Baseball"
+  },
+  "Header": {
+    "menu": "Menu",
+    "results": "Results",
+    "odds": "Odds",
+    "predictions": "Predictions",
+    "bookmarkers": "Bookmarkers",
+    "calendars": "Calendars",
+    "language": "Change language"
+  },
+  "Footer": {
+    "description": "Your complete portal for sports odds, expert predictions, and comparison of the best Italian and European bookmakers.",
+    "popularSports": "Popular Sports",
+    "topLeagues": "Top Leagues",
+    "usefulLinks": "Useful Links",
+    "aboutUs": "About Us",
+    "contact": "Contact",
+    "terms": "Terms and Conditions",
+    "privacy": "Privacy Policy",
+    "responsibleGambling": "Responsible Gambling",
+    "copyright": "© 2025 OddsSite. All rights reserved. Gambling is forbidden to minors under 18 years of age. Gamble responsibly.",
+    "admDisclaimer": "OddsSite compares odds from ADM (formerly AAMS) authorized bookmakers.",
+    "about": "About"
+  },
+  "MobileNav": {
+    "home": "Home",
+    "sports": "Sports",
+    "login": "Login",
+    "favorites": "Favorites"
+  },
+  "SportsMenuPanel": {
+    "leagueNavigation": "League Navigation",
+    "odds": "Odds",
+    "calendar": "Calendar",
+    "standings": "Standings",
+    "allSports": "All Sports",
+    "football": "Football",
+    "basketball": "Basketball",
+    "baseball": "Baseball"
+  },
+  "FootballTab": {
+    "viewAll": "View all football predictions",
+    "predictions1X2": "1X2 Predictions",
+    "predictions1X2Short": "1X2",
+    "underOver": "Under/Over 2.5",
+    "bothTeamsToScore": "Both Teams to Score",
+    "btts": "BTTS",
+    "doubleChance": "Double Chance",
+    "handicap": "Handicap",
+    "tableColumns": {
+      "match": "Match",
+      "date": "Date",
+      "probability": "Prob. %",
+      "prediction": "Prediction",
+      "result": "Result",
+      "odds": "Odds",
+      "pred": "Pred"
+    }
+  },
+  "BasketballTab": {
+    "viewAll": "View all basketball predictions",
+    "matchWinner": "Match Winner",
+    "pointSpread": "Point Spread",
+    "overUnder": "Over/Under",
+    "teamTotals": "Team Totals",
+    "tableColumns": {
+      "match": "Match",
+      "date": "Date",
+      "probability": "Prob. %",
+      "prediction": "Prediction",
+      "result": "Result",
+      "odds": "Odds",
+      "pred": "Pred"
+    }
+  },
+  "BaseballTab": {
+    "viewAll": "View all baseball predictions",
+    "matchWinner": "Match Winner",
+    "pointSpread": "Point Spread",
+    "overUnder": "Over/Under",
+    "teamTotals": "Team Totals",
+    "tableColumns": {
+      "match": "Match",
+      "date": "Date",
+      "probability": "Prob. %",
+      "prediction": "Prediction",
+      "result": "Result",
+      "odds": "Odds",
+      "pred": "Pred"
+    }
+  },
+  "RightSidebar": {
+    "topOffers": "Top Bookmaker Offers",
+    "latestPredictions": "Latest Predictions"
   }
 }
