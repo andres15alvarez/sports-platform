@@ -1,4 +1,7 @@
 import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -17,10 +20,9 @@ const nextConfig: NextConfig = {
       'sportslogos.net',
       'flagcdn.com',
     ],
-
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

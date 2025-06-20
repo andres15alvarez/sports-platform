@@ -2,6 +2,7 @@
 import React from 'react';
 import { Table } from '../table';
 import useOdds, { Odd, OddValue } from '@/src/hooks/basketball/useOdds';
+import Link from 'next/link';
 
 interface MatchData {
   match: string;
@@ -134,12 +135,12 @@ const BasketballTab: React.FC = () => {
       </div>
 
       <div className="text-center mt-4">
-        <a
+        <Link
           href="/basketball-predictions"
           className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium"
         >
           View all basketball predictions
-        </a>
+        </Link>
       </div>
     </>
   );
