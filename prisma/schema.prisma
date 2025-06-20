@@ -7,40 +7,33 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model Sport {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  leagues League[]
-}
 
 model League {
   id           Int       @id @default(autoincrement())
-  leagueId     Int
+  leagueId     Int       
   name         String
   type         String?
   logo         String?
   country      String
   countryCode  String?
   countryFlag  String?
-  sportId      Int
-  sport        Sport     @relation(fields: [sportId], references: [id])
-  seasons      Season[]
+  sport        String
 
-  @@unique([leagueId, sportId])
+  @@unique([leagueId, sport])
 }
 
-model Season {
-  id        Int      @id @default(autoincrement())
-  season    String   
-  start     DateTime
-  end       DateTime
-  leagueId  Int
-  league    League   @relation(fields: [leagueId], references: [id])
-  coverage  Json?
+model Team {
+  id        Int    @id @default(autoincrement())
+  teamId    Int    
+  name      String
+  code      String?
+  country   String?
+  logo      String?
+  sport     String
 
-  @@unique([leagueId, season])
+  @@unique([teamId, sport])
 }
