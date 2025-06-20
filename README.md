@@ -1,4 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sports Platform
+
+Your ultimate sports platform for soccer, basketball, and baseball matches, results, standings, and live scores.
+
+## Database Setup
+
+### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Database Configuration
+DATABASE_URL="prisma+postgres://your_postgres_url_here"
+
+# API Sports Configuration
+APISPORTS_KEY="your_api_sports_key_here"
+
+# League IDs for each sport (comma-separated)
+FOOTBALL_LEAGUES=1,2,10
+BASKETBALL_LEAGUES=12,20,13
+BASEBALL_LEAGUES=1,2,3
+```
+
+### Database Migration and Seeding
+
+1. **Generate Prisma Client:**
+   ```bash
+   npx prisma generate
+   ```
+
+2. **Run Database Migration:**
+   ```bash
+   npx prisma migrate dev
+   ```
+
+3. **Seed the Database:**
+   ```bash
+   npm run seed
+   ```
+
+The seed script will:
+- Read league IDs from environment variables
+- Fetch league and team information from the API Sports API
+- Insert only new records (prevents duplicates)
+- Support football (v3 API), basketball (v1 API), and baseball (v1 API)
 
 ## Getting Started
 

@@ -10,7 +10,8 @@
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,html}'",
     "prepare": "husky",
     "postbuild": "next-sitemap",
-    "sitemap": "next-sitemap"
+    "sitemap": "next-sitemap",
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
