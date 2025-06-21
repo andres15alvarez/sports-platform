@@ -1,11 +1,11 @@
 import React from 'react';
-import { LeagueData } from '../../types/types';
+import { CommonLeagueData } from '../../types/sportsResults';
 import { filterFixtures } from '../../utils/utils';
 import LeagueHeader from './league-header';
 import FixtureCard from './fixture-card';
 
 interface LeagueResultsProps {
-  league: LeagueData;
+  league: CommonLeagueData;
   selectedFilter: string;
   sportType: string;
 }
@@ -39,14 +39,14 @@ const LeagueResults: React.FC<LeagueResultsProps> = ({
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredFixtures.map((fixture, index) => {
-                if (!fixture || !fixture.fixture || !fixture.fixture.id) {
+                if (!fixture || !fixture.id) {
                   console.error('Invalid fixture structure:', fixture);
                   return null;
                 }
 
                 return (
                   <FixtureCard
-                    key={fixture.fixture.id || index}
+                    key={fixture.id || index}
                     fixture={fixture}
                     sportType={sportType}
                     leagueId={league.id}

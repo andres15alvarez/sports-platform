@@ -1,10 +1,10 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LeagueData } from '../../types/types';
+import { CommonLeagueData } from '../../types/sportsResults';
 
 interface LeagueHeaderProps {
-  league: LeagueData;
+  league: CommonLeagueData;
   sportType: string;
 }
 

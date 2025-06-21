@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
+import { ActiveLeague, ResultFilter, FixtureResponse } from '@/src/types/types';
+import { CommonLeagueData, UseResultsHook } from '@/src/types/sportsResults';
 import {
-  ActiveLeague,
-  LeagueData,
-  ResultFilter,
-  FixtureResponse,
-} from '@/src/types/types';
+  adaptFootballFixture,
+  adaptLeagueData,
+} from '@/src/utils/sportsAdapters';
 
-const useFootballResults = () => {
-  const [leaguesData, setLeaguesData] = useState<LeagueData[]>([]);
+const useFootballResults = (): UseResultsHook => {
+  const [leaguesData, setLeaguesData] = useState<CommonLeagueData[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] =
     useState<ResultFilter>('All Results');
@@ -72,21 +72,25 @@ const useFootballResults = () => {
         )
         .slice(0, 3);
 
+      const commonFixtures = sortedFixtures.map(adaptFootballFixture);
+
       const leagueInfo = sortedFixtures[0]?.league || {};
 
       setLeaguesData((prev) => {
         const updated = [...prev];
-        updated[index] = {
-          id: leagueId,
-          name: leagueInfo.name || activeLeagues[index].name,
-          country: leagueInfo.country || activeLeagues[index].country,
-          logo: leagueInfo.logo || '',
-          flag: leagueInfo.flag || '',
-          fixtures: sortedFixtures,
-          loading: false,
-          error: null,
-          expanded: false,
-        };
+        updated[index] = adaptLeagueData(
+          {
+            id: leagueId,
+            name: leagueInfo.name || activeLeagues[index].name,
+            country: leagueInfo.country || activeLeagues[index].country,
+            logo: leagueInfo.logo || '',
+            flag: leagueInfo.flag || '',
+            loading: false,
+            error: null,
+            expanded: false,
+          },
+          commonFixtures,
+        );
         return updated;
       });
     } catch (err) {
@@ -106,8 +110,10 @@ const useFootballResults = () => {
   const initializeLeaguesData = async () => {
     setInitialLoading(true);
 
-    const initialData: LeagueData[] = activeLeagues.map((league) => ({
-      ...league,
+    const initialData: CommonLeagueData[] = activeLeagues.map((league) => ({
+      id: league.id,
+      name: league.name,
+      country: league.country,
       logo: '',
       flag: '',
       fixtures: [],
@@ -136,7 +142,6 @@ const useFootballResults = () => {
     selectedFilter,
     setSelectedFilter,
     resultFilters,
-    refetch: initializeLeaguesData,
   };
 };
 

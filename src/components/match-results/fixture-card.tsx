@@ -1,11 +1,11 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FixtureResponse } from '../../types/types';
+import { CommonFixture } from '../../types/sportsResults';
 import { formatDate, formatTime, getResultType } from '../../utils/utils';
 
 interface FixtureCardProps {
-  fixture: FixtureResponse;
+  fixture: CommonFixture;
   sportType: string;
   leagueId: number;
 }
@@ -22,10 +22,10 @@ const FixtureCard: React.FC<FixtureCardProps> = ({
       <div className="bg-white p-4">
         <div className="flex items-center justify-between mb-3">
           <span className="text-xs text-gray-500">
-            {formatDate(fixture.fixture.date)}
+            {formatDate(fixture.date)}
           </span>
           <span className="text-xs text-gray-500">
-            {formatTime(fixture.fixture.date)}
+            {formatTime(fixture.date)}
           </span>
         </div>
 
@@ -50,7 +50,7 @@ const FixtureCard: React.FC<FixtureCardProps> = ({
             <span
               className={`text-lg font-bold ml-2 ${fixture.teams.home.winner ? 'text-green-700' : ''}`}
             >
-              {fixture.goals.home}
+              {fixture.score.home}
             </span>
           </div>
 
@@ -74,7 +74,7 @@ const FixtureCard: React.FC<FixtureCardProps> = ({
             <span
               className={`text-lg font-bold ml-2 ${fixture.teams.away.winner ? 'text-green-700' : ''}`}
             >
-              {fixture.goals.away}
+              {fixture.score.away}
             </span>
           </div>
         </div>
@@ -93,7 +93,7 @@ const FixtureCard: React.FC<FixtureCardProps> = ({
             </span>
           </div>
 
-          {fixture.score.halftime.home !== null && (
+          {fixture.score.halftime && fixture.score.halftime.home !== null && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-gray-600">Half-time</span>
               <span className="font-medium">
@@ -102,11 +102,11 @@ const FixtureCard: React.FC<FixtureCardProps> = ({
             </div>
           )}
 
-          {fixture.fixture.venue.name && (
+          {fixture.venue?.name && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-gray-600">Venue</span>
               <span className="font-medium text-right">
-                {fixture.fixture.venue.name}
+                {fixture.venue.name}
               </span>
             </div>
           )}

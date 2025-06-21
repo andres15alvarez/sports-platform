@@ -1,4 +1,5 @@
-import { FixtureResponse, ResultFilter } from '@/src/types/types';
+import { ResultFilter } from '@/src/types/types';
+import { CommonFixture } from '@/src/types/sportsResults';
 
 export const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -17,17 +18,17 @@ export const formatTime = (dateString: string) => {
   });
 };
 
-export const getResultType = (fixture: FixtureResponse) => {
-  const homeGoals = fixture.goals.home || 0;
-  const awayGoals = fixture.goals.away || 0;
+export const getResultType = (fixture: CommonFixture) => {
+  const homeScore = fixture.score.home || 0;
+  const awayScore = fixture.score.away || 0;
 
-  if (homeGoals > awayGoals) return 'Home Win';
-  if (awayGoals > homeGoals) return 'Away Win';
+  if (homeScore > awayScore) return 'Home Win';
+  if (awayScore > homeScore) return 'Away Win';
   return 'Draw';
 };
 
 export const filterFixtures = (
-  fixtures: FixtureResponse[],
+  fixtures: CommonFixture[],
   selectedFilter: ResultFilter,
 ) => {
   if (selectedFilter === 'All Results') return fixtures;

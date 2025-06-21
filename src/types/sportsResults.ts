@@ -48,8 +48,67 @@ export interface LeagueData {
   seasons: Season[];
 }
 
+export interface CommonFixture {
+  id: number;
+  date: string;
+  timestamp: number;
+  status: {
+    long: string;
+    short: string;
+  };
+  venue?: {
+    name: string | null;
+    city?: string | null;
+  };
+  teams: {
+    home: {
+      id: number;
+      name: string;
+      logo: string;
+      winner: boolean | null;
+    };
+    away: {
+      id: number;
+      name: string;
+      logo: string;
+      winner: boolean | null;
+    };
+  };
+  score: {
+    home: number;
+    away: number;
+    halftime?: {
+      home: number | null;
+      away: number | null;
+    };
+    fulltime?: {
+      home: number | null;
+      away: number | null;
+    };
+  };
+  league: {
+    id: number;
+    name: string;
+    country: string;
+    logo: string;
+    flag?: string | null;
+  };
+}
+
+export interface CommonLeagueData {
+  id: number;
+  name: string;
+  country: string;
+  logo: string;
+  flag: string;
+  fixtures: CommonFixture[];
+  loading: boolean;
+  error: string | null;
+  expanded: boolean;
+}
+
 export interface UseResultsHook {
-  leaguesData: LeagueData[];
+  leaguesData: CommonLeagueData[];
   initialLoading: boolean;
   selectedFilter: ResultFilter;
   setSelectedFilter: (filter: ResultFilter) => void;

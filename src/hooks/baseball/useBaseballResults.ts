@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { ActiveLeague, ResultFilter } from '@/src/types/types';
 import { CommonLeagueData, UseResultsHook } from '@/src/types/sportsResults';
 import {
-  adaptBasketballFixture,
+  adaptBaseballFixture,
   adaptLeagueData,
 } from '@/src/utils/sportsAdapters';
 
-interface BasketballGame {
+interface BaseballGame {
   id: number;
   date: string;
   status: {
@@ -14,16 +14,12 @@ interface BasketballGame {
     long: string;
   };
   venue?: string;
-  referee?: string;
-  timezone?: string;
   league?: {
     id: number;
     name: string;
     country: string;
     logo: string;
     flag: string;
-    season: string;
-    round: string;
   };
   teams?: {
     home: {
@@ -40,31 +36,27 @@ interface BasketballGame {
   scores?: {
     home: {
       total: number;
-      quarter_1?: number;
-      quarter_2?: number;
-      overtime?: number;
+      inning_1?: number;
+      inning_2?: number;
     };
     away: {
       total: number;
-      quarter_1?: number;
-      quarter_2?: number;
-      overtime?: number;
+      inning_1?: number;
+      inning_2?: number;
     };
   };
 }
 
-const useBasketballResults = (): UseResultsHook => {
+const useBaseballResults = (): UseResultsHook => {
   const [leaguesData, setLeaguesData] = useState<CommonLeagueData[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] =
     useState<ResultFilter>('All Results');
 
   const activeLeagues: ActiveLeague[] = [
-    { id: 12, name: 'NBA', country: 'USA' },
-    { id: 120, name: 'EuroLeague', country: 'Europe' },
-    { id: 118, name: 'Liga ACB', country: 'Spain' },
-    { id: 127, name: 'Lega Basket Serie A', country: 'Italy' },
-    { id: 133, name: 'LNB Pro A', country: 'France' },
+    { id: 1, name: 'MLB', country: 'USA' },
+    { id: 2, name: 'NPB', country: 'Japan' },
+    { id: 3, name: 'KBO', country: 'South Korea' },
   ];
 
   const resultFilters: ResultFilter[] = [
@@ -75,17 +67,17 @@ const useBasketballResults = (): UseResultsHook => {
   ];
 
   const fetchLeagueResults = async (leagueId: number, index: number) => {
-    console.log(`Fetching basketball results for league ${leagueId}...`);
+    console.log(`Fetching baseball results for league ${leagueId}...`);
     try {
-      const season = '2024-2025';
+      const season = '2025';
       const apiKey = process.env.NEXT_PUBLIC_API_KEYY;
 
       const response = await fetch(
-        `https://v1.basketball.api-sports.io/games?league=${leagueId}&season=${season}`,
+        `https://v1.baseball.api-sports.io/games?league=${leagueId}&season=${season}`,
         {
           headers: {
             'x-rapidapi-key': apiKey || '',
-            'x-rapidapi-host': 'v1.basketball.api-sports.io',
+            'x-rapidapi-host': 'v1.baseball.api-sports.io',
           },
         },
       );
@@ -114,21 +106,21 @@ const useBasketballResults = (): UseResultsHook => {
 
       const completedGames = data.response
         .filter(
-          (game: BasketballGame) =>
+          (game: BaseballGame) =>
             game.status?.short === 'FT' ||
             game.status?.long === 'Finished' ||
             game.status?.long === 'Match Finished' ||
             game.status?.long === 'Game Finished',
         )
-        .sort((a: BasketballGame, b: BasketballGame) => {
+        .sort((a: BaseballGame, b: BaseballGame) => {
           const dateA = new Date(a.date).getTime();
           const dateB = new Date(b.date).getTime();
           return dateB - dateA;
         })
         .slice(0, 3);
 
-      const commonFixtures = completedGames.map((game: BasketballGame) =>
-        adaptBasketballFixture(
+      const commonFixtures = completedGames.map((game: BaseballGame) =>
+        adaptBaseballFixture(
           game,
           leagueId,
           activeLeagues[index].name,
@@ -169,7 +161,7 @@ const useBasketballResults = (): UseResultsHook => {
         return updated;
       });
     } catch (err) {
-      console.error(`Error fetching basketball league ${leagueId}:`, err);
+      console.error(`Error fetching baseball league ${leagueId}:`, err);
       setLeaguesData((prev) => {
         const updated = [...prev];
         updated[index] = {
@@ -220,4 +212,4 @@ const useBasketballResults = (): UseResultsHook => {
   };
 };
 
-export default useBasketballResults;
+export default useBaseballResults;
