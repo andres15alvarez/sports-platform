@@ -9,6 +9,8 @@ interface LeagueHeaderProps {
 }
 
 const LeagueHeader: React.FC<LeagueHeaderProps> = ({ league, sportType }) => {
+  const resultsUrl = `/${sportType}/${league.id}/results`;
+
   return (
     <div className="bg-gradient-to-r from-green-700 to-green-900 text-white p-4">
       <div className="flex items-center justify-between">
@@ -42,7 +44,7 @@ const LeagueHeader: React.FC<LeagueHeaderProps> = ({ league, sportType }) => {
           </div>
         </div>
         {league.fixtures.length > 0 && (
-          <Link href={`/${sportType}/results-league`}>
+          <Link href={resultsUrl}>
             <button className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center space-x-1">
               <span>View More</span>
               <svg
