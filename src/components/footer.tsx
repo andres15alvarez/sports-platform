@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-green-900 text-white py-8 mt-8">
+    <footer className="bg-green-900 text-white py-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* OddsSite Description */}
