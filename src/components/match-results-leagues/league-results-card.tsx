@@ -112,7 +112,8 @@ const LeagueResultsCard: React.FC<LeagueResultsCardProps> = ({
             {fixture.fixture.venue?.name && (
               <span className="hidden sm:inline">
                 {fixture.fixture.venue.name}
-                {fixture.fixture.venue.city && `, ${fixture.fixture.venue.city}`}
+                {fixture.fixture.venue.city &&
+                  `, ${fixture.fixture.venue.city}`}
               </span>
             )}
           </div>
@@ -140,4 +141,4 @@ const LeagueResultsCard: React.FC<LeagueResultsCardProps> = ({
   );
 };
 
-export default LeagueResultsCard; 
+export default LeagueResultsCard;

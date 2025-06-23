@@ -15,9 +15,7 @@ interface LeagueResultsPageProps {
   sportType: SportType;
 }
 
-const LeagueResultsPage: React.FC<LeagueResultsPageProps> = ({
-  sportType,
-}) => {
+const LeagueResultsPage: React.FC<LeagueResultsPageProps> = ({ sportType }) => {
   const {
     loading,
     error,
@@ -73,4 +71,4 @@ const LeagueResultsPage: React.FC<LeagueResultsPageProps> = ({
   );
 };
 
-export default LeagueResultsPage; 
+export default LeagueResultsPage;

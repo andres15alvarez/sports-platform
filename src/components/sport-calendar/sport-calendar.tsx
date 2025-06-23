@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { CalendarFixture, UseCalendarHook, ViewType } from '@/src/types/sportCalendar';
+import {
+  CalendarFixture,
+  UseCalendarHook,
+  ViewType,
+} from '@/src/types/sportCalendar';
 import LeagueSelector from './league-selector';
 import FixturesList from './fixtures-list';
 import FixtureModal from './fixture-modal';
@@ -22,7 +26,8 @@ const SportCalendar: React.FC<SportCalendarProps> = ({ useCalendarHook }) => {
     leagues,
   } = useCalendarHook();
 
-  const [selectedFixture, setSelectedFixture] = useState<CalendarFixture | null>(null);
+  const [selectedFixture, setSelectedFixture] =
+    useState<CalendarFixture | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -35,7 +40,7 @@ const SportCalendar: React.FC<SportCalendarProps> = ({ useCalendarHook }) => {
     setShowModal(false);
     setSelectedFixture(null);
   };
-  
+
   const buttonStyles: Record<ViewType, string> = {
     upcoming: 'bg-blue-600 text-white',
     live: 'bg-red-600 text-white',
@@ -115,4 +120,4 @@ const SportCalendar: React.FC<SportCalendarProps> = ({ useCalendarHook }) => {
   );
 };
 
-export default SportCalendar; 
+export default SportCalendar;

@@ -7,4 +7,4 @@ const BasketballLeagueResultsPage: React.FC = () => {
   return <LeagueResultsPage sportType="basketball" />;
 };
 
-export default BasketballLeagueResultsPage; 
+export default BasketballLeagueResultsPage;

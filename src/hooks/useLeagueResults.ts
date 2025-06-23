@@ -21,9 +21,9 @@ export const useLeagueResults = (sportType: SportType) => {
   const leagueId = parseInt(leagueIdParam, 10);
 
   const [fixtures, setFixtures] = useState<FixtureResponse[]>([]);
-  const [leagueInfo, setLeagueInfo] = useState<FixtureResponse['league'] | null>(
-    null,
-  );
+  const [leagueInfo, setLeagueInfo] = useState<
+    FixtureResponse['league'] | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('All Results');
@@ -58,7 +58,8 @@ export const useLeagueResults = (sportType: SportType) => {
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            errorData.message || `HTTP ${response.status}: Failed to fetch results`,
+            errorData.message ||
+              `HTTP ${response.status}: Failed to fetch results`,
           );
         }
 
@@ -69,29 +70,34 @@ export const useLeagueResults = (sportType: SportType) => {
           setLoading(false);
           return;
         }
-        
+
         let completedFixtures = data.response;
 
         if (sportType === 'basketball' || sportType === 'baseball') {
-            completedFixtures = data.response.filter(
-              (game: RawApiGame) => {
-                const status = (game as BasketballGame | BaseballGame).status as GameStatus;
-                return ['FT', 'AET', 'POST'].includes(status?.short || '') ||
-                  status?.long === 'Finished';
-              },
+          completedFixtures = data.response.filter((game: RawApiGame) => {
+            const status = (game as BasketballGame | BaseballGame)
+              .status as GameStatus;
+            return (
+              ['FT', 'AET', 'POST'].includes(status?.short || '') ||
+              status?.long === 'Finished'
             );
-          }
+          });
+        }
 
         if (completedFixtures.length === 0) {
-            setError('No completed matches found');
-            setLoading(false);
-            return;
+          setError('No completed matches found');
+          setLoading(false);
+          return;
         }
 
         const sortedFixtures = completedFixtures.sort(
           (a: RawApiGame, b: RawApiGame) => {
-            const dateA = (a as BasketballGame | BaseballGame).date || (a as FixtureResponse).fixture?.date;
-            const dateB = (b as BasketballGame | BaseballGame).date || (b as FixtureResponse).fixture?.date;
+            const dateA =
+              (a as BasketballGame | BaseballGame).date ||
+              (a as FixtureResponse).fixture?.date;
+            const dateB =
+              (b as BasketballGame | BaseballGame).date ||
+              (b as FixtureResponse).fixture?.date;
             return new Date(dateB).getTime() - new Date(dateA).getTime();
           },
         );
@@ -103,7 +109,7 @@ export const useLeagueResults = (sportType: SportType) => {
             }
 
             const game = item as BasketballGame | BaseballGame;
-            
+
             let halftimeHome: number | null = null;
             let halftimeAway: number | null = null;
             let extratimeHome: number | null = null;
@@ -117,8 +123,12 @@ export const useLeagueResults = (sportType: SportType) => {
               extratimeAway = basketballGame.scores.away.overtime ?? null;
             } else if (sportType === 'baseball') {
               const baseballGame = game as BaseballGame;
-              const homeInnings = Object.values(baseballGame.scores.home.innings);
-              const awayInnings = Object.values(baseballGame.scores.away.innings);
+              const homeInnings = Object.values(
+                baseballGame.scores.home.innings,
+              );
+              const awayInnings = Object.values(
+                baseballGame.scores.away.innings,
+              );
               halftimeHome = homeInnings[0] ?? null;
               halftimeAway = awayInnings[0] ?? null;
               extratimeHome = null;
@@ -222,4 +232,4 @@ export const useLeagueResults = (sportType: SportType) => {
     currentPage,
     paginate,
   };
-}; 
+};

@@ -8,7 +8,11 @@ interface FixtureModalProps {
   onClose: () => void;
 }
 
-const FixtureModal: React.FC<FixtureModalProps> = ({ fixture, isOpen, onClose }) => {
+const FixtureModal: React.FC<FixtureModalProps> = ({
+  fixture,
+  isOpen,
+  onClose,
+}) => {
   if (!isOpen || !fixture) return null;
 
   const getStatusColor = (status: string) => {
@@ -133,9 +137,7 @@ const FixtureModal: React.FC<FixtureModalProps> = ({ fixture, isOpen, onClose })
                   unoptimized
                 />
                 <div>
-                  <p className="font-medium">
-                    {fixture.league.name}
-                  </p>
+                  <p className="font-medium">{fixture.league.name}</p>
                   <p className="text-sm text-gray-600">
                     {fixture.league.round}
                   </p>
@@ -161,9 +163,7 @@ const FixtureModal: React.FC<FixtureModalProps> = ({ fixture, isOpen, onClose })
                   className="object-contain mx-auto mb-2"
                   unoptimized
                 />
-                <p className="font-medium">
-                  {fixture.teams.home.name}
-                </p>
+                <p className="font-medium">{fixture.teams.home.name}</p>
               </div>
 
               <div className="px-6">
@@ -210,9 +210,7 @@ const FixtureModal: React.FC<FixtureModalProps> = ({ fixture, isOpen, onClose })
                   className="object-contain mx-auto mb-2"
                   unoptimized
                 />
-                <p className="font-medium">
-                  {fixture.teams.away.name}
-                </p>
+                <p className="font-medium">{fixture.teams.away.name}</p>
               </div>
             </div>
           </div>
@@ -222,8 +220,7 @@ const FixtureModal: React.FC<FixtureModalProps> = ({ fixture, isOpen, onClose })
               <div className="flex justify-between">
                 <span className="text-gray-600">Stadium:</span>
                 <span className="font-medium">
-                  {fixture.fixture.venue.name},{' '}
-                  {fixture.fixture.venue.city}
+                  {fixture.fixture.venue.name}, {fixture.fixture.venue.city}
                 </span>
               </div>
             )}
@@ -231,9 +228,7 @@ const FixtureModal: React.FC<FixtureModalProps> = ({ fixture, isOpen, onClose })
             {fixture.fixture.referee && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Referee:</span>
-                <span className="font-medium">
-                  {fixture.fixture.referee}
-                </span>
+                <span className="font-medium">{fixture.fixture.referee}</span>
               </div>
             )}
 
@@ -287,4 +282,4 @@ const FixtureModal: React.FC<FixtureModalProps> = ({ fixture, isOpen, onClose })
   );
 };
 
-export default FixtureModal; 
+export default FixtureModal;

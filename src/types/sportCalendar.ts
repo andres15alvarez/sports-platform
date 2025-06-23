@@ -89,4 +89,4 @@ export interface SportCalendarConfig {
   apiHost: string;
   leagues: League[];
   defaultLeagueId: number;
-} 
+}

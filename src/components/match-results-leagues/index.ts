@@ -6,4 +6,4 @@ export { default as LeagueResultsPagination } from './league-results-pagination'
 export { default as LeagueResultsCard } from './league-results-card';
 export { default as LeagueResultsLoading } from './league-results-loading';
 export { default as LeagueResultsError } from './league-results-error';
-export * from '@/src/types/leagueResults'; 
+export * from '@/src/types/leagueResults';

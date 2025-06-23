@@ -11,4 +11,4 @@ const LeagueResultsLoading: React.FC = () => {
   );
 };
 
-export default LeagueResultsLoading; 
+export default LeagueResultsLoading;

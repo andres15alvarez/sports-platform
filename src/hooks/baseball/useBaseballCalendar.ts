@@ -76,128 +76,135 @@ const useBaseballCalendar = (): UseCalendarHook => {
     { id: 8, name: 'LNB', country: 'Nicaragua' },
   ];
 
-  const fetchFixtures = useCallback(async (leagueId: number) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_API_KEYY;
-      if (!apiKey) throw new Error('API key not configured');
+  const fetchFixtures = useCallback(
+    async (leagueId: number) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const apiKey = process.env.NEXT_PUBLIC_API_KEYY;
+        if (!apiKey) throw new Error('API key not configured');
 
-      const season = '2025'; 
-      const allFixtures = [];
+        const season = '2025';
+        const allFixtures = [];
 
-      for (let i = -7; i <= 30; i++) {
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + i);
-        const dateString = targetDate.toISOString().split('T')[0];
+        for (let i = -7; i <= 30; i++) {
+          const targetDate = new Date();
+          targetDate.setDate(targetDate.getDate() + i);
+          const dateString = targetDate.toISOString().split('T')[0];
 
-        // Small delay to avoid rate-limiting
-        await new Promise((resolve) => setTimeout(resolve, 150));
+          // Small delay to avoid rate-limiting
+          await new Promise((resolve) => setTimeout(resolve, 150));
 
-        const response = await fetch(
-          `https://v1.baseball.api-sports.io/games?league=${leagueId}&season=${season}&date=${dateString}`,
-          {
-            method: 'GET',
-            headers: {
-              'x-rapidapi-key': apiKey,
-              'x-rapidapi-host': 'v1.baseball.api-sports.io',
+          const response = await fetch(
+            `https://v1.baseball.api-sports.io/games?league=${leagueId}&season=${season}&date=${dateString}`,
+            {
+              method: 'GET',
+              headers: {
+                'x-rapidapi-key': apiKey,
+                'x-rapidapi-host': 'v1.baseball.api-sports.io',
+              },
             },
-          },
-        );
+          );
 
-        if (!response.ok) {
-          console.warn(`Could not fetch baseball data for ${dateString}: ${response.statusText}`);
-          continue;
+          if (!response.ok) {
+            console.warn(
+              `Could not fetch baseball data for ${dateString}: ${response.statusText}`,
+            );
+            continue;
+          }
+
+          const data = await response.json();
+          if (data.response && data.response.length > 0) {
+            allFixtures.push(...data.response);
+          }
         }
 
-        const data = await response.json();
-        if (data.response && data.response.length > 0) {
-          allFixtures.push(...data.response);
-        }
-      }
+        if (allFixtures.length > 0) {
+          const sortedFixtures = allFixtures.sort(
+            (a: BaseballGameResponse, b: BaseballGameResponse) =>
+              new Date(a.date).getTime() - new Date(b.date).getTime(),
+          );
 
-      if (allFixtures.length > 0) {
-        const sortedFixtures = allFixtures.sort(
-          (a: BaseballGameResponse, b: BaseballGameResponse) =>
-            new Date(a.date).getTime() - new Date(b.date).getTime(),
-        );
-
-        const adaptedFixtures: CalendarFixture[] = sortedFixtures.map(
-          (game: BaseballGameResponse) => ({
-            fixture: {
-              id: game.id,
-              referee: null,
-              timezone: game.timezone,
-              date: game.date,
-              timestamp: game.timestamp,
-              periods: {
-                first: null, 
-                second: null,
+          const adaptedFixtures: CalendarFixture[] = sortedFixtures.map(
+            (game: BaseballGameResponse) => ({
+              fixture: {
+                id: game.id,
+                referee: null,
+                timezone: game.timezone,
+                date: game.date,
+                timestamp: game.timestamp,
+                periods: {
+                  first: null,
+                  second: null,
+                },
+                venue: {
+                  id: game.venue?.id || null,
+                  name: game.venue?.name || 'N/A',
+                  city: game.country?.name || 'N/A',
+                },
+                status: {
+                  long: game.status.long,
+                  short: game.status.short,
+                  elapsed: null,
+                },
               },
-              venue: {
-                id: game.venue?.id || null,
-                name: game.venue?.name || 'N/A',
-                city: game.country?.name || 'N/A',
+              league: {
+                id: game.league?.id || selectedLeague,
+                name: game.league?.name || 'Unknown',
+                country: game.country?.name || 'Unknown',
+                logo: game.league?.logo || '',
+                flag: game.country?.flag || null,
+                season: game.league?.season || season,
+                round: game.league?.type || 'Regular Season',
               },
-              status: {
-                long: game.status.long,
-                short: game.status.short,
-                elapsed: null,
+              teams: {
+                home: {
+                  id: game.teams.home.id,
+                  name: game.teams.home.name,
+                  logo: game.teams.home.logo,
+                  winner: game.scores.home.total > game.scores.away.total,
+                },
+                away: {
+                  id: game.teams.away.id,
+                  name: game.teams.away.name,
+                  logo: game.teams.away.logo,
+                  winner: game.scores.away.total > game.scores.home.total,
+                },
               },
-            },
-            league: {
-              id: game.league?.id || selectedLeague,
-              name: game.league?.name || 'Unknown',
-              country: game.country?.name || 'Unknown',
-              logo: game.league?.logo || '',
-              flag: game.country?.flag || null,
-              season: game.league?.season || season,
-              round: game.league?.type || 'Regular Season',
-            },
-            teams: {
-              home: {
-                id: game.teams.home.id,
-                name: game.teams.home.name,
-                logo: game.teams.home.logo,
-                winner: game.scores.home.total > game.scores.away.total,
-              },
-              away: {
-                id: game.teams.away.id,
-                name: game.teams.away.name,
-                logo: game.teams.away.logo,
-                winner: game.scores.away.total > game.scores.home.total,
-              },
-            },
-            goals: {
-              home: game.scores.home.total,
-              away: game.scores.away.total,
-            },
-            score: {
-              halftime: { home: null, away: null },
-              fulltime: {
+              goals: {
                 home: game.scores.home.total,
                 away: game.scores.away.total,
               },
-              extratime: {
-                home: game.scores.home.innings.extra,
-                away: game.scores.away.innings.extra,
+              score: {
+                halftime: { home: null, away: null },
+                fulltime: {
+                  home: game.scores.home.total,
+                  away: game.scores.away.total,
+                },
+                extratime: {
+                  home: game.scores.home.innings.extra,
+                  away: game.scores.away.innings.extra,
+                },
+                penalty: { home: null, away: null },
               },
-              penalty: { home: null, away: null },
-            },
-          }),
+            }),
+          );
+          setFixtures(adaptedFixtures);
+        } else {
+          setFixtures([]);
+        }
+      } catch (err) {
+        console.error('Error fetching baseball fixtures:', err);
+        setError(
+          err instanceof Error ? err.message : 'An unknown error occurred.',
         );
-        setFixtures(adaptedFixtures);
-      } else {
         setFixtures([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching baseball fixtures:", err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
-      setFixtures([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedLeague]);
+    },
+    [selectedLeague],
+  );
 
   useEffect(() => {
     fetchFixtures(selectedLeague);
@@ -215,4 +222,4 @@ const useBaseballCalendar = (): UseCalendarHook => {
   };
 };
 
-export default useBaseballCalendar; 
+export default useBaseballCalendar;

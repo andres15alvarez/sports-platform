@@ -7,4 +7,4 @@ const CalendarsPage: React.FC = () => {
   return <UnifiedSportCalendar />;
 };
 
-export default CalendarsPage; 
+export default CalendarsPage;

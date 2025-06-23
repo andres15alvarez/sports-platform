@@ -23,7 +23,7 @@ const FixturesList: React.FC<FixturesListProps> = ({
     const status = fixture.fixture.status.short;
 
     if (selectedDate) {
-      const fixtureDate = fixture.fixture.date.substring(0, 10); 
+      const fixtureDate = fixture.fixture.date.substring(0, 10);
       if (fixtureDate !== selectedDate) {
         return false;
       }
@@ -39,7 +39,7 @@ const FixturesList: React.FC<FixturesListProps> = ({
 
     return viewMap[viewType]?.includes(status) ?? false;
   });
-  
+
   const indexOfLastFixture = currentPage * fixturesPerPage;
   const indexOfFirstFixture = indexOfLastFixture - fixturesPerPage;
   const currentFixtures = filteredFixtures.slice(
@@ -48,15 +48,20 @@ const FixturesList: React.FC<FixturesListProps> = ({
   );
   const totalPages = Math.ceil(filteredFixtures.length / fixturesPerPage);
 
-  const groupedFixtures = currentFixtures.reduce((acc, fixture) => {
-    const localDate = new Date(fixture.fixture.date).toLocaleDateString('en-CA');
-    if (!acc[localDate]) {
-      acc[localDate] = [];
-    }
-    acc[localDate].push(fixture);
-    return acc;
-  }, {} as Record<string, CalendarFixture[]>);
-  
+  const groupedFixtures = currentFixtures.reduce(
+    (acc, fixture) => {
+      const localDate = new Date(fixture.fixture.date).toLocaleDateString(
+        'en-CA',
+      );
+      if (!acc[localDate]) {
+        acc[localDate] = [];
+      }
+      acc[localDate].push(fixture);
+      return acc;
+    },
+    {} as Record<string, CalendarFixture[]>,
+  );
+
   const sortedDates = Object.keys(groupedFixtures).sort();
 
   const handlePageChange = (page: number) => {
@@ -100,13 +105,13 @@ const FixturesList: React.FC<FixturesListProps> = ({
 
       {totalPages > 1 && (
         <LeagueResultsPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
         />
       )}
     </div>
   );
 };
 
-export default FixturesList; 
+export default FixturesList;

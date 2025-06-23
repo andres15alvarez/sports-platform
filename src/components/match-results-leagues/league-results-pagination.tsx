@@ -31,8 +31,7 @@ const LeagueResultsPagination: React.FC<LeagueResultsPaginationProps> = ({
           if (
             pageNumber === 1 ||
             pageNumber === totalPages ||
-            (pageNumber >= currentPage - 1 &&
-              pageNumber <= currentPage + 1)
+            (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
           ) {
             return (
               <button
@@ -76,4 +75,4 @@ const LeagueResultsPagination: React.FC<LeagueResultsPaginationProps> = ({
   );
 };
 
-export default LeagueResultsPagination; 
+export default LeagueResultsPagination;

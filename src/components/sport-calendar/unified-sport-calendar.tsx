@@ -58,4 +58,4 @@ const UnifiedSportCalendar: React.FC = () => {
   );
 };
 
-export default UnifiedSportCalendar; 
+export default UnifiedSportCalendar;

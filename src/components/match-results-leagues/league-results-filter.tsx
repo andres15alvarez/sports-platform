@@ -52,4 +52,4 @@ const LeagueResultsFilter: React.FC<LeagueResultsFilterProps> = ({
   );
 };
 
-export default LeagueResultsFilter; 
+export default LeagueResultsFilter;

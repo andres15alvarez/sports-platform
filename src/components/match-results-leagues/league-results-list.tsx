@@ -1,6 +1,6 @@
 import React from 'react';
 import LeagueResultsCard from './league-results-card';
-import { FixtureResponse } from '@/src/types/leagueResults'; 
+import { FixtureResponse } from '@/src/types/leagueResults';
 
 interface LeagueResultsListProps {
   fixtures: FixtureResponse[];
@@ -16,9 +16,7 @@ const LeagueResultsList: React.FC<LeagueResultsListProps> = ({
   if (fixtures.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-        <p className="text-gray-500">
-          No matches found with selected filter
-        </p>
+        <p className="text-gray-500">No matches found with selected filter</p>
       </div>
     );
   }
@@ -37,4 +35,4 @@ const LeagueResultsList: React.FC<LeagueResultsListProps> = ({
   );
 };
 
-export default LeagueResultsList; 
+export default LeagueResultsList;

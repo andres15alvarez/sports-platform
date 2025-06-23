@@ -26,4 +26,4 @@ const useSportCalendar = (sport: SportType): UseCalendarHook => {
   return getHookForSport(sport);
 };
 
-export default useSportCalendar; 
+export default useSportCalendar;

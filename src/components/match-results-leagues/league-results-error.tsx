@@ -6,7 +6,10 @@ interface LeagueResultsErrorProps {
   sportType: string;
 }
 
-const LeagueResultsError: React.FC<LeagueResultsErrorProps> = ({ error, sportType }) => {
+const LeagueResultsError: React.FC<LeagueResultsErrorProps> = ({
+  error,
+  sportType,
+}) => {
   return (
     <div className="min-h-screen bg-white py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -23,4 +26,4 @@ const LeagueResultsError: React.FC<LeagueResultsErrorProps> = ({ error, sportTyp
   );
 };
 
-export default LeagueResultsError; 
+export default LeagueResultsError;

@@ -32,4 +32,4 @@ export const getSportApiConfig = (sport: string): SportApiConfig => {
     throw new Error(`Unsupported sport type: ${sport}`);
   }
   return config;
-}; 
+};

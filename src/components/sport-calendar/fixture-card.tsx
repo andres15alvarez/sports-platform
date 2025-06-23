@@ -180,4 +180,4 @@ const FixtureCard: React.FC<FixtureCardProps> = ({ fixture, onClick }) => {
   );
 };
 
-export default FixtureCard; 
+export default FixtureCard;

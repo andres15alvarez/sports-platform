@@ -32,4 +32,4 @@ const LeagueSelector: React.FC<LeagueSelectorProps> = ({
   );
 };
 
-export default LeagueSelector; 
+export default LeagueSelector;

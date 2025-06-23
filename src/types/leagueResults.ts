@@ -75,4 +75,4 @@ export interface LeagueInfo {
   flag: string | null;
   season: number | string;
   round: string;
-} 
+}

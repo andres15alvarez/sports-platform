@@ -1,5 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CalendarFixture, UseCalendarHook, League, ViewType } from '@/src/types/sportCalendar';
+import {
+  CalendarFixture,
+  UseCalendarHook,
+  League,
+  ViewType,
+} from '@/src/types/sportCalendar';
 
 interface FootballFixtureResponse {
   fixture: {
@@ -106,7 +111,7 @@ const useFootballCalendar = (): UseCalendarHook => {
       fromDate.setDate(today.getDate() - 7);
       const toDate = new Date();
       toDate.setDate(today.getDate() + 30);
-      
+
       const season = new Date().getFullYear();
 
       const response = await fetch(
@@ -157,4 +162,4 @@ const useFootballCalendar = (): UseCalendarHook => {
   };
 };
 
-export default useFootballCalendar; 
+export default useFootballCalendar;

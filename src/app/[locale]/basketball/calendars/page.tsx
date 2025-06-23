@@ -8,4 +8,4 @@ const BasketballCalendarPage: React.FC = () => {
   return <SportCalendar useCalendarHook={useBasketballCalendar} />;
 };
 
-export default BasketballCalendarPage; 
+export default BasketballCalendarPage;

@@ -15,4 +15,4 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ error }) => {
   );
 };
 
-export default ErrorMessage; 
+export default ErrorMessage;
