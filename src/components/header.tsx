@@ -10,6 +10,7 @@ export default function Header() {
     null,
   );
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
   const lang = 'en';
 
   const tHeader = useTranslations('Header');
@@ -61,12 +62,23 @@ export default function Header() {
           aria-label="Main navigation"
         >
           {navItems.map((item) => (
-            <div key={item.name} className="relative">
+            <div
+              key={item.name}
+              className="relative"
+              onMouseEnter={() => {
+                if (closeTimeout) {
+                  clearTimeout(closeTimeout);
+                  setCloseTimeout(null);
+                }
+                setOpenDropdown(item.name);
+              }}
+              onMouseLeave={() => {
+                const timeout = setTimeout(() => setOpenDropdown(null), 150);
+                setCloseTimeout(timeout);
+              }}
+            >
               <button
                 className="px-4 py-2 flex items-center hover:text-yellow-500 focus:outline-none"
-                onClick={() =>
-                  setOpenDropdown(openDropdown === item.name ? null : item.name)
-                }
                 aria-expanded={openDropdown === item.name}
                 aria-controls={`dropdown-${item.name}`}
                 type="button"
@@ -78,7 +90,19 @@ export default function Header() {
                 <ul
                   id={`dropdown-${item.name}`}
                   className="absolute left-0 top-full mt-4 w-48 bg-white border border-t-0 border-green-600 rounded-b shadow-none z-50"
-                  onMouseLeave={() => setOpenDropdown(null)}
+                  onMouseEnter={() => {
+                    if (closeTimeout) {
+                      clearTimeout(closeTimeout);
+                      setCloseTimeout(null);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    const timeout = setTimeout(
+                      () => setOpenDropdown(null),
+                      150,
+                    );
+                    setCloseTimeout(timeout);
+                  }}
                 >
                   {sports.map((sport) => (
                     <li key={sport.name}>
