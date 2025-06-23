@@ -8,13 +8,11 @@ type MainLayoutProps = {
 
 export default function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="container mx-auto px-4 pt-6 lg:flex">
+    <div className="pt-6 lg:flex">
       <div className="hidden lg:block">
         <LeftSidebar />
       </div>
-      <main className="flex-1 bg-white p-4 lg:p-6 mt-5 rounded-lg shadow">
-        {children}
-      </main>
+      <main className="flex-1 bg-white p-4 lg:p-6 mt-5">{children}</main>
       <div className="hidden lg:block">
         <RightSidebar />
       </div>

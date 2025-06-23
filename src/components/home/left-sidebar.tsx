@@ -2,14 +2,13 @@
 
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import SportsMenu from './sports-menu';
 
 import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
 import useLeagues from '@/src/hooks/basketball/useLeagues';
 import useBaseballLeagues from '@/src/hooks/baseball/useBaseballLeagues';
 import { popularFootballLeagues } from '@/src/config/leaguesData';
+import { usePathname, Link } from '@/src/i18n/navigation';
 
 const LeftSidebar: React.FC = () => {
   const pathname = usePathname();
