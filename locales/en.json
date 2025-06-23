@@ -8,13 +8,12 @@
     "sectionTitle": "Today's Sports Predictions",
     "seeAll": "See all"
   },
-  "Tabs": {
+  "Sports": {
     "football": "Football",
     "basketball": "Basketball",
     "baseball": "Baseball"
   },
   "Header": {
-    "menu": "Menu",
     "results": "Results",
     "odds": "Odds",
     "predictions": "Predictions",

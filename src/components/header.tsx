@@ -1,21 +1,8 @@
 'use client';
-import Link from 'next/link';
+import { Link } from '../i18n/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
-
-const navItems = [
-  { name: 'results' },
-  { name: 'odds' },
-  { name: 'predictions' },
-  { name: 'bookmarkers' },
-  { name: 'calendars' },
-];
-
-const sports = [
-  { name: 'Football', path: 'football' },
-  { name: 'Basketball', path: 'basketball' },
-  { name: 'Baseball', path: 'baseball' },
-];
+import { useTranslations } from 'next-intl';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -23,6 +10,24 @@ export default function Header() {
     null,
   );
   const lang = 'en';
+
+  const tHeader = useTranslations('Header');
+  const tSports = useTranslations('Sports');
+
+  const navItemKeys = [
+    'results',
+    'odds',
+    'predictions',
+    'bookmarkers',
+    'calendars',
+  ];
+  const navItems = navItemKeys.map((key) => ({
+    name: key,
+    label: tHeader(key),
+  }));
+
+  const sportKeys = ['football', 'basketball', 'baseball'];
+  const sports = sportKeys.map((key) => ({ name: tSports(key), path: key }));
 
   return (
     <header className="fixed top-0 left-0 py-2 w-full bg-white shadow-lg border-b-4 border-green-600 z-50">
@@ -57,7 +62,7 @@ export default function Header() {
           {navItems.map((item) => (
             <div key={item.name} className="relative group">
               <button className="px-4 py-2 flex items-center hover:text-yellow-500 focus:outline-none">
-                <span className="capitalize">{item.name}</span>
+                <span className="capitalize">{item.label}</span>
                 <i className="bx bx-chevron-down ml-1"></i>
               </button>
               <ul className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none group-hover:pointer-events-auto">
@@ -154,7 +159,7 @@ export default function Header() {
                 }
                 className="w-full flex justify-between items-center text-green-700 hover:text-yellow-500 font-medium py-2"
               >
-                <span className="capitalize">{item.name}</span>
+                <span className="capitalize">{item.label}</span>
                 <i
                   className={`bx bx-chevron-down transition-transform ${
                     openMobileSubMenu === item.name ? 'rotate-180' : ''
