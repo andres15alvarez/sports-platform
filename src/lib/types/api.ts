@@ -20,7 +20,6 @@ export interface ApiResponse<T> {
   response: T;
 }
 
-// Generic API error type
 export class ApiError extends Error {
   status: number;
   endpoint: string;
@@ -32,7 +31,6 @@ export class ApiError extends Error {
   }
 }
 
-// Football (Soccer) Types - API v3
 export interface FootballLeague {
   id: number;
   name: string;
@@ -176,6 +174,139 @@ export interface FootballPrediction {
   h2h: FootballGame[];
 }
 
+export interface FootballPlayer {
+  id: number;
+  name: string;
+  number: number;
+  pos: string;
+  grid: string | null;
+}
+
+export interface FootballLineup {
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+    colors: Record<string, unknown> | null;
+  };
+  coach: {
+    id: number;
+    name: string;
+    photo: string;
+  };
+  formation: string;
+  startXI: { player: FootballPlayer }[];
+  substitutes: { player: FootballPlayer }[];
+}
+
+// Football Team Details
+export interface FootballTeamDetails {
+  team: FootballTeam;
+  venue: FootballVenue;
+}
+
+// Football Team Statistics
+export interface FootballTeamStats {
+  league: FootballLeague;
+  team: FootballTeam;
+  form: string;
+  fixtures: {
+    played: { home: number; away: number; total: number };
+    wins: { home: number; away: number; total: number };
+    draws: { home: number; away: number; total: number };
+    loses: { home: number; away: number; total: number };
+  };
+  goals: {
+    for: {
+      total: { home: number; away: number; total: number };
+      average: { home: string; away: string; total: string };
+      minute: Record<
+        string,
+        { total: number | null; percentage: string | null }
+      >;
+    };
+    against: {
+      total: { home: number; away: number; total: number };
+      average: { home: string; away: string; total: string };
+      minute: Record<
+        string,
+        { total: number | null; percentage: string | null }
+      >;
+    };
+  };
+  biggest: {
+    streak: { wins: number; draws: number; loses: number };
+    wins: { home: string; away: string };
+    loses: { home: string; away: string };
+    goals: {
+      for: { home: number; away: number };
+      against: { home: number; away: number };
+    };
+  };
+  clean_sheet: { home: number; away: number; total: number };
+  failed_to_score: { home: number; away: number; total: number };
+  penalty: {
+    scored: { total: number; percentage: string };
+    missed: { total: number; percentage: string };
+    total: number;
+  };
+  lineups: { formation: string; played: number }[];
+  cards: {
+    yellow: Record<string, { total: number | null; percentage: string | null }>;
+    red: Record<string, { total: number | null; percentage: string | null }>;
+  };
+}
+
+export interface FootballPlayerStats {
+  player: {
+    id: number;
+    name: string;
+    firstname: string;
+    lastname: string;
+    age: number;
+    birth: { date: string; place: string; country: string };
+    nationality: string;
+    height: string;
+    weight: string;
+    injured: boolean;
+    photo: string;
+  };
+  statistics: {
+    team: FootballTeam;
+    league: FootballLeague;
+    games: {
+      appearences: number;
+      lineups: number;
+      minutes: number;
+      number: number | null;
+      position: string;
+      rating: string | null;
+      captain: boolean;
+    };
+    substitutes: { in: number; out: number; bench: number };
+    shots: { total: number; on: number };
+    goals: {
+      total: number;
+      conceded: number | null;
+      assists: number | null;
+      saves: number | null;
+    };
+    passes: { total: number; key: number; accuracy: number };
+    tackles: { total: number; blocks: number | null; interceptions: number };
+    duels: { total: number; won: number };
+    dribbles: { attempts: number; success: number; past: number | null };
+    fouls: { drawn: number; committed: number };
+    cards: { yellow: number; yellowred: number; red: number };
+    penalty: {
+      won: number | null;
+      commited: number | null;
+      scored: number;
+      missed: number;
+      saved: number | null;
+    };
+  }[];
+}
+
 // Basketball Types - API v1
 export interface BasketballLeague {
   id: number;
@@ -269,6 +400,13 @@ export interface BasketballStanding {
   description: string | null;
 }
 
+export interface BasketballTeamDetails {
+  id: number;
+  name: string;
+  logo: string;
+  country: Country;
+}
+
 // Baseball Types - API v1
 export interface BaseballLeague {
   id: number;
@@ -354,7 +492,44 @@ export interface BaseballStanding {
   description: string | null;
 }
 
-// Utility types for API parameters
+// Param Types
+export interface TeamParams extends Record<string, unknown> {
+  id?: number;
+  name?: string;
+  league?: number;
+  season?: number;
+  country?: string;
+  search?: string;
+}
+
+export interface TeamStatsParams extends Record<string, unknown> {
+  league: number;
+  season: number;
+  team: number;
+  date?: string;
+}
+
+export interface PlayerStatsParams extends Record<string, unknown> {
+  player?: number;
+  id?: number;
+  season?: number;
+}
+
+export interface LineupParams extends Record<string, unknown> {
+  fixture: number;
+  team?: number;
+}
+
+export interface PredictionParams extends Record<string, unknown> {
+  fixture: number;
+}
+
+export interface RoundsParams extends Record<string, unknown> {
+  league: number;
+  season: number;
+  current?: boolean;
+}
+
 export interface FootballGameParams extends Record<string, unknown> {
   id?: number;
   ids?: string;
@@ -369,13 +544,17 @@ export interface FootballGameParams extends Record<string, unknown> {
 }
 
 export interface BasketballGameParams extends Record<string, unknown> {
+  id?: number;
   date?: string;
   league?: number;
   season?: string;
   h2h?: string;
+  live?: string;
 }
 
 export interface BaseballGameParams extends Record<string, unknown> {
+  id?: number;
+  live?: string;
   date?: string;
   league?: number;
   season?: number;
@@ -389,7 +568,12 @@ export interface StandingsParams extends Record<string, unknown> {
 }
 
 export interface LeagueParams extends Record<string, unknown> {
-  code?: string;
-  search?: string;
+  id?: number;
+  name?: string;
   country?: string;
+  code?: string;
+  season?: number;
+  type?: string;
+  search?: string;
+  last?: number;
 }

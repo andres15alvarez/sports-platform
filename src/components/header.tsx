@@ -1,16 +1,33 @@
 'use client';
-import Link from 'next/link';
+import { Link } from '../i18n/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openMobileSubMenu, setOpenMobileSubMenu] = useState<string | null>(
+    null,
+  );
   const lang = 'en';
-  const results = 'results';
-  const odds = 'odds';
-  const predictions = 'predictions';
-  const bookmarkers = 'bookmarkers';
-  const calendars = 'calendars';
+
+  const tHeader = useTranslations('Header');
+  const tSports = useTranslations('Sports');
+
+  const navItemKeys = [
+    'results',
+    'odds',
+    'predictions',
+    'bookmarkers',
+    'calendars',
+  ];
+  const navItems = navItemKeys.map((key) => ({
+    name: key,
+    label: tHeader(key),
+  }));
+
+  const sportKeys = ['football', 'basketball', 'baseball'];
+  const sports = sportKeys.map((key) => ({ name: tSports(key), path: key }));
 
   return (
     <header className="fixed top-0 left-0 py-2 w-full bg-white shadow-lg border-b-4 border-green-600 z-50">
@@ -39,30 +56,33 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav
-          className="hidden lg:flex space-x-6 text-green-700 font-medium"
+          className="hidden lg:flex space-x-1 text-green-700 font-medium"
           aria-label="Main navigation"
         >
-          <Link href="/football/results" title="Sports results in real time">
-            {results}
-          </Link>
-          <Link href="/football/odds" title="Odds from the best bookmakers">
-            {odds}
-          </Link>
-          <Link href="/soccer-prediction" title="Expert sports predictions">
-            {predictions}
-          </Link>
-          <Link
-            href="/football/bookmarkers"
-            title="Reviews of the best bookmakers"
-          >
-            {bookmarkers}
-          </Link>
-          <Link
-            href="/football/calendars"
-            title="Exclusive promotions and bonuses"
-          >
-            {calendars}
-          </Link>
+          {navItems.map((item) => (
+            <div key={item.name} className="relative group">
+              <button className="px-4 py-2 flex items-center hover:text-yellow-500 focus:outline-none">
+                <span className="capitalize">{item.label}</span>
+                <i className="bx bx-chevron-down ml-1"></i>
+              </button>
+              <ul className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none group-hover:pointer-events-auto">
+                {sports.map((sport) => (
+                  <li key={sport.name}>
+                    <Link
+                      href={
+                        item.name === 'predictions' && sport.path === 'football'
+                          ? '/soccer-prediction'
+                          : `/${sport.path}/${item.name}`
+                      }
+                      className="block px-4 py-2 text-green-700 hover:bg-green-50"
+                    >
+                      {sport.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         {/* Actions */}
@@ -124,41 +144,51 @@ export default function Header() {
       {/* Mobile Navigation */}
       <nav
         className={`${
-          mobileMenuOpen ? 'max-h-[300px]' : 'max-h-0'
-        } overflow-hidden transition-max-height duration-300 bg-white border-t border-green-600 lg:hidden`}
+          mobileMenuOpen ? 'max-h-[500px]' : 'max-h-0'
+        } overflow-y-auto transition-max-height duration-500 ease-in-out bg-white border-t border-green-600 lg:hidden`}
         aria-label="Mobile menu"
       >
         <div className="px-4 pt-2 pb-4 space-y-2">
-          <Link
-            href="/football/results"
-            className="block text-green-700 hover:text-yellow-500 font-medium"
-          >
-            {results}
-          </Link>
-          <Link
-            href="/football/odds"
-            className="block text-green-700 hover:text-yellow-500 font-medium"
-          >
-            {odds}
-          </Link>
-          <Link
-            href="/soccer-prediction"
-            className="block text-green-700 hover:text-yellow-500 font-medium"
-          >
-            {predictions}
-          </Link>
-          <Link
-            href="/football/bookmarkers"
-            className="block text-green-700 hover:text-yellow-500 font-medium"
-          >
-            {bookmarkers}
-          </Link>
-          <Link
-            href="/football/calendars"
-            className="block text-green-700 hover:text-yellow-500 font-medium"
-          >
-            {calendars}
-          </Link>
+          {navItems.map((item) => (
+            <div key={item.name}>
+              <button
+                onClick={() =>
+                  setOpenMobileSubMenu(
+                    openMobileSubMenu === item.name ? null : item.name,
+                  )
+                }
+                className="w-full flex justify-between items-center text-green-700 hover:text-yellow-500 font-medium py-2"
+              >
+                <span className="capitalize">{item.label}</span>
+                <i
+                  className={`bx bx-chevron-down transition-transform ${
+                    openMobileSubMenu === item.name ? 'rotate-180' : ''
+                  }`}
+                ></i>
+              </button>
+              <div
+                className={`overflow-hidden transition-max-height duration-300 ease-in-out ${
+                  openMobileSubMenu === item.name ? 'max-h-48' : 'max-h-0'
+                }`}
+              >
+                <div className="pl-4 pt-2 pb-2 space-y-2">
+                  {sports.map((sport) => (
+                    <Link
+                      key={sport.name}
+                      href={
+                        item.name === 'predictions' && sport.path === 'football'
+                          ? '/soccer-prediction'
+                          : `/${sport.path}/${item.name}`
+                      }
+                      className="block text-green-700 hover:text-yellow-500"
+                    >
+                      {sport.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </nav>
     </header>
