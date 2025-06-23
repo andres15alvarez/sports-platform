@@ -14,7 +14,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 ];
 
 const Text: React.FC = () => {
-  const t = useTranslations();
+  const t = useTranslations('Home');
   return (
     <>
       <h1 className="text-xl sm:text-2xl font-bold mb-4">{t('title')}</h1>

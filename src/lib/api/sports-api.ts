@@ -16,6 +16,19 @@ import {
   BaseballGame,
   BaseballStanding,
   BaseballGameParams,
+  // New types for additional endpoints
+  FootballLineup,
+  FootballPrediction,
+  FootballTeamDetails,
+  FootballTeamStats,
+  FootballPlayerStats,
+  BasketballTeamDetails,
+  TeamParams,
+  TeamStatsParams,
+  PlayerStatsParams,
+  LineupParams,
+  PredictionParams,
+  RoundsParams,
 } from '../types/api';
 
 const API_KEY = process.env.API_SPORTS_KEY;
@@ -75,14 +88,17 @@ class ApiClient {
 export class FootballApi {
   private client = new ApiClient('football');
 
+  // Countries
   async getCountries(): Promise<Country[]> {
     return this.client.get<Country[]>('/countries');
   }
 
+  // Leagues
   async getLeagues(params?: LeagueParams): Promise<FootballLeague[]> {
     return this.client.get<FootballLeague[]>('/leagues', params);
   }
 
+  // Games/Fixtures
   async getGames(params?: FootballGameParams): Promise<FootballGame[]> {
     return this.client.get<FootballGame[]>('/fixtures', params);
   }
@@ -110,54 +126,169 @@ export class FootballApi {
     return games[0];
   }
 
+  // Head to Head
   async getHeadToHead(team1: number, team2: number): Promise<FootballGame[]> {
     return this.client.get<FootballGame[]>('/fixtures/headtohead', {
       h2h: `${team1}-${team2}`,
     });
   }
 
+  // Lineups
+  async getLineups(params: LineupParams): Promise<FootballLineup[]> {
+    return this.client.get<FootballLineup[]>('/fixtures/lineups', params);
+  }
+
+  // Predictions
+  async getPredictions(
+    params: PredictionParams,
+  ): Promise<FootballPrediction[]> {
+    return this.client.get<FootballPrediction[]>('/predictions', params);
+  }
+
+  // Standings
   async getStandings(params: StandingsParams): Promise<FootballStanding[][]> {
     return this.client.get<FootballStanding[][]>('/standings', params);
   }
 
-  async getRounds(league: number, season: number): Promise<string[]> {
+  // Rounds
+  async getRounds(params: RoundsParams): Promise<string[]> {
     const result = await this.client.get<{ rounds: string[] }>(
       '/fixtures/rounds',
-      { league, season },
+      params,
     );
     return result.rounds;
+  }
+
+  // Teams
+  async getTeams(params?: TeamParams): Promise<FootballTeamDetails[]> {
+    return this.client.get<FootballTeamDetails[]>('/teams', params);
+  }
+
+  async getTeamById(id: number): Promise<FootballTeamDetails> {
+    const teams = await this.getTeams({ id });
+    if (teams.length === 0) {
+      throw new Error(`Team with id ${id} not found`);
+    }
+    return teams[0];
+  }
+
+  // Team Statistics
+  async getTeamStatistics(
+    params: TeamStatsParams,
+  ): Promise<FootballTeamStats[]> {
+    return this.client.get<FootballTeamStats[]>('/teams/statistics', params);
+  }
+
+  // Player Statistics
+  async getPlayerStatistics(
+    params: PlayerStatsParams,
+  ): Promise<FootballPlayerStats[]> {
+    return this.client.get<FootballPlayerStats[]>('/players', params);
+  }
+
+  async getPlayerById(
+    id: number,
+    season?: number,
+  ): Promise<FootballPlayerStats> {
+    const params: PlayerStatsParams = { player: id };
+    if (season) {
+      params.season = season;
+    }
+    const players = await this.getPlayerStatistics(params);
+    if (players.length === 0) {
+      throw new Error(`Player with id ${id} not found`);
+    }
+    return players[0];
   }
 }
 
 export class BasketballApi {
   private client = new ApiClient('basketball');
 
+  // Countries
+  async getCountries(): Promise<Country[]> {
+    return this.client.get<Country[]>('/countries');
+  }
+
+  // Leagues
   async getLeagues(params?: LeagueParams): Promise<BasketballLeague[]> {
     return this.client.get<BasketballLeague[]>('/leagues', params);
   }
 
+  // Games
   async getGames(params?: BasketballGameParams): Promise<BasketballGame[]> {
     return this.client.get<BasketballGame[]>('/games', params);
   }
 
+  async getLiveGames(): Promise<BasketballGame[]> {
+    return this.getGames({ live: 'all' });
+  }
+
+  async getGamesByDate(date: string): Promise<BasketballGame[]> {
+    return this.getGames({ date });
+  }
+
+  async getGamesByLeague(
+    league: number,
+    season: string,
+  ): Promise<BasketballGame[]> {
+    return this.getGames({ league, season });
+  }
+
+  async getGameById(id: number): Promise<BasketballGame> {
+    const games = await this.getGames({ id });
+    if (games.length === 0) {
+      throw new Error(`Game with id ${id} not found`);
+    }
+    return games[0];
+  }
+
+  // Head to Head
+  async getHeadToHead(team1: number, team2: number): Promise<BasketballGame[]> {
+    return this.client.get<BasketballGame[]>('/games/h2h', {
+      h2h: `${team1}-${team2}`,
+    });
+  }
+
+  // Standings
   async getStandings(params: StandingsParams): Promise<BasketballStanding[][]> {
     return this.client.get<BasketballStanding[][]>('/standings', params);
+  }
+
+  // Teams
+  async getTeams(params?: TeamParams): Promise<BasketballTeamDetails[]> {
+    return this.client.get<BasketballTeamDetails[]>('/teams', params);
+  }
+
+  async getTeamById(id: number): Promise<BasketballTeamDetails> {
+    const teams = await this.getTeams({ id });
+    if (teams.length === 0) {
+      throw new Error(`Team with id ${id} not found`);
+    }
+    return teams[0];
   }
 }
 
 export class BaseballApi {
   private client = new ApiClient('baseball');
 
+  // Countries
   async getCountries(): Promise<Country[]> {
     return this.client.get<Country[]>('/countries');
   }
 
-  async getLeagues(params?: { country?: string }): Promise<BaseballLeague[]> {
+  // Leagues
+  async getLeagues(params?: LeagueParams): Promise<BaseballLeague[]> {
     return this.client.get<BaseballLeague[]>('/leagues', params);
   }
 
+  // Games
   async getGames(params?: BaseballGameParams): Promise<BaseballGame[]> {
     return this.client.get<BaseballGame[]>('/games', params);
+  }
+
+  async getLiveGames(): Promise<BaseballGame[]> {
+    return this.getGames({ live: 'all' });
   }
 
   async getGamesByDate(date: string): Promise<BaseballGame[]> {
@@ -171,20 +302,24 @@ export class BaseballApi {
     return this.getGames({ league, season });
   }
 
+  async getGameById(id: number): Promise<BaseballGame> {
+    const games = await this.getGames({ id });
+    if (games.length === 0) {
+      throw new Error(`Game with id ${id} not found`);
+    }
+    return games[0];
+  }
+
+  // Head to Head (if available in baseball API)
   async getHeadToHead(team1: number, team2: number): Promise<BaseballGame[]> {
     return this.client.get<BaseballGame[]>('/games/h2h', {
       h2h: `${team1}-${team2}`,
     });
   }
 
-  async getStandings(
-    league: number,
-    season: number,
-  ): Promise<BaseballStanding[][]> {
-    return this.client.get<BaseballStanding[][]>('/standings', {
-      league,
-      season,
-    });
+  // Standings
+  async getStandings(params: StandingsParams): Promise<BaseballStanding[][]> {
+    return this.client.get<BaseballStanding[][]>('/standings', params);
   }
 }
 

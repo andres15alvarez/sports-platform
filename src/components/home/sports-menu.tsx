@@ -1,8 +1,6 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 import useLeagues from '@/src/hooks/basketball/useLeagues';
 import useFootballLeagues from '@/src/hooks/football/useFootballLeagues';
 import useBaseballLeagues from '@/src/hooks/baseball/useBaseballLeagues';
@@ -12,6 +10,7 @@ import {
   footballLeagues as footballIds,
   baseballLeagues as baseballLeaguesIds,
 } from '@/src/config/leaguesData';
+import { usePathname, Link } from '@/src/i18n/navigation';
 
 type MenuKey = 'football' | 'baseball' | 'basketball';
 
