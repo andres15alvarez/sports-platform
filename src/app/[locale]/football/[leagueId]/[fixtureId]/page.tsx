@@ -125,6 +125,13 @@ interface TeamStatsData {
   };
 }
 
+// Tipo mínimo para los fixtures de la API usados en getProgression
+interface FixtureAPIResponse {
+  fixture: { date: string };
+  teams: { home: { id: number }; away: { id: number } };
+  goals: { home: number; away: number };
+}
+
 const Page: React.FC = () => {
   const params = useParams<{ leagueId: string; fixtureId: string }>();
   const fixtureId = params?.fixtureId ? Number(params.fixtureId) : null;
@@ -144,6 +151,7 @@ const Page: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('match-analysis');
+  const [pointsProgression, setPointsProgression] = useState<unknown[]>([]);
 
   useEffect(() => {
     if (fixtureId) {
@@ -285,6 +293,89 @@ const Page: React.FC = () => {
       setLoading(false);
     }
   };
+
+  ///// PARA GRAFICOS TEAM STATS
+
+  useEffect(() => {
+    const fetchTeamFixtures = async (
+      teamId: number,
+      leagueId: number,
+      season: number,
+    ): Promise<FixtureAPIResponse[]> => {
+      const response = await fetch(
+        `https://v3.football.api-sports.io/fixtures?team=${teamId}&league=${leagueId}&season=${season}&status=FT`,
+        {
+          headers: {
+            'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+            'x-rapidapi-host': 'v3.football.api-sports.io',
+          },
+        },
+      );
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.response || [];
+    };
+
+    const getProgression = (fixtures: FixtureAPIResponse[], teamId: number) => {
+      // Ordenar por fecha ascendente
+      const sorted = [...fixtures].sort(
+        (a, b) =>
+          new Date(a.fixture.date).getTime() -
+          new Date(b.fixture.date).getTime(),
+      );
+      let points = 0;
+      return sorted.map((match) => {
+        let result = 0;
+        if (
+          match.teams.home.id === teamId &&
+          match.goals.home > match.goals.away
+        )
+          result = 3;
+        else if (
+          match.teams.away.id === teamId &&
+          match.goals.away > match.goals.home
+        )
+          result = 3;
+        else if (match.goals.home === match.goals.away) result = 1;
+        points += result;
+        // Formato de fecha dd/mm/aa
+        const dateObj = new Date(match.fixture.date);
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = String(dateObj.getFullYear()).slice(-2);
+        const dateLabel = `${day}/${month}/${year}`;
+        return {
+          date: dateLabel,
+          points,
+        };
+      });
+    };
+
+    const fetchAll = async () => {
+      if (!fixtureData) return;
+      const leagueId = fixtureData.league.id;
+      const season = fixtureData.league.season;
+      const homeId = fixtureData.teams.home.id;
+      const awayId = fixtureData.teams.away.id;
+      const [home, away] = await Promise.all([
+        fetchTeamFixtures(homeId, leagueId, season),
+        fetchTeamFixtures(awayId, leagueId, season),
+      ]);
+      // Calcular progresión de puntos
+      const homeProg = getProgression(home, homeId);
+      const awayProg = getProgression(away, awayId);
+      // Unir por matchday
+      const maxLen = Math.max(homeProg.length, awayProg.length);
+      const progression = Array.from({ length: maxLen }).map((_, i) => ({
+        date: homeProg[i]?.date || awayProg[i]?.date || '',
+        [fixtureData.teams.home.name]: homeProg[i]?.points ?? null,
+        [fixtureData.teams.away.name]: awayProg[i]?.points ?? null,
+      }));
+      setPointsProgression(progression);
+    };
+
+    if (fixtureData) fetchAll();
+  }, [fixtureData]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -1546,10 +1637,88 @@ const Page: React.FC = () => {
 
         {activeTab === 'team-stats' && (
           <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-            <h2 className="text-lg font-bold mb-4">Team Statistics</h2>
-            <p className="text-gray-600">
-              Team statistics content will go here...
-            </p>
+            <h2 className="text-lg font-bold mb-4">
+              Team Statistics Comparison
+            </h2>
+            {/* Gráfica de acumulación de puntos */}
+            <div className="mb-8">
+              <h3 className="text-md font-bold mb-2">Season Performance</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-semibold mb-2">Points Accumulation</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart
+                      data={pointsProgression}
+                      margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey={fixtureData?.teams.home.name}
+                        stroke="#6cb6f9"
+                        strokeWidth={3}
+                        dot={{ r: 3 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey={fixtureData?.teams.away.name}
+                        stroke="#a16be0"
+                        strokeWidth={3}
+                        dot={{ r: 3 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {/* Comparación de goles */}
+                <div>
+                  <h4 className="font-semibold mb-2">Goals Comparison</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart
+                      data={[
+                        {
+                          name: 'Goals Scored',
+                          [fixtureData?.teams.home.name]:
+                            homeTeamStats?.goals.for.total.total ?? 0,
+                          [fixtureData?.teams.away.name]:
+                            awayTeamStats?.goals.for.total.total ?? 0,
+                        },
+                        {
+                          name: 'Goals Conceded',
+                          [fixtureData?.teams.home.name]:
+                            homeTeamStats?.goals.against.total.total ?? 0,
+                          [fixtureData?.teams.away.name]:
+                            awayTeamStats?.goals.against.total.total ?? 0,
+                        },
+                      ]}
+                      margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+                      barCategoryGap={30}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar
+                        dataKey={fixtureData?.teams.home.name}
+                        fill="#6cb6f9"
+                        barSize={30}
+                        radius={[7, 7, 0, 0]}
+                      />
+                      <Bar
+                        dataKey={fixtureData?.teams.away.name}
+                        fill="#a16be0"
+                        barSize={30}
+                        radius={[7, 7, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
