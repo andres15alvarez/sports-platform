@@ -3,6 +3,20 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Label,
+  BarChart,
+  Bar,
+  Cell,
+} from 'recharts';
 
 interface BookmakerOdds {
   name: string;
@@ -93,6 +107,16 @@ interface TeamStatsData {
     for: {
       total: { home: number; away: number; total: number };
       average: { home: string; away: string; total: string };
+      minute?: {
+        '0-15'?: { total: number };
+        '16-30'?: { total: number };
+        '31-45'?: { total: number };
+        '46-60'?: { total: number };
+        '61-75'?: { total: number };
+        '76-90'?: { total: number };
+        '91-105'?: { total: number };
+        '106-120'?: { total: number };
+      };
     };
     against: {
       total: { home: number; away: number; total: number };
@@ -314,6 +338,33 @@ const Page: React.FC = () => {
         return 'D';
       })
       .join(' ');
+  };
+
+  // DATOS PARA EL GRAFICO DE RENDIMIENTO
+  const getPerformanceData = () => {
+    if (!fixtureData || h2hFullData.length === 0) return [];
+    const homeId = fixtureData.teams.home.id;
+    const awayId = fixtureData.teams.away.id;
+    const matches = h2hFullData.slice(0, 10).reverse();
+    return matches.map((match) => {
+      // Para cada equipo, asignar: Win=2, Draw=1, Loss=0
+      let homeResult = 1;
+      let awayResult = 1;
+      if (match.goals.home > match.goals.away) {
+        homeResult = match.teams.home.id === homeId ? 2 : 0;
+        awayResult = match.teams.away.id === awayId ? 0 : 2;
+      } else if (match.goals.home < match.goals.away) {
+        homeResult = match.teams.home.id === homeId ? 0 : 2;
+        awayResult = match.teams.away.id === awayId ? 2 : 0;
+      }
+      const dateObj = new Date(match.fixture.date);
+      const label = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+      return {
+        name: label,
+        [fixtureData.teams.home.name]: homeResult,
+        [fixtureData.teams.away.name]: awayResult,
+      };
+    });
   };
 
   if (loading) {
@@ -1050,9 +1101,68 @@ const Page: React.FC = () => {
           </div>
         </div>
 
-        {/* Head-to-Head Section */}
-        {h2hFullData.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        {/* TABS */}
+
+        {activeTab === 'match-analysis' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">
+              Last 10 Matches Performance
+            </h2>
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart
+                data={getPerformanceData()}
+                margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  interval={0}
+                  tick={{ fontSize: 12, dy: 16 }}
+                  padding={{ left: 0, right: 30 }}
+                />
+                <YAxis
+                  type="number"
+                  domain={[0, 2]}
+                  ticks={[0, 1, 2]}
+                  tickFormatter={(v) =>
+                    v === 2 ? 'Win' : v === 1 ? 'Draw' : 'Loss'
+                  }
+                >
+                  <Label
+                    angle={-90}
+                    position="insideLeft"
+                    style={{ textAnchor: 'middle' }}
+                  />
+                </YAxis>
+                <Tooltip
+                  formatter={(value) =>
+                    value === 2 ? 'Win' : value === 1 ? 'Draw' : 'Loss'
+                  }
+                />
+                <Legend wrapperStyle={{ marginTop: 30, paddingTop: 50 }} />
+                <Line
+                  type="monotone"
+                  dataKey={fixtureData.teams.home.name}
+                  stroke="#6cb6f9"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey={fixtureData.teams.away.name}
+                  stroke="#a16be0"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {activeTab === 'head-to-head' && h2hFullData.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
             <h2 className="text-xl font-bold mb-6">
               Head-to-Head: {fixtureData.teams.home.name} vs{' '}
               {fixtureData.teams.away.name}
@@ -1063,7 +1173,6 @@ const Page: React.FC = () => {
               <h3 className="text-lg font-semibold mb-4">
                 Historical Matchup Summary
               </h3>
-
               {(() => {
                 // Calculate wins, draws, losses from all h2h data
                 let homeWins = 0;
@@ -1192,88 +1301,81 @@ const Page: React.FC = () => {
                 );
               })()}
             </div>
-          </div>
-        )}
 
-        {/* Last 5 Meetings */}
-        {h2hData.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-bold mb-4">Last 5 Meetings</h2>
+            {/* Last 5 Meetings */}
+            {h2hData.length > 0 && (
+              <div className="bg-white p-6 mb-6">
+                <h2 className="text-lg font-bold mb-4">Last 5 Meetings</h2>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      DATE
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      COMPETITION
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      HOME
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">
-                      SCORE
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">
-                      AWAY
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {h2hData.slice(0, 5).map((match, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4 text-sm text-gray-600">
-                        {new Date(match.fixture.date).toLocaleDateString(
-                          'en-US',
-                          {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          },
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">
-                        {match.league?.name || fixtureData.league.name}
-                      </td>
-                      <td className="py-3 px-4 text-sm">
-                        <span
-                          className={`font-medium ${match.teams.home.winner ? 'text-blue-600' : ''}`}
-                        >
-                          {match.teams.home.name}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-center font-semibold">
-                        {match.goals.home}-{match.goals.away}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-right">
-                        <span
-                          className={`font-medium ${match.teams.away.winner ? 'text-blue-600' : ''}`}
-                        >
-                          {match.teams.away.name}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b bg-gray-50">
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                          DATE
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                          COMPETITION
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                          HOME
+                        </th>
+                        <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">
+                          SCORE
+                        </th>
+                        <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">
+                          AWAY
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {h2hData.slice(0, 5).map((match, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4 text-sm text-gray-600">
+                            {new Date(match.fixture.date).toLocaleDateString(
+                              'en-US',
+                              {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              },
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-600">
+                            {match.league?.name || fixtureData.league.name}
+                          </td>
+                          <td className="py-3 px-4 text-sm">
+                            <span
+                              className={`font-medium ${match.teams.home.winner ? 'text-blue-600' : ''}`}
+                            >
+                              {match.teams.home.name}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-sm text-center font-semibold">
+                            {match.goals.home}-{match.goals.away}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-right">
+                            <span
+                              className={`font-medium ${match.teams.away.winner ? 'text-blue-600' : ''}`}
+                            >
+                              {match.teams.away.name}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
-        {/* Goal Distribution Section */}
-        {h2hFullData.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-bold mb-6">Goal Distribution</h2>
-
+            {/* Goal Distribution Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Goals Scored (Last 10 Meetings) */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-4">
+                <h4 className="text-lg font-medium text-gray-700 mb-4">
                   Goals Scored (Last 10 Meetings)
                 </h4>
-
                 {(() => {
                   // Calculate total goals for each team in last 10 meetings
                   const last10Matches = h2hFullData.slice(0, 10);
@@ -1290,180 +1392,178 @@ const Page: React.FC = () => {
                     }
                   });
 
-                  const maxGoals = Math.max(homeTeamGoals, awayTeamGoals);
+                  const data = [
+                    {
+                      team: fixtureData.teams.home.name,
+                      Goals: homeTeamGoals,
+                      fill: '#6cb6f9',
+                    },
+                    {
+                      team: fixtureData.teams.away.name,
+                      Goals: awayTeamGoals,
+                      fill: '#a16be0',
+                    },
+                  ];
 
                   return (
-                    <div className="space-y-4">
-                      {/* Legend */}
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                          <span>Goals Scored</span>
-                        </div>
-                      </div>
-
-                      {/* Home Team Bar */}
-                      <div className="space-y-2">
-                        <div className="text-sm text-gray-600">
-                          {fixtureData.teams.home.name}
-                        </div>
-                        <div className="relative">
-                          <div className="bg-gray-200 h-8 rounded">
-                            <div
-                              className="bg-blue-500 h-full rounded flex items-center justify-end pr-2"
-                              style={{
-                                width: `${(homeTeamGoals / (maxGoals || 1)) * 80}%`,
-                              }}
-                            >
-                              <span className="text-white text-sm font-medium">
-                                {homeTeamGoals}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Away Team Bar */}
-                      <div className="space-y-2">
-                        <div className="text-sm text-gray-600">
-                          {fixtureData.teams.away.name}
-                        </div>
-                        <div className="relative">
-                          <div className="bg-gray-200 h-8 rounded">
-                            <div
-                              className="bg-purple-500 h-full rounded flex items-center justify-end pr-2"
-                              style={{
-                                width: `${(awayTeamGoals / (maxGoals || 1)) * 80}%`,
-                              }}
-                            >
-                              <span className="text-white text-sm font-medium">
-                                {awayTeamGoals}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* X-axis */}
-                      <div className="flex justify-between text-xs text-gray-500 mt-2">
-                        <span>0</span>
-                        <span>5</span>
-                        <span>10</span>
-                        <span>15</span>
-                        <span>20</span>
-                      </div>
-                    </div>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart
+                        data={data}
+                        layout="vertical"
+                        margin={{ top: 50, right: 60, left: -20, bottom: 30 }}
+                        barCategoryGap={20}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          type="number"
+                          allowDecimals={false}
+                          domain={[
+                            0,
+                            Math.max(homeTeamGoals, awayTeamGoals, 10) + 2,
+                          ]}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis type="category" dataKey="team" width={140} />
+                        <Tooltip />
+                        <Legend
+                          verticalAlign="top"
+                          height={10}
+                          iconType="rect"
+                          wrapperStyle={{
+                            top: 25,
+                            fontWeight: 600,
+                            fontSize: 15,
+                          }}
+                        />
+                        <Bar
+                          dataKey="Goals"
+                          isAnimationActive={false}
+                          barSize={48}
+                          radius={[0, 10, 10, 0]}
+                        >
+                          {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   );
                 })()}
               </div>
-
-              {/* Goal Timing (Last 10 Meetings) 
-              Es una simulación, hay que ajustar la forma en que la api trae la data*/}
+              {/* Goal Timing (Last 10 Meetings) */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-4">
+                <h4 className="text-lg font-medium text-gray-700 mb-4">
                   Goal Timing (Last 10 Meetings)
                 </h4>
-
                 {(() => {
-                  // Simulated data based on typical goal distribution patterns
-                  const simulatedData = {
-                    '1-15': { home: 2, away: 1 },
-                    '16-30': { home: 3, away: 2 },
-                    '31-45': { home: 4, away: 3 },
-                    '46-60': { home: 2, away: 5 },
-                    '61-75': { home: 3, away: 4 },
-                    '76-90': { home: 2, away: 3 },
-                  };
-
-                  const maxValue = 5; // Maximum value for scaling
-
+                  if (!homeTeamStats || !awayTeamStats) {
+                    return (
+                      <div className="text-gray-400 text-xs">
+                        No goal timing data available
+                      </div>
+                    );
+                  }
+                  const intervals = [
+                    '0-15',
+                    '16-30',
+                    '31-45',
+                    '46-60',
+                    '61-75',
+                    '76-90',
+                    '91-105',
+                    '106-120',
+                  ];
+                  const homeMinute = homeTeamStats.goals.for.minute;
+                  const awayMinute = awayTeamStats.goals.for.minute;
+                  if (!homeMinute || !awayMinute) {
+                    return (
+                      <div className="text-gray-400 text-xs">
+                        No goal timing data available
+                      </div>
+                    );
+                  }
+                  const data = intervals.map((interval) => ({
+                    interval: interval === '0-15' ? '1-15' : interval,
+                    [fixtureData.teams.home.name]:
+                      homeMinute[interval as keyof typeof homeMinute]?.total ??
+                      0,
+                    [fixtureData.teams.away.name]:
+                      awayMinute[interval as keyof typeof awayMinute]?.total ??
+                      0,
+                  }));
+                  const allZero = data.every(
+                    (d) =>
+                      d[fixtureData.teams.home.name] === 0 &&
+                      d[fixtureData.teams.away.name] === 0,
+                  );
+                  if (allZero) {
+                    return (
+                      <div className="text-gray-400 text-xs">
+                        No goal timing data available
+                      </div>
+                    );
+                  }
                   return (
-                    <div>
-                      {/* Legend */}
-                      <div className="flex items-center gap-4 text-sm mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                          <span>{fixtureData.teams.home.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                          <span>{fixtureData.teams.away.name}</span>
-                        </div>
-                      </div>
-
-                      {/* Chart */}
-                      <div className="relative h-48">
-                        {/* Y-axis labels */}
-                        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
-                          <span>5</span>
-                          <span>4</span>
-                          <span>3</span>
-                          <span>2</span>
-                          <span>1</span>
-                          <span>0</span>
-                        </div>
-
-                        {/* Chart area */}
-                        <div className="ml-6 h-full relative">
-                          {/* Grid lines */}
-                          <div className="absolute inset-0 flex flex-col justify-between">
-                            {[0, 1, 2, 3, 4, 5].map((i) => (
-                              <div
-                                key={i}
-                                className="border-t border-gray-200"
-                              ></div>
-                            ))}
-                          </div>
-
-                          {/* Bars */}
-                          <div className="relative h-full flex items-end justify-around pb-6">
-                            {Object.entries(simulatedData).map(
-                              ([period, goals]) => (
-                                <div
-                                  key={period}
-                                  className="flex gap-1 items-end"
-                                >
-                                  <div
-                                    className="w-8 bg-blue-500 rounded-t"
-                                    style={{
-                                      height: `${(goals.home / maxValue) * 100}%`,
-                                    }}
-                                  ></div>
-                                  <div
-                                    className="w-8 bg-purple-500 rounded-t"
-                                    style={{
-                                      height: `${(goals.away / maxValue) * 100}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                              ),
-                            )}
-                          </div>
-
-                          {/* X-axis labels */}
-                          <div className="absolute bottom-0 left-0 right-0 flex justify-around text-xs text-gray-500">
-                            <span>1-15</span>
-                            <span>16-30</span>
-                            <span>31-45</span>
-                            <span>46-60</span>
-                            <span>61-75</span>
-                            <span>76-90</span>
-                          </div>
-
-                          <div className="text-center text-xs text-gray-500 mt-8">
-                            Minutes
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-center text-xs text-gray-400 mt-4">
-                        * Goal timing data is simulated for demonstration
-                      </div>
-                    </div>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart
+                        data={data}
+                        margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
+                        barCategoryGap={40}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="interval" tick={{ fontSize: 12 }} />
+                        <YAxis
+                          allowDecimals={false}
+                          label={{
+                            value: 'Goals',
+                            angle: -90,
+                            position: 'insideLeft',
+                            offset: 10,
+                          }}
+                        />
+                        <Tooltip />
+                        <Legend verticalAlign="top" height={36} />
+                        <Bar
+                          dataKey={fixtureData.teams.home.name}
+                          fill="#6cb6f9"
+                          barSize={18}
+                          radius={[4, 4, 0, 0]}
+                        />
+                        <Bar
+                          dataKey={fixtureData.teams.away.name}
+                          fill="#a16be0"
+                          barSize={18}
+                          radius={[4, 4, 0, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
                   );
                 })()}
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'team-stats' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">Team Statistics</h2>
+            <p className="text-gray-600">
+              Team statistics content will go here...
+            </p>
+          </div>
+        )}
+
+        {activeTab === 'key-players' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">Key Players</h2>
+            <p className="text-gray-600">Key players content will go here...</p>
+          </div>
+        )}
+
+        {activeTab === 'predictions' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">Match Predictions</h2>
+            <p className="text-gray-600">Predictions content will go here...</p>
           </div>
         )}
       </div>
