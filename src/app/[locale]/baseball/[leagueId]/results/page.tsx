@@ -2,9 +2,19 @@
 
 import React from 'react';
 import LeagueResultsPage from '@/src/components/match-results-leagues/league-results-page';
+import { useParams } from 'next/navigation';
 
 const BaseballLeagueResultsPage: React.FC = () => {
-  return <LeagueResultsPage sportType="baseball" />;
+  const params = useParams<{ locale: string; leagueId: string }>();
+  const locale = params?.locale || 'en';
+  const leagueId = params?.leagueId || '';
+  return (
+    <LeagueResultsPage
+      sportType="baseball"
+      locale={locale}
+      leagueId={leagueId}
+    />
+  );
 };
 
 export default BaseballLeagueResultsPage;
