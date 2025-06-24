@@ -13,14 +13,19 @@ type SportType = 'football' | 'basketball' | 'baseball';
 
 interface LeagueResultsPageProps {
   sportType: SportType;
+  locale: string;
+  leagueId: string;
 }
 
-const LeagueResultsPage: React.FC<LeagueResultsPageProps> = ({ sportType }) => {
+const LeagueResultsPage: React.FC<LeagueResultsPageProps> = ({
+  sportType,
+  locale,
+  leagueId,
+}) => {
   const {
     loading,
     error,
     leagueInfo,
-    leagueId,
     selectedFilter,
     setSelectedFilter,
     resultFilters,
@@ -57,6 +62,7 @@ const LeagueResultsPage: React.FC<LeagueResultsPageProps> = ({ sportType }) => {
           fixtures={currentFixtures}
           sportType={sportType}
           leagueId={leagueId}
+          locale={locale}
         />
 
         {totalPages > 1 && (

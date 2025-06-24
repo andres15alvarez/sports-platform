@@ -4,26 +4,18 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 
-// Tipos
 interface BookmakerOdds {
   name: string;
   home: string;
   draw: string;
   away: string;
 }
-
 interface FixtureData {
   fixture: {
     id: number;
     date: string;
-    venue: {
-      name: string;
-      city: string;
-    };
-    status: {
-      elapsed: number;
-      long: string;
-    };
+    venue: { name: string; city: string };
+    status: { elapsed: number; long: string };
   };
   league: {
     id: number;
@@ -35,41 +27,16 @@ interface FixtureData {
     round: string;
   };
   teams: {
-    home: {
-      id: number;
-      name: string;
-      logo: string;
-    };
-    away: {
-      id: number;
-      name: string;
-      logo: string;
-    };
+    home: { id: number; name: string; logo: string };
+    away: { id: number; name: string; logo: string };
   };
-  goals: {
-    home: number;
-    away: number;
-  };
-  score: {
-    fulltime: {
-      home: number;
-      away: number;
-    };
-  };
+  goals: { home: number; away: number };
+  score: { fulltime: { home: number; away: number } };
 }
-
 interface Statistics {
-  team: {
-    id: number;
-    name: string;
-    logo: string;
-  };
-  statistics: Array<{
-    type: string;
-    value: string;
-  }>;
+  team: { id: number; name: string; logo: string };
+  statistics: Array<{ type: string; value: string }>;
 }
-
 interface OddsData {
   bookmakers: Array<{
     id: number;
@@ -77,36 +44,17 @@ interface OddsData {
     bets: Array<{
       id: number;
       name: string;
-      values: Array<{
-        value: string;
-        odd: string;
-      }>;
+      values: Array<{ value: string; odd: string }>;
     }>;
   }>;
 }
-
 interface H2HData {
   teams: {
-    home: {
-      id: number;
-      name: string;
-      logo: string;
-      winner?: boolean;
-    };
-    away: {
-      id: number;
-      name: string;
-      logo: string;
-      winner?: boolean;
-    };
+    home: { id: number; name: string; logo: string; winner?: boolean };
+    away: { id: number; name: string; logo: string; winner?: boolean };
   };
-  goals: {
-    home: number;
-    away: number;
-  };
-  fixture: {
-    date: string;
-  };
+  goals: { home: number; away: number };
+  fixture: { date: string };
   league?: {
     id: number;
     name: string;
@@ -115,14 +63,9 @@ interface H2HData {
     flag: string;
   };
 }
-
 interface StandingData {
   rank: number;
-  team: {
-    id: number;
-    name: string;
-    logo: string;
-  };
+  team: { id: number; name: string; logo: string };
   points: number;
   goalsDiff: number;
   group: string;
@@ -134,73 +77,34 @@ interface StandingData {
     win: number;
     draw: number;
     lose: number;
-    goals: {
-      for: number;
-      against: number;
-    };
+    goals: { for: number; against: number };
   };
 }
-
 interface TeamStatsData {
-  team: {
-    id: number;
-    name: string;
-    logo: string;
-  };
+  team: { id: number; name: string; logo: string };
   form: string;
   fixtures: {
-    played: {
-      home: number;
-      away: number;
-      total: number;
-    };
-    wins: {
-      home: number;
-      away: number;
-      total: number;
-    };
-    draws: {
-      home: number;
-      away: number;
-      total: number;
-    };
-    loses: {
-      home: number;
-      away: number;
-      total: number;
-    };
+    played: { home: number; away: number; total: number };
+    wins: { home: number; away: number; total: number };
+    draws: { home: number; away: number; total: number };
+    loses: { home: number; away: number; total: number };
   };
   goals: {
     for: {
-      total: {
-        home: number;
-        away: number;
-        total: number;
-      };
-      average: {
-        home: string;
-        away: string;
-        total: string;
-      };
+      total: { home: number; away: number; total: number };
+      average: { home: string; away: string; total: string };
     };
     against: {
-      total: {
-        home: number;
-        away: number;
-        total: number;
-      };
-      average: {
-        home: string;
-        away: string;
-        total: string;
-      };
+      total: { home: number; away: number; total: number };
+      average: { home: string; away: string; total: string };
     };
   };
 }
 
 const Page: React.FC = () => {
-  const params = useParams<{ leagueId: string }>();
-  const leagueId = params?.leagueId ? Number(params.leagueId) : 71; // Default to 71 if not provided
+  const params = useParams<{ leagueId: string; fixtureId: string }>();
+  const fixtureId = params?.fixtureId ? Number(params.fixtureId) : null;
+
   const [fixtureData, setFixtureData] = useState<FixtureData | null>(null);
   const [statistics, setStatistics] = useState<Statistics[]>([]);
   const [odds, setOdds] = useState<OddsData | null>(null);
@@ -215,51 +119,18 @@ const Page: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [, setFixtureId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('match-analysis');
 
   useEffect(() => {
-    fetchRecentCompletedMatch();
-  }, []);
-
-  const fetchRecentCompletedMatch = async () => {
-    try {
-      // Buscar el partido más reciente completado
-      const recentResponse = await fetch(
-        `https://v3.football.api-sports.io/fixtures?league=${leagueId}&season=2025&status=FT&last=10`,
-        {
-          headers: {
-            'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-            'x-rapidapi-host': 'v3.football.api-sports.io',
-          },
-        },
-      );
-
-      if (!recentResponse.ok) throw new Error('Failed to fetch recent matches');
-
-      const recentData = await recentResponse.json();
-
-      if (recentData.response && recentData.response.length > 0) {
-        // Usar el primer partido completado
-        const matchId = recentData.response[0].fixture.id;
-        setFixtureId(matchId);
-        fetchMatchData(matchId);
-      } else {
-        throw new Error('No completed matches found');
-      }
-    } catch (err) {
-      console.error('Error fetching recent match:', err);
-      setError('Failed to load recent match data');
-      setLoading(false);
+    if (fixtureId) {
+      fetchMatchData(fixtureId);
     }
-  };
+  }, [fixtureId]);
 
   const fetchMatchData = async (matchId: number) => {
     setLoading(true);
     setError(null);
-
     try {
-      // Obtener datos del partido
       const fixtureResponse = await fetch(
         `https://v3.football.api-sports.io/fixtures?id=${matchId}`,
         {
@@ -269,19 +140,12 @@ const Page: React.FC = () => {
           },
         },
       );
-
       if (!fixtureResponse.ok) throw new Error('Failed to fetch fixture data');
-
       const fixtureResult = await fixtureResponse.json();
-
       if (fixtureResult.response && fixtureResult.response[0]) {
         setFixtureData(fixtureResult.response[0]);
-
-        // Obtener el season y league id para standings
         const leagueId = fixtureResult.response[0].league.id;
         const season = fixtureResult.response[0].league.season;
-
-        // Obtener standings de la liga
         const standingsResponse = await fetch(
           `https://v3.football.api-sports.io/standings?league=${leagueId}&season=${season}`,
           {
@@ -291,7 +155,6 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (standingsResponse.ok) {
           const standingsResult = await standingsResponse.json();
           if (
@@ -301,12 +164,8 @@ const Page: React.FC = () => {
             setStandings(standingsResult.response[0].league.standings[0]);
           }
         }
-
-        // Obtener estadísticas de equipos
         const homeTeamId = fixtureResult.response[0].teams.home.id;
         const awayTeamId = fixtureResult.response[0].teams.away.id;
-
-        // Stats del equipo local
         const homeStatsResponse = await fetch(
           `https://v3.football.api-sports.io/teams/statistics?league=${leagueId}&season=${season}&team=${homeTeamId}`,
           {
@@ -316,15 +175,12 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (homeStatsResponse.ok) {
           const homeStatsResult = await homeStatsResponse.json();
           if (homeStatsResult.response) {
             setHomeTeamStats(homeStatsResult.response);
           }
         }
-
-        // Stats del equipo visitante
         const awayStatsResponse = await fetch(
           `https://v3.football.api-sports.io/teams/statistics?league=${leagueId}&season=${season}&team=${awayTeamId}`,
           {
@@ -334,7 +190,6 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (awayStatsResponse.ok) {
           const awayStatsResult = await awayStatsResponse.json();
           if (awayStatsResult.response) {
@@ -342,8 +197,6 @@ const Page: React.FC = () => {
           }
         }
       }
-
-      // Obtener estadísticas del partido
       const statsResponse = await fetch(
         `https://v3.football.api-sports.io/fixtures/statistics?fixture=${matchId}`,
         {
@@ -353,13 +206,10 @@ const Page: React.FC = () => {
           },
         },
       );
-
       if (statsResponse.ok) {
         const statsResult = await statsResponse.json();
         setStatistics(statsResult.response || []);
       }
-
-      // Obtener odds del partido
       const oddsResponse = await fetch(
         `https://v3.football.api-sports.io/odds?fixture=${matchId}`,
         {
@@ -369,19 +219,14 @@ const Page: React.FC = () => {
           },
         },
       );
-
       if (oddsResponse.ok) {
         const oddsResult = await oddsResponse.json();
         if (oddsResult.response && oddsResult.response[0]) {
           setOdds(oddsResult.response[0]);
         }
       }
-
-      // Obtener H2H
       if (fixtureResult.response && fixtureResult.response[0]) {
         const fixture = fixtureResult.response[0];
-
-        // Obtener últimos 5 partidos para la tabla
         const h2hResponse = await fetch(
           `https://v3.football.api-sports.io/fixtures/headtohead?h2h=${fixture.teams.home.id}-${fixture.teams.away.id}&last=5`,
           {
@@ -391,13 +236,10 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (h2hResponse.ok) {
           const h2hResult = await h2hResponse.json();
           setH2hData(h2hResult.response || []);
         }
-
-        // Obtener más partidos históricos para el Historical Matchup Summary
         const h2hFullResponse = await fetch(
           `https://v3.football.api-sports.io/fixtures/headtohead?h2h=${fixture.teams.home.id}-${fixture.teams.away.id}&last=20`,
           {
@@ -407,7 +249,6 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (h2hFullResponse.ok) {
           const h2hFullResult = await h2hFullResponse.json();
           setH2hFullData(h2hFullResult.response || []);
@@ -428,7 +269,6 @@ const Page: React.FC = () => {
       year: 'numeric',
     });
   };
-
   const getStatValue = (
     stats: Statistics[],
     teamId: number,
@@ -436,21 +276,15 @@ const Page: React.FC = () => {
   ) => {
     const teamStats = stats.find((s) => s.team.id === teamId);
     if (!teamStats) return '0';
-
     const stat = teamStats.statistics.find((s) => s.type === statType);
     return stat ? stat.value : '0';
   };
-
   const getTeamPosition = (
     teamId: number,
   ): { position: number; points: number } => {
     const standing = standings.find((s) => s.team.id === teamId);
-    return {
-      position: standing?.rank || 0,
-      points: standing?.points || 0,
-    };
+    return { position: standing?.rank || 0, points: standing?.points || 0 };
   };
-
   const getTeamForm = (teamId: number): string => {
     if (homeTeamStats && homeTeamStats.team.id === teamId) {
       return homeTeamStats.form || 'N/A';
@@ -461,24 +295,20 @@ const Page: React.FC = () => {
     const standing = standings.find((s) => s.team.id === teamId);
     return standing?.form || 'N/A';
   };
-
   const calculateFormFromH2H = (teamId: number): string => {
     const form = getTeamForm(teamId);
     if (form && form !== 'N/A') {
       return form.split('').slice(-5).join(' ');
     }
-
     if (h2hData.length === 0) {
       return 'N/A';
     }
-
     const recentMatches = h2hData.slice(0, 5);
     return recentMatches
       .map((match) => {
         const isHome = match.teams.home.id === teamId;
         const teamGoals = isHome ? match.goals.home : match.goals.away;
         const opponentGoals = isHome ? match.goals.away : match.goals.home;
-
         if (teamGoals > opponentGoals) return 'W';
         if (teamGoals < opponentGoals) return 'L';
         return 'D';
@@ -496,7 +326,6 @@ const Page: React.FC = () => {
       </div>
     );
   }
-
   if (error || !fixtureData) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white">
@@ -509,8 +338,6 @@ const Page: React.FC = () => {
 
   const homePosition = getTeamPosition(fixtureData.teams.home.id);
   const awayPosition = getTeamPosition(fixtureData.teams.away.id);
-  //const homeStats = statistics.find(s => s.team.id === fixtureData.teams.home.id);
-  //const awayStats = statistics.find(s => s.team.id === fixtureData.teams.away.id);
 
   // Procesar odds de la API
   const bookmakers: BookmakerOdds[] = [];
@@ -521,7 +348,6 @@ const Page: React.FC = () => {
         const homeOdd = matchWinner.values.find((v) => v.value === 'Home')?.odd;
         const drawOdd = matchWinner.values.find((v) => v.value === 'Draw')?.odd;
         const awayOdd = matchWinner.values.find((v) => v.value === 'Away')?.odd;
-
         if (homeOdd && drawOdd && awayOdd) {
           bookmakers.push({
             name: bookmaker.name,
@@ -546,13 +372,11 @@ const Page: React.FC = () => {
             {fixtureData.teams.home.name} vs {fixtureData.teams.away.name}
           </span>
         </div>
-
         {/* Title */}
         <h1 className="text-2xl font-bold text-gray-900 mb-6">
           {fixtureData.teams.home.name} vs {fixtureData.teams.away.name}:
           In-depth Match Analysis and Predictions
         </h1>
-
         {/* Match Header Card */}
         <div className="bg-gradient-to-r from-blue-900 to-red-900 rounded-lg p-6 text-white mb-6">
           <div className="text-center mb-4">
