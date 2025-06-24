@@ -9,6 +9,8 @@ export default function Header() {
   const [openMobileSubMenu, setOpenMobileSubMenu] = useState<string | null>(
     null,
   );
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
   const lang = 'en';
 
   const tHeader = useTranslations('Header');
@@ -60,27 +62,65 @@ export default function Header() {
           aria-label="Main navigation"
         >
           {navItems.map((item) => (
-            <div key={item.name} className="relative group">
-              <button className="px-4 py-2 flex items-center hover:text-yellow-500 focus:outline-none">
+            <div
+              key={item.name}
+              className="relative"
+              onMouseEnter={() => {
+                if (closeTimeout) {
+                  clearTimeout(closeTimeout);
+                  setCloseTimeout(null);
+                }
+                setOpenDropdown(item.name);
+              }}
+              onMouseLeave={() => {
+                const timeout = setTimeout(() => setOpenDropdown(null), 150);
+                setCloseTimeout(timeout);
+              }}
+            >
+              <button
+                className="px-4 py-2 flex items-center hover:text-yellow-500 focus:outline-none"
+                aria-expanded={openDropdown === item.name}
+                aria-controls={`dropdown-${item.name}`}
+                type="button"
+              >
                 <span className="capitalize">{item.label}</span>
                 <i className="bx bx-chevron-down ml-1"></i>
               </button>
-              <ul className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none group-hover:pointer-events-auto">
-                {sports.map((sport) => (
-                  <li key={sport.name}>
-                    <Link
-                      href={
-                        item.name === 'predictions' && sport.path === 'football'
-                          ? '/soccer-prediction'
-                          : `/${sport.path}/${item.name}`
-                      }
-                      className="block px-4 py-2 text-green-700 hover:bg-green-50"
-                    >
-                      {sport.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              {openDropdown === item.name && (
+                <ul
+                  id={`dropdown-${item.name}`}
+                  className="absolute left-0 top-full mt-4 w-48 bg-white border border-t-0 border-green-600 rounded-b shadow-none z-50"
+                  onMouseEnter={() => {
+                    if (closeTimeout) {
+                      clearTimeout(closeTimeout);
+                      setCloseTimeout(null);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    const timeout = setTimeout(
+                      () => setOpenDropdown(null),
+                      150,
+                    );
+                    setCloseTimeout(timeout);
+                  }}
+                >
+                  {sports.map((sport) => (
+                    <li key={sport.name}>
+                      <Link
+                        href={
+                          item.name === 'predictions' &&
+                          sport.path === 'football'
+                            ? '/soccer-prediction'
+                            : `/${sport.path}/${item.name}`
+                        }
+                        className="block px-4 py-2 text-green-700 hover:bg-green-50"
+                      >
+                        {sport.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </nav>
