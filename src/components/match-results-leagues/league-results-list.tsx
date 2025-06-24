@@ -11,7 +11,6 @@ interface LeagueResultsListProps {
 
 const LeagueResultsList: React.FC<LeagueResultsListProps> = ({
   fixtures,
-  sportType,
   leagueId,
   locale,
 }) => {
@@ -29,7 +28,6 @@ const LeagueResultsList: React.FC<LeagueResultsListProps> = ({
         <LeagueResultsCard
           key={fixture.fixture.id}
           fixture={fixture}
-          sportType={sportType}
           leagueId={leagueId}
           locale={locale}
         />
