@@ -16,6 +16,9 @@ import {
   BarChart,
   Bar,
   Cell,
+  PieChart,
+  Pie,
+  Tooltip as RechartsTooltip,
 } from 'recharts';
 
 interface BookmakerOdds {
@@ -174,6 +177,15 @@ const Page: React.FC = () => {
     [],
   );
   const [loadingKeyPlayers, setLoadingKeyPlayers] = useState(false);
+  const [predictionData, setPredictionData] = useState<{
+    home: number;
+    draw: number;
+    away: number;
+  } | null>(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionAnalysis, setPredictionAnalysis] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     if (fixtureId) {
@@ -535,6 +547,71 @@ const Page: React.FC = () => {
     };
     fetchKeyPlayers();
   }, [fixtureData]);
+
+  useEffect(() => {
+    const fetchPrediction = async () => {
+      if (!fixtureData) return;
+      setPredictionLoading(true);
+      try {
+        const response = await fetch(
+          `/api/football?endpoint=predictions&fixture=${fixtureData.fixture.id}`,
+        );
+        if (!response.ok) throw new Error('No prediction data');
+        const data = await response.json();
+        const pred = data.response?.[0]?.predictions;
+        if (pred && pred.percent) {
+          setPredictionData({
+            home: parseInt(pred.percent.home),
+            draw: parseInt(pred.percent.draw),
+            away: parseInt(pred.percent.away),
+          });
+          setPredictionAnalysis(pred.advice || null);
+        } else {
+          setPredictionData(null);
+          setPredictionAnalysis(null);
+        }
+      } catch {
+        setPredictionData(null);
+        setPredictionAnalysis(null);
+      } finally {
+        setPredictionLoading(false);
+      }
+    };
+    fetchPrediction();
+  }, [fixtureData]);
+
+  // Buscar la mejor odd para cada resultado
+  const getBestOdds = () => {
+    if (!odds || !odds.bookmakers)
+      return { home: null, draw: null, away: null };
+    let bestHome: string | null = null,
+      bestDraw: string | null = null,
+      bestAway: string | null = null;
+    odds.bookmakers.forEach((bookmaker) => {
+      const matchWinner = bookmaker.bets.find((b) => b.name === 'Match Winner');
+      if (matchWinner) {
+        const homeOdd = matchWinner.values.find((v) => v.value === 'Home')?.odd;
+        const drawOdd = matchWinner.values.find((v) => v.value === 'Draw')?.odd;
+        const awayOdd = matchWinner.values.find((v) => v.value === 'Away')?.odd;
+        if (
+          homeOdd &&
+          (!bestHome || parseFloat(homeOdd) > parseFloat(bestHome))
+        )
+          bestHome = homeOdd;
+        if (
+          drawOdd &&
+          (!bestDraw || parseFloat(drawOdd) > parseFloat(bestDraw))
+        )
+          bestDraw = drawOdd;
+        if (
+          awayOdd &&
+          (!bestAway || parseFloat(awayOdd) > parseFloat(bestAway))
+        )
+          bestAway = awayOdd;
+      }
+    });
+    return { home: bestHome, draw: bestDraw, away: bestAway };
+  };
 
   if (loading) {
     return (
@@ -1855,8 +1932,135 @@ const Page: React.FC = () => {
 
         {activeTab === 'predictions' && (
           <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-            <h2 className="text-lg font-bold mb-4">Match Predictions</h2>
-            <p className="text-gray-600">Predictions content will go here...</p>
+            <h2 className="text-lg font-bold mb-4">Outcome Prediction</h2>
+            <div className="w-full flex flex-col items-center justify-center">
+              {/* Leyenda personalizada */}
+              <div className="flex flex-row justify-center gap-8 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 rounded bg-blue-500"></span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {fixtureData.teams.home.name} Win
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 rounded bg-gray-500"></span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Draw
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 rounded bg-purple-500"></span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {fixtureData.teams.away.name} Win
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col md:flex-row w-full justify-center items-center gap-10">
+                <div className="flex flex-col items-center justify-center">
+                  <span className="block font-semibold mb-2">
+                    Match Result Probability
+                  </span>
+                  {predictionLoading ? (
+                    <div className="text-gray-500">Loading prediction...</div>
+                  ) : predictionData ? (
+                    <PieChart width={340} height={340}>
+                      <Pie
+                        data={[
+                          {
+                            name: `${fixtureData.teams.home.name} Win`,
+                            value: predictionData.home,
+                          },
+                          { name: 'Draw', value: predictionData.draw },
+                          {
+                            name: `${fixtureData.teams.away.name} Win`,
+                            value: predictionData.away,
+                          },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={110}
+                        outerRadius={150}
+                        paddingAngle={2}
+                        dataKey="value"
+                      >
+                        <Cell key="home" fill="#3b82f6" />
+                        <Cell key="draw" fill="#6b7280" />
+                        <Cell key="away" fill="#a78bfa" />
+                      </Pie>
+                      <RechartsTooltip
+                        formatter={(value: number, name: string, props) => [
+                          `${value}%`,
+                          props.payload?.name,
+                        ]}
+                      />
+                    </PieChart>
+                  ) : (
+                    <div className="text-gray-400">
+                      No prediction data available
+                    </div>
+                  )}
+                </div>
+                {/* Análisis experto */}
+                <div className="flex-1 max-w-xl">
+                  <span className="block font-semibold mb-2 text-lg">
+                    Expert Analysis
+                  </span>
+                  <div className="text-gray-700 text-base whitespace-pre-line">
+                    {predictionAnalysis || 'No analysis available.'}
+                  </div>
+                </div>
+              </div>
+              {/* Recuadros de probabilidades y cuotas */}
+              {predictionData && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 w-full max-w-3xl">
+                  {(() => {
+                    const odds = getBestOdds();
+                    return [
+                      {
+                        label: 'Home Win',
+                        value: predictionData.home,
+                        odd: odds.home,
+                        color: 'text-blue-600',
+                        badge: 'bg-blue-100 text-blue-600',
+                      },
+                      {
+                        label: 'Draw',
+                        value: predictionData.draw,
+                        odd: odds.draw,
+                        color: 'text-gray-700',
+                        badge: 'bg-gray-200 text-gray-700',
+                      },
+                      {
+                        label: 'Away Win',
+                        value: predictionData.away,
+                        odd: odds.away,
+                        color: 'text-purple-600',
+                        badge: 'bg-purple-100 text-purple-600',
+                      },
+                    ].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="border rounded-xl p-6 text-center flex flex-col items-center shadow-sm bg-white"
+                      >
+                        <div className="text-xs text-gray-500 mb-1">
+                          {item.label}
+                        </div>
+                        <div
+                          className={`text-3xl font-bold mb-1 ${item.color}`}
+                        >
+                          {item.odd ? item.odd : '--'}
+                        </div>
+                        <span
+                          className={`mt-1 px-3 py-1 rounded-full text-xs font-semibold ${item.badge}`}
+                        >
+                          {item.value}% Probability
+                        </span>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
