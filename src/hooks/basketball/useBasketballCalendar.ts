@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
   CalendarFixture,
   UseCalendarHook,
@@ -71,158 +71,165 @@ const useBasketballCalendar = (): UseCalendarHook => {
 
   const leagues: League[] = [
     { id: 12, name: 'NBA', country: 'USA' },
-    { id: 13, name: 'NCAA', country: 'USA' },
-    { id: 14, name: 'EuroLeague', country: 'Europe' },
+    { id: 116, name: 'NCAA', country: 'USA' },
+    { id: 120, name: 'EuroLeague', country: 'Europe' },
     { id: 15, name: 'Liga ACB', country: 'Spain' },
-    { id: 16, name: 'Lega Basket Serie A', country: 'Italy' },
-    { id: 17, name: 'LNB Pro A', country: 'France' },
-    { id: 18, name: 'BBL', country: 'Germany' },
-    { id: 19, name: 'NBL', country: 'Australia' },
+    { id: 52, name: 'Lega Basket Serie A', country: 'Italy' },
+    { id: 2, name: 'LNB Pro A', country: 'France' },
+    { id: 40, name: 'BBL', country: 'Germany' },
+    { id: 1, name: 'NBL', country: 'Australia' },
   ];
 
-  const fetchFixtures = useCallback(
-    async (leagueId: number) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const apiKey = process.env.NEXT_PUBLIC_API_KEYY;
-        if (!apiKey) throw new Error('API key not configured');
+  const fetchLeagueFixtures = async (leagueId: number) => {
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_API_KEYY;
+      if (!apiKey) throw new Error('API key not configured');
 
-        const season = '2024-2025';
-        const allFixtures = [];
+      const season = '2024-2025';
+      const allFixtures = [];
 
-        for (let i = -7; i <= 30; i++) {
-          const targetDate = new Date();
-          targetDate.setDate(targetDate.getDate() + i);
-          const dateString = targetDate.toISOString().split('T')[0];
+      for (let i = -7; i <= 30; i++) {
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + i);
+        const dateString = targetDate.toISOString().split('T')[0];
 
-          await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-          const response = await fetch(
-            `https://v1.basketball.api-sports.io/games?league=${leagueId}&season=${season}&date=${dateString}`,
-            {
-              method: 'GET',
-              headers: {
-                'x-rapidapi-key': apiKey,
-                'x-rapidapi-host': 'v1.basketball.api-sports.io',
-              },
+        const response = await fetch(
+          `https://v1.basketball.api-sports.io/games?league=${leagueId}&season=${season}&date=${dateString}`,
+          {
+            method: 'GET',
+            headers: {
+              'x-rapidapi-key': apiKey,
+              'x-rapidapi-host': 'v1.basketball.api-sports.io',
             },
+          },
+        );
+
+        if (!response.ok) {
+          console.warn(
+            `Could not fetch basketball data for ${dateString}: ${response.statusText}`,
           );
-
-          if (!response.ok) {
-            console.warn(
-              `Could not fetch basketball data for ${dateString}: ${response.statusText}`,
-            );
-            continue;
-          }
-
-          const data = await response.json();
-          if (data.response && data.response.length > 0) {
-            allFixtures.push(...data.response);
-          }
+          continue;
         }
 
-        if (allFixtures.length > 0) {
-          const sortedFixtures = allFixtures.sort(
-            (a: BasketballGameResponse, b: BasketballGameResponse) =>
-              new Date(a.date).getTime() - new Date(b.date).getTime(),
-          );
+        const data = await response.json();
+        if (data.response && data.response.length > 0) {
+          allFixtures.push(...data.response);
+        }
+      }
 
-          const adaptedFixtures: CalendarFixture[] = sortedFixtures.map(
-            (game: BasketballGameResponse) => ({
-              fixture: {
-                id: game.id,
-                referee: null,
-                timezone: game.timezone,
-                date: game.date,
-                timestamp: game.timestamp,
-                periods: {
-                  first: game.periods?.first || null,
-                  second: game.periods?.second || null,
-                },
-                venue: {
-                  id: game.venue?.id || null,
-                  name: game.venue?.name || 'N/A',
-                  city: game.country?.name || 'N/A',
-                },
-                status: {
-                  long: game.status?.long || 'Unknown',
-                  short: game.status?.short || 'Unknown',
-                  elapsed: null,
-                },
+      if (allFixtures.length > 0) {
+        const sortedFixtures = allFixtures.sort(
+          (a: BasketballGameResponse, b: BasketballGameResponse) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime(),
+        );
+
+        const adaptedFixtures: CalendarFixture[] = sortedFixtures.map(
+          (game: BasketballGameResponse) => ({
+            fixture: {
+              id: game.id,
+              referee: null,
+              timezone: game.timezone,
+              date: game.date,
+              timestamp: game.timestamp,
+              periods: {
+                first: game.periods?.first || null,
+                second: game.periods?.second || null,
               },
-              league: {
-                id: game.league?.id || selectedLeague,
-                name: game.league?.name || 'Unknown',
-                country: game.country?.name || 'Unknown',
-                logo: game.league?.logo || '',
-                flag: game.country?.flag || null,
-                season: game.league?.season || season,
-                round: game.league?.type || 'Regular Season',
+              venue: {
+                id: game.venue?.id || null,
+                name: game.venue?.name || 'N/A',
+                city: game.country?.name || 'N/A',
               },
-              teams: {
-                home: {
-                  id: game.teams?.home?.id || 0,
-                  name: game.teams?.home?.name || 'Unknown',
-                  logo: game.teams?.home?.logo || '',
-                  winner:
-                    (game.scores?.home?.total || 0) >
-                    (game.scores?.away?.total || 0),
-                },
-                away: {
-                  id: game.teams?.away?.id || 0,
-                  name: game.teams?.away?.name || 'Unknown',
-                  logo: game.teams?.away?.logo || '',
-                  winner:
-                    (game.scores?.away?.total || 0) >
-                    (game.scores?.home?.total || 0),
-                },
+              status: {
+                long: game.status?.long || 'Unknown',
+                short: game.status?.short || 'Unknown',
+                elapsed: null,
               },
-              goals: {
+            },
+            league: {
+              id: game.league?.id || leagueId,
+              name: game.league?.name || 'Unknown',
+              country: game.country?.name || 'Unknown',
+              logo: game.league?.logo || '',
+              flag: game.country?.flag || null,
+              season: game.league?.season || season,
+              round: game.league?.type || 'Regular Season',
+            },
+            teams: {
+              home: {
+                id: game.teams?.home?.id || 0,
+                name: game.teams?.home?.name || 'Unknown',
+                logo: game.teams?.home?.logo || '',
+                winner:
+                  (game.scores?.home?.total || 0) >
+                  (game.scores?.away?.total || 0),
+              },
+              away: {
+                id: game.teams?.away?.id || 0,
+                name: game.teams?.away?.name || 'Unknown',
+                logo: game.teams?.away?.logo || '',
+                winner:
+                  (game.scores?.away?.total || 0) >
+                  (game.scores?.home?.total || 0),
+              },
+            },
+            goals: {
+              home: game.scores?.home?.total || null,
+              away: game.scores?.away?.total || null,
+            },
+            score: {
+              halftime: {
+                home:
+                  (game.scores?.home?.quarter_1 || 0) +
+                  (game.scores?.home?.quarter_2 || 0),
+                away:
+                  (game.scores?.away?.quarter_1 || 0) +
+                  (game.scores?.away?.quarter_2 || 0),
+              },
+              fulltime: {
                 home: game.scores?.home?.total || null,
                 away: game.scores?.away?.total || null,
               },
-              score: {
-                halftime: {
-                  home:
-                    (game.scores?.home?.quarter_1 || 0) +
-                    (game.scores?.home?.quarter_2 || 0),
-                  away:
-                    (game.scores?.away?.quarter_1 || 0) +
-                    (game.scores?.away?.quarter_2 || 0),
-                },
-                fulltime: {
-                  home: game.scores?.home?.total || null,
-                  away: game.scores?.away?.total || null,
-                },
-                extratime: {
-                  home: game.scores?.home?.overtime || null,
-                  away: game.scores?.away?.overtime || null,
-                },
-                penalty: { home: null, away: null },
+              extratime: {
+                home: game.scores?.home?.overtime || null,
+                away: game.scores?.away?.overtime || null,
               },
-            }),
-          );
-          setFixtures(adaptedFixtures);
-        } else {
-          setFixtures([]);
-        }
-      } catch (err) {
-        console.error('Error fetching basketball fixtures:', err);
-        setError(
-          err instanceof Error ? err.message : 'An unknown error occurred.',
+              penalty: { home: null, away: null },
+            },
+          }),
         );
-        setFixtures([]);
-      } finally {
-        setLoading(false);
+        return adaptedFixtures;
       }
-    },
-    [selectedLeague],
-  );
+      return [];
+    } catch (err) {
+      console.error(`Error fetching basketball league ${leagueId}:`, err);
+      return [];
+    }
+  };
+
+  const fetchAllLeaguesFixtures = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const promises = leagues.map((league) => fetchLeagueFixtures(league.id));
+      const allFixturesArrays = await Promise.all(promises);
+
+      const allFixtures = allFixturesArrays.flat();
+      setFixtures(allFixtures);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      setFixtures([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    fetchFixtures(selectedLeague);
-  }, [selectedLeague, fetchFixtures]);
+    fetchAllLeaguesFixtures();
+  }, []);
 
   return {
     fixtures,

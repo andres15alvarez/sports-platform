@@ -85,8 +85,7 @@ export interface UseCalendarHook {
 }
 
 export interface SportCalendarConfig {
-  sport: 'football' | 'basketball' | 'baseball';
-  apiHost: string;
-  leagues: League[];
-  defaultLeagueId: number;
+  title: string;
+  loadingMessage: string;
+  sportType: string;
 }
