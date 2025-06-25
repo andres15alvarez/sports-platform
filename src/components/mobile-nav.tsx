@@ -39,11 +39,11 @@ const MobileNav = () => {
   const getSportIcon = () => {
     switch (currentSport) {
       case 'basketball':
-        return 'bx-basketball';
+        return 'bx bx-basketball';
       case 'baseball':
-        return 'bx-baseball';
+        return 'bx bx-baseball';
       default:
-        return 'bx-football';
+        return 'bx bx-football';
     }
   };
 

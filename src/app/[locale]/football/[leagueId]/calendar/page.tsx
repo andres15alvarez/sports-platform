@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
+import { Link } from '@/src/i18n/navigation';
 
 interface Team {
   id: number;
@@ -675,6 +676,26 @@ const FixturesPageContent: React.FC = () => {
                       </div>
                     </div>
                   )}
+                  <Link
+                    href={`/football/${leagueId}/${selectedFixture.fixture.id}`}
+                  >
+                    <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-md transition-colors flex items-center justify-center space-x-2 text-sm font-medium">
+                      <span>View Details</span>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>

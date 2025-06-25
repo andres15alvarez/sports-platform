@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 
 const Footer: React.FC = () => {
   return (
@@ -48,20 +48,26 @@ const Footer: React.FC = () => {
             </h3>
             <ul className="space-y-2 text-xs lg:text-sm">
               <li>
-                <Link href="/sport/football" className="hover:text-yellow-300">
+                <Link
+                  href="/football/calendars"
+                  className="hover:text-yellow-300"
+                >
                   Football
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/sport/basketball"
+                  href="/basketball/calendars"
                   className="hover:text-yellow-300"
                 >
                   Basketball
                 </Link>
               </li>
               <li>
-                <Link href="/sport/baseball" className="hover:text-yellow-300">
+                <Link
+                  href="/baseball/calendars"
+                  className="hover:text-yellow-300"
+                >
                   Baseball
                 </Link>
               </li>
@@ -73,43 +79,31 @@ const Footer: React.FC = () => {
             <h3 className="text-base lg:text-lg font-bold mb-4">Top Leagues</h3>
             <ul className="space-y-2 text-xs lg:text-sm">
               <li>
-                <Link
-                  href="/football/serie-a"
-                  className="hover:text-yellow-300"
-                >
+                <Link href="/football/135" className="hover:text-yellow-300">
                   Serie A
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/football/premier-league"
-                  className="hover:text-yellow-300"
-                >
+                <Link href="/football/39" className="hover:text-yellow-300">
                   Premier League
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/football/champions-league"
-                  className="hover:text-yellow-300"
-                >
-                  Champions League
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/football/bundesliga"
+                  href="/football/78"
                   className="hover:text-yellow-300 hidden lg:block"
                 >
                   Bundesliga
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/football/la-liga"
-                  className="hover:text-yellow-300"
-                >
+                <Link href="/football/140" className="hover:text-yellow-300">
                   La Liga
+                </Link>
+              </li>
+              <li>
+                <Link href="/football/71" className="hover:text-yellow-300">
+                  Brasileirao
                 </Link>
               </li>
             </ul>

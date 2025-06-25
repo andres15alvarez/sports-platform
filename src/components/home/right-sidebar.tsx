@@ -93,7 +93,7 @@ const RightSidebar: React.FC = () => {
 
   return (
     <aside
-      className="w-64 bg-white h-full"
+      className="w-64 bg-white h-full pr-5"
       aria-label="Bookmaker offers and predictions"
     >
       <h2 className="text-green-700 font-semibold mb-6">Most Visited Events</h2>

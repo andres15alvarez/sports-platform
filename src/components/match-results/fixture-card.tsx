@@ -112,7 +112,7 @@ const FixtureCard: React.FC<FixtureCardProps> = ({
           )}
 
           <div className="pt-2 mt-2 border-t border-gray-200">
-            <Link href={`/${sportType}/${leagueId}/game-details`}>
+            <Link href={`/${sportType}/${leagueId}/${fixture.id}`}>
               <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-md transition-colors flex items-center justify-center space-x-2 text-sm font-medium">
                 <span>View Details</span>
                 <svg

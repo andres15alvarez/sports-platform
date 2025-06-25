@@ -16,13 +16,7 @@ export default function Header() {
   const tHeader = useTranslations('Header');
   const tSports = useTranslations('Sports');
 
-  const navItemKeys = [
-    'results',
-    'odds',
-    'predictions',
-    'bookmarkers',
-    'calendars',
-  ];
+  const navItemKeys = ['results', 'odds', 'bookmarkers', 'calendars'];
   const navItems = navItemKeys.map((key) => ({
     name: key,
     label: tHeader(key),
@@ -107,12 +101,7 @@ export default function Header() {
                   {sports.map((sport) => (
                     <li key={sport.name}>
                       <Link
-                        href={
-                          item.name === 'predictions' &&
-                          sport.path === 'football'
-                            ? '/soccer-prediction'
-                            : `/${sport.path}/${item.name}`
-                        }
+                        href={`/${sport.path}/${item.name}`}
                         className="block px-4 py-2 text-green-700 hover:bg-green-50"
                       >
                         {sport.name}
