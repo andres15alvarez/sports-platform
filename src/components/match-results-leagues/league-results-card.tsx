@@ -5,14 +5,14 @@ import { FixtureResponse } from '@/src/types/leagueResults';
 
 interface LeagueResultsCardProps {
   fixture: FixtureResponse;
-  sportType: string;
   leagueId: string;
+  locale: string;
 }
 
 const LeagueResultsCard: React.FC<LeagueResultsCardProps> = ({
   fixture,
-  sportType,
   leagueId,
+  locale,
 }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -117,7 +117,7 @@ const LeagueResultsCard: React.FC<LeagueResultsCardProps> = ({
               </span>
             )}
           </div>
-          <Link href={`/${sportType}/${leagueId}/game-details`}>
+          <Link href={`/${locale}/football/${leagueId}/${fixture.fixture.id}`}>
             <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors flex items-center space-x-2 text-sm font-medium">
               <span>View Details</span>
               <svg

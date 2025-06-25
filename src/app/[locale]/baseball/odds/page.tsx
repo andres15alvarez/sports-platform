@@ -1,112 +1,97 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 
-// Tipo para el odd como viene de la API
-interface OddResponse {
-  league: {
-    id: number;
-    name: string;
-    country: string;
-    logo: string;
-    flag: string;
-    season: number;
-  };
-  fixture: {
-    id: number;
-    timezone: string;
-    date: string;
-    timestamp: number;
-  };
-  update: string;
-  bookmakers: {
-    id: number;
-    name: string;
-    bets: {
-      id: number;
-      name: string;
-      values: {
-        value: string;
-        odd: string;
-      }[];
-    }[];
-  }[];
+// Ligas activas de béisbol
+const activeLeagues = [
+  { id: 1, name: 'MLB', country: 'USA' },
+  { id: 2, name: 'NPB', country: 'Japan' },
+  { id: 3, name: 'KBO', country: 'South Korea' },
+];
+
+const SEASON = '2025';
+
+const betTypes = ['Match Winner'];
+
+interface Team {
+  id: number;
+  name: string;
+  logo: string;
 }
 
-// Tipo para la información de equipos
-interface TeamsInfo {
-  home: {
-    id: number;
-    name: string;
-    logo: string;
+interface Game {
+  id: number;
+  date: string;
+  teams: {
+    home: Team;
+    away: Team;
   };
-  away: {
-    id: number;
-    name: string;
-    logo: string;
+  league?: {
+    logo?: string;
+    flag?: string;
+    country?: string;
   };
 }
 
-// Tipo combinado
-interface OddWithTeams extends OddResponse {
-  teams?: TeamsInfo;
+interface OddValue {
+  odd: string;
+  value: string;
 }
 
-// Tipo para datos de liga
+interface BookmakerBet {
+  name: string;
+  values: OddValue[];
+}
+
+interface Bookmaker {
+  name: string;
+  bets: BookmakerBet[];
+}
+
+interface Odd {
+  id: number;
+  game: Game;
+  bookmakers: Bookmaker[];
+}
+
 interface LeagueData {
   id: number;
   name: string;
   country: string;
   logo: string;
-  flag: string;
-  odds: OddWithTeams[];
+  flag?: string;
+  odds: Odd[];
   loading: boolean;
   error: string | null;
   expanded: boolean;
 }
 
+const bookmakerLogos: { [key: string]: string } = {
+  Bet365: 'https://www.bet365.com/favicon.ico',
+  'William Hill': 'https://www.williamhill.com/favicon.ico',
+  Betfair: 'https://www.betfair.com/favicon.ico',
+  '1xBet': 'https://1xbet.com/favicon.ico',
+  Betway: 'https://www.betway.com/favicon.ico',
+};
+
 const Page: React.FC = () => {
-  const [selectedBet, setSelectedBet] = useState('Match Winner');
   const [leaguesData, setLeaguesData] = useState<LeagueData[]>([]);
+  const [selectedBet, setSelectedBet] = useState(betTypes[0]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [expandedMatches, setExpandedMatches] = useState<{
-    [fixtureId: number]: boolean;
+    [gameId: number]: boolean;
   }>({});
-
-  // Ligas actualmente activas (enero 2025)
-  const activeLeagues = [
-    { id: 15, name: 'Liga BetPlay', country: 'Colombia' },
-    { id: 239, name: 'Primera División', country: 'Chile' },
-    { id: 268, name: 'Primera División', country: 'Uruguay' },
-    { id: 281, name: 'Liga 1', country: 'Peru' },
-  ];
-
-  const betTypes = [
-    'Match Winner',
-    'Both Teams Score',
-    'Goals Over/Under',
-    'Double Chance',
-  ];
-
-  const bookmakerLogos: { [key: string]: string } = {
-    Bet365: 'https://www.bet365.com/favicon.ico',
-    'William Hill': 'https://www.williamhill.com/favicon.ico',
-    Betfair: 'https://www.betfair.com/favicon.ico',
-    '1xBet': 'https://1xbet.com/favicon.ico',
-    Betway: 'https://www.betway.com/favicon.ico',
-  };
 
   useEffect(() => {
     initializeLeaguesData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initializeLeaguesData = async () => {
     setInitialLoading(true);
-
-    // Inicializar estructura de datos para cada liga
     const initialData: LeagueData[] = activeLeagues.map((league) => ({
       ...league,
       logo: '',
@@ -116,37 +101,28 @@ const Page: React.FC = () => {
       error: null,
       expanded: false,
     }));
-
     setLeaguesData(initialData);
-
-    // Cargar datos de cada liga
-    const promises = activeLeagues.map((league, index) =>
-      fetchLeagueOdds(league.id, index),
+    const promises = activeLeagues.map((league, idx) =>
+      fetchLeagueOdds(league.id, idx),
     );
-
     await Promise.all(promises);
     setInitialLoading(false);
   };
 
   const fetchLeagueOdds = async (leagueId: number, index: number) => {
     try {
-      // Obtener odds de la liga actual
-      // Para ligas sudamericanas, usar temporada 2025
-      const season = 2025;
+      const season = SEASON;
       const oddsResponse = await fetch(
-        `https://v3.football.api-sports.io/odds?league=${leagueId}&season=${season}`,
+        `https://v1.baseball.api-sports.io/odds?league=${leagueId}&season=${season}`,
         {
           headers: {
             'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-            'x-rapidapi-host': 'v3.football.api-sports.io',
+            'x-rapidapi-host': 'v1.baseball.api-sports.io',
           },
         },
       );
-
       if (!oddsResponse.ok) throw new Error('Failed to fetch odds');
-
       const oddsData = await oddsResponse.json();
-
       if (!oddsData.response || oddsData.response.length === 0) {
         setLeaguesData((prev) => {
           const updated = [...prev];
@@ -159,98 +135,28 @@ const Page: React.FC = () => {
         });
         return;
       }
-
-      const oddsResults: OddResponse[] = oddsData.response;
-
-      // IMPORTANTE: Filtrar solo los partidos que pertenecen a la liga que estamos consultando
-      const filteredOddsResults = oddsResults.filter(
-        (odd) => odd.league.id === leagueId,
-      );
-
-      if (filteredOddsResults.length === 0) {
-        setLeaguesData((prev) => {
-          const updated = [...prev];
-          updated[index] = {
-            ...updated[index],
-            loading: false,
-            error: 'No active games found for this league',
-          };
-          return updated;
-        });
-        return;
-      }
-
-      // Ordenar por fecha y tomar solo los próximos 3 partidos
-      const sortedOdds = filteredOddsResults
-        .sort((a, b) => a.fixture.timestamp - b.fixture.timestamp)
+      const oddsResults: Odd[] = oddsData.response;
+      const sortedOdds = oddsResults
+        .sort((a, b) => {
+          const dateA = new Date(a.game.date).getTime();
+          const dateB = new Date(b.game.date).getTime();
+          return dateA - dateB;
+        })
         .slice(0, 3);
-
-      // Obtener información de la liga del primer resultado
-      const leagueInfo = sortedOdds[0]?.league || {};
-
-      // Obtener información de equipos para los 3 partidos
-      const fixtureIds = sortedOdds.map((odd) => odd.fixture.id);
-      const teamsMap = new Map<number, TeamsInfo>();
-
-      const teamsPromises = fixtureIds.map(async (fixtureId) => {
-        try {
-          const response = await fetch(
-            `https://v3.football.api-sports.io/fixtures?id=${fixtureId}`,
-            {
-              headers: {
-                'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-                'x-rapidapi-host': 'v3.football.api-sports.io',
-              },
-            },
-          );
-
-          if (!response.ok) return null;
-
-          const data = await response.json();
-          if (data.response && data.response[0]) {
-            return {
-              fixtureId,
-              teams: data.response[0].teams,
-            };
-          }
-          return null;
-        } catch (err) {
-          console.error(`Error fetching fixture ${fixtureId}:`, err);
-          return null;
-        }
-      });
-
-      const teamsResults = await Promise.all(teamsPromises);
-
-      teamsResults.forEach((result) => {
-        if (result) {
-          teamsMap.set(result.fixtureId, result.teams);
-        }
-      });
-
-      // Combinar odds con información de equipos
-      const oddsWithTeams: OddWithTeams[] = sortedOdds.map((odd) => ({
-        ...odd,
-        teams: teamsMap.get(odd.fixture.id),
-      }));
-
+      const leagueInfo = sortedOdds[0]?.game?.league || {};
       setLeaguesData((prev) => {
         const updated = [...prev];
         updated[index] = {
-          id: leagueId,
-          name: leagueInfo.name || activeLeagues[index].name,
-          country: leagueInfo.country || activeLeagues[index].country,
+          ...updated[index],
           logo: leagueInfo.logo || '',
           flag: leagueInfo.flag || '',
-          odds: oddsWithTeams,
+          odds: sortedOdds,
           loading: false,
           error: null,
-          expanded: false,
         };
         return updated;
       });
-    } catch (err) {
-      console.error('Error:', err);
+    } catch (err: unknown) {
       setLeaguesData((prev) => {
         const updated = [...prev];
         updated[index] = {
@@ -263,10 +169,10 @@ const Page: React.FC = () => {
     }
   };
 
-  const toggleMatchExpansion = (fixtureId: number) => {
+  const toggleMatchExpansion = (gameId: number) => {
     setExpandedMatches((prev) => ({
       ...prev,
-      [fixtureId]: !prev[fixtureId],
+      [gameId]: !prev[gameId],
     }));
   };
 
@@ -302,10 +208,9 @@ const Page: React.FC = () => {
     <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-green-700 mb-8">
-          Live Football Betting Odds
+          Live Baseball Betting Odds
         </h1>
-
-        {/* Bet Type Selector */}
+        {/* Selector de tipo de apuesta  */}
         <div className="mb-6 bg-white rounded-lg shadow-sm p-4">
           <div className="max-w-sm">
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -324,15 +229,14 @@ const Page: React.FC = () => {
             </select>
           </div>
         </div>
-
-        {/* Leagues List - One below another */}
+        {/* Lista de ligas */}
         <div className="space-y-6">
           {leaguesData.map((league) => (
             <div
               key={league.id}
               className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
             >
-              {/* League Header */}
+              {/* Encabezado de liga */}
               <div className="bg-gradient-to-r from-green-700 to-green-900 text-white p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -365,7 +269,7 @@ const Page: React.FC = () => {
                     </div>
                   </div>
                   {league.odds.length > 0 && (
-                    <Link href={`/football/${league.id}/odds`}>
+                    <Link href={`/baseball/${league.id}/odds`}>
                       <button className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center space-x-1">
                         <span>View More</span>
                         <svg
@@ -386,8 +290,7 @@ const Page: React.FC = () => {
                   )}
                 </div>
               </div>
-
-              {/* League Content */}
+              {/* Contenido de la liga */}
               <div className="p-6">
                 {league.loading ? (
                   <div className="text-center py-8">
@@ -399,7 +302,7 @@ const Page: React.FC = () => {
                   </div>
                 ) : league.odds.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    No active matches found
+                    No hay partidos con cuotas disponibles.
                   </div>
                 ) : (
                   <div>
@@ -408,6 +311,7 @@ const Page: React.FC = () => {
                       {league.odds
                         .slice(0, league.expanded ? undefined : 3)
                         .map((odd) => {
+                          // Filtrar bookmakers por tipo de apuesta
                           const filteredBookmakers = odd.bookmakers.filter(
                             (b) =>
                               b.bets.some((bet) => bet.name === selectedBet),
@@ -416,11 +320,12 @@ const Page: React.FC = () => {
                           if (filteredBookmakers.length === 0) return null;
 
                           const isExpanded =
-                            expandedMatches[odd.fixture.id] || false;
+                            expandedMatches[odd.game.id] || false;
                           const bookmakersToShow = isExpanded
                             ? filteredBookmakers
                             : filteredBookmakers.slice(0, 3);
 
+                          // Calcular mejores odds por columna
                           const minOddsPerColumn: number[] = [];
                           if (filteredBookmakers.length > 0) {
                             const betsArrays = filteredBookmakers.map(
@@ -433,7 +338,6 @@ const Page: React.FC = () => {
                                   : [];
                               },
                             );
-
                             const numColumns = betsArrays[0]?.length || 0;
                             for (let i = 0; i < numColumns; i++) {
                               let min = Infinity;
@@ -451,58 +355,51 @@ const Page: React.FC = () => {
 
                           return (
                             <div
-                              key={odd.fixture.id}
+                              key={odd.game.id}
                               className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50"
                             >
                               {/* Match Info */}
                               <div className="bg-white p-4">
                                 <div className="flex items-center justify-between mb-3">
                                   <span className="text-xs text-gray-500">
-                                    {formatDate(odd.fixture.date)}
+                                    {formatDate(odd.game.date)}
                                   </span>
                                 </div>
-                                {odd.teams ? (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center space-x-2">
-                                        <div className="relative w-8 h-8">
-                                          <Image
-                                            src={odd.teams.home.logo}
-                                            alt={odd.teams.home.name}
-                                            fill
-                                            className="object-contain"
-                                            unoptimized
-                                          />
-                                        </div>
-                                        <span className="text-sm font-medium">
-                                          {odd.teams.home.name}
-                                        </span>
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-2">
+                                      <div className="relative w-8 h-8">
+                                        <Image
+                                          src={odd.game.teams.home.logo}
+                                          alt={odd.game.teams.home.name}
+                                          fill
+                                          className="object-contain"
+                                          unoptimized
+                                        />
                                       </div>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center space-x-2">
-                                        <div className="relative w-8 h-8">
-                                          <Image
-                                            src={odd.teams.away.logo}
-                                            alt={odd.teams.away.name}
-                                            fill
-                                            className="object-contain"
-                                            unoptimized
-                                          />
-                                        </div>
-                                        <span className="text-sm font-medium">
-                                          {odd.teams.away.name}
-                                        </span>
-                                      </div>
+                                      <span className="text-sm font-medium">
+                                        {odd.game.teams.home.name}
+                                      </span>
                                     </div>
                                   </div>
-                                ) : (
-                                  <div className="text-sm text-gray-500">
-                                    Match #{odd.fixture.id}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-2">
+                                      <div className="relative w-8 h-8">
+                                        <Image
+                                          src={odd.game.teams.away.logo}
+                                          alt={odd.game.teams.away.name}
+                                          fill
+                                          className="object-contain"
+                                          unoptimized
+                                        />
+                                      </div>
+                                      <span className="text-sm font-medium">
+                                        {odd.game.teams.away.name}
+                                      </span>
+                                    </div>
                                   </div>
-                                )}
+                                </div>
                               </div>
-
                               {/* Odds Display */}
                               <div className="p-4 bg-gray-50 border-t border-gray-200">
                                 <div className="space-y-2">
@@ -562,44 +459,42 @@ const Page: React.FC = () => {
                                       </div>
                                     );
                                   })}
-                                  {filteredBookmakers.length > 3 && (
-                                    <div className="flex justify-end">
-                                      <button
-                                        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-green-100 transition-colors focus:outline-none mt-2"
-                                        onClick={() =>
-                                          toggleMatchExpansion(odd.fixture.id)
-                                        }
-                                        aria-label={
-                                          isExpanded
-                                            ? 'Mostrar menos casas'
-                                            : `Mostrar ${filteredBookmakers.length - 3} más`
-                                        }
-                                        type="button"
-                                      >
-                                        <ChevronDown
-                                          className={`w-5 h-5 text-green-700 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                                        />
-                                      </button>
-                                    </div>
-                                  )}
+                                  {/* Mostrar el botón desplegable SIEMPRE, aunque haya 1, 2 o 3 casas */}
+                                  <div className="flex justify-end">
+                                    <button
+                                      className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-green-100 transition-colors focus:outline-none mt-2"
+                                      onClick={() =>
+                                        toggleMatchExpansion(odd.game.id)
+                                      }
+                                      aria-label={
+                                        isExpanded
+                                          ? 'Show less bookmakers'
+                                          : `Show more bookmakers`
+                                      }
+                                      type="button"
+                                    >
+                                      <ChevronDown
+                                        className={`w-5 h-5 text-green-700 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                                      />
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           );
                         })}
                     </div>
-
                     {/* View More Button */}
                     {league.odds.length > 3 && (
                       <div className="mt-6 text-center">
-                        <a
-                          href={`/football/${league.id}/odds`}
+                        <Link
+                          href={`/baseball/${league.id}/odds`}
                           className="inline-block bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
                         >
                           {league.expanded
                             ? 'Show Less'
                             : `View More (${league.odds.length - 3} more matches)`}
-                        </a>
+                        </Link>
                       </div>
                     )}
                   </div>

@@ -6,12 +6,13 @@ interface LeagueResultsListProps {
   fixtures: FixtureResponse[];
   sportType: string;
   leagueId: string;
+  locale: string;
 }
 
 const LeagueResultsList: React.FC<LeagueResultsListProps> = ({
   fixtures,
-  sportType,
   leagueId,
+  locale,
 }) => {
   if (fixtures.length === 0) {
     return (
@@ -27,8 +28,8 @@ const LeagueResultsList: React.FC<LeagueResultsListProps> = ({
         <LeagueResultsCard
           key={fixture.fixture.id}
           fixture={fixture}
-          sportType={sportType}
           leagueId={leagueId}
+          locale={locale}
         />
       ))}
     </div>

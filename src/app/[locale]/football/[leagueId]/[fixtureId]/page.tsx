@@ -3,27 +3,36 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Label,
+  BarChart,
+  Bar,
+  Cell,
+  PieChart,
+  Pie,
+  Tooltip as RechartsTooltip,
+} from 'recharts';
 
-// Tipos
 interface BookmakerOdds {
   name: string;
   home: string;
   draw: string;
   away: string;
 }
-
 interface FixtureData {
   fixture: {
     id: number;
     date: string;
-    venue: {
-      name: string;
-      city: string;
-    };
-    status: {
-      elapsed: number;
-      long: string;
-    };
+    venue: { name: string; city: string };
+    status: { elapsed: number; long: string };
   };
   league: {
     id: number;
@@ -35,41 +44,16 @@ interface FixtureData {
     round: string;
   };
   teams: {
-    home: {
-      id: number;
-      name: string;
-      logo: string;
-    };
-    away: {
-      id: number;
-      name: string;
-      logo: string;
-    };
+    home: { id: number; name: string; logo: string };
+    away: { id: number; name: string; logo: string };
   };
-  goals: {
-    home: number;
-    away: number;
-  };
-  score: {
-    fulltime: {
-      home: number;
-      away: number;
-    };
-  };
+  goals: { home: number; away: number };
+  score: { fulltime: { home: number; away: number } };
 }
-
 interface Statistics {
-  team: {
-    id: number;
-    name: string;
-    logo: string;
-  };
-  statistics: Array<{
-    type: string;
-    value: string;
-  }>;
+  team: { id: number; name: string; logo: string };
+  statistics: Array<{ type: string; value: string }>;
 }
-
 interface OddsData {
   bookmakers: Array<{
     id: number;
@@ -77,36 +61,17 @@ interface OddsData {
     bets: Array<{
       id: number;
       name: string;
-      values: Array<{
-        value: string;
-        odd: string;
-      }>;
+      values: Array<{ value: string; odd: string }>;
     }>;
   }>;
 }
-
 interface H2HData {
   teams: {
-    home: {
-      id: number;
-      name: string;
-      logo: string;
-      winner?: boolean;
-    };
-    away: {
-      id: number;
-      name: string;
-      logo: string;
-      winner?: boolean;
-    };
+    home: { id: number; name: string; logo: string; winner?: boolean };
+    away: { id: number; name: string; logo: string; winner?: boolean };
   };
-  goals: {
-    home: number;
-    away: number;
-  };
-  fixture: {
-    date: string;
-  };
+  goals: { home: number; away: number };
+  fixture: { date: string };
   league?: {
     id: number;
     name: string;
@@ -115,14 +80,9 @@ interface H2HData {
     flag: string;
   };
 }
-
 interface StandingData {
   rank: number;
-  team: {
-    id: number;
-    name: string;
-    logo: string;
-  };
+  team: { id: number; name: string; logo: string };
   points: number;
   goalsDiff: number;
   group: string;
@@ -134,73 +94,69 @@ interface StandingData {
     win: number;
     draw: number;
     lose: number;
-    goals: {
-      for: number;
-      against: number;
-    };
+    goals: { for: number; against: number };
   };
 }
-
 interface TeamStatsData {
-  team: {
-    id: number;
-    name: string;
-    logo: string;
-  };
+  team: { id: number; name: string; logo: string };
   form: string;
   fixtures: {
-    played: {
-      home: number;
-      away: number;
-      total: number;
-    };
-    wins: {
-      home: number;
-      away: number;
-      total: number;
-    };
-    draws: {
-      home: number;
-      away: number;
-      total: number;
-    };
-    loses: {
-      home: number;
-      away: number;
-      total: number;
-    };
+    played: { home: number; away: number; total: number };
+    wins: { home: number; away: number; total: number };
+    draws: { home: number; away: number; total: number };
+    loses: { home: number; away: number; total: number };
   };
   goals: {
     for: {
-      total: {
-        home: number;
-        away: number;
-        total: number;
-      };
-      average: {
-        home: string;
-        away: string;
-        total: string;
+      total: { home: number; away: number; total: number };
+      average: { home: string; away: string; total: string };
+      minute?: {
+        '0-15'?: { total: number };
+        '16-30'?: { total: number };
+        '31-45'?: { total: number };
+        '46-60'?: { total: number };
+        '61-75'?: { total: number };
+        '76-90'?: { total: number };
+        '91-105'?: { total: number };
+        '106-120'?: { total: number };
       };
     };
     against: {
-      total: {
-        home: number;
-        away: number;
-        total: number;
-      };
-      average: {
-        home: string;
-        away: string;
-        total: string;
-      };
+      total: { home: number; away: number; total: number };
+      average: { home: string; away: string; total: string };
     };
   };
 }
 
+// Tipo mínimo para los fixtures de la API usados en getProgression
+interface FixtureAPIResponse {
+  fixture: { date: string };
+  teams: { home: { id: number }; away: { id: number } };
+  goals: { home: number; away: number };
+}
+
+// Tipo mínimo para los datos de jugadores
+interface PlayerStatsAPIResponse {
+  player: { id: number; name: string };
+  statistics: Array<{
+    team: { id: number; name: string };
+    goals: { total: number; assists: number };
+  }>;
+}
+
+// Tipo para los datos de la gráfica de key players
+interface PlayerKeyContribution {
+  name: string;
+  team: string;
+  goals: number;
+  assists: number;
+  contribution: number;
+}
+
 const Page: React.FC = () => {
-  const params = useParams<{ leagueId: string }>();
-  const leagueId = params?.leagueId ? Number(params.leagueId) : 71; // Default to 71 if not provided
+  const params = useParams<{ leagueId: string; fixtureId: string }>();
+  const fixtureId = params?.fixtureId ? Number(params.fixtureId) : null;
+
   const [fixtureData, setFixtureData] = useState<FixtureData | null>(null);
   const [statistics, setStatistics] = useState<Statistics[]>([]);
   const [odds, setOdds] = useState<OddsData | null>(null);
@@ -215,51 +171,32 @@ const Page: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [, setFixtureId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('match-analysis');
+  const [pointsProgression, setPointsProgression] = useState<unknown[]>([]);
+  const [keyPlayersData, setKeyPlayersData] = useState<PlayerKeyContribution[]>(
+    [],
+  );
+  const [loadingKeyPlayers, setLoadingKeyPlayers] = useState(false);
+  const [predictionData, setPredictionData] = useState<{
+    home: number;
+    draw: number;
+    away: number;
+  } | null>(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
+  const [predictionAnalysis, setPredictionAnalysis] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
-    fetchRecentCompletedMatch();
-  }, []);
-
-  const fetchRecentCompletedMatch = async () => {
-    try {
-      // Buscar el partido más reciente completado
-      const recentResponse = await fetch(
-        `https://v3.football.api-sports.io/fixtures?league=${leagueId}&season=2025&status=FT&last=10`,
-        {
-          headers: {
-            'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
-            'x-rapidapi-host': 'v3.football.api-sports.io',
-          },
-        },
-      );
-
-      if (!recentResponse.ok) throw new Error('Failed to fetch recent matches');
-
-      const recentData = await recentResponse.json();
-
-      if (recentData.response && recentData.response.length > 0) {
-        // Usar el primer partido completado
-        const matchId = recentData.response[0].fixture.id;
-        setFixtureId(matchId);
-        fetchMatchData(matchId);
-      } else {
-        throw new Error('No completed matches found');
-      }
-    } catch (err) {
-      console.error('Error fetching recent match:', err);
-      setError('Failed to load recent match data');
-      setLoading(false);
+    if (fixtureId) {
+      fetchMatchData(fixtureId);
     }
-  };
+  }, [fixtureId]);
 
   const fetchMatchData = async (matchId: number) => {
     setLoading(true);
     setError(null);
-
     try {
-      // Obtener datos del partido
       const fixtureResponse = await fetch(
         `https://v3.football.api-sports.io/fixtures?id=${matchId}`,
         {
@@ -269,19 +206,12 @@ const Page: React.FC = () => {
           },
         },
       );
-
       if (!fixtureResponse.ok) throw new Error('Failed to fetch fixture data');
-
       const fixtureResult = await fixtureResponse.json();
-
       if (fixtureResult.response && fixtureResult.response[0]) {
         setFixtureData(fixtureResult.response[0]);
-
-        // Obtener el season y league id para standings
         const leagueId = fixtureResult.response[0].league.id;
         const season = fixtureResult.response[0].league.season;
-
-        // Obtener standings de la liga
         const standingsResponse = await fetch(
           `https://v3.football.api-sports.io/standings?league=${leagueId}&season=${season}`,
           {
@@ -291,7 +221,6 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (standingsResponse.ok) {
           const standingsResult = await standingsResponse.json();
           if (
@@ -301,12 +230,8 @@ const Page: React.FC = () => {
             setStandings(standingsResult.response[0].league.standings[0]);
           }
         }
-
-        // Obtener estadísticas de equipos
         const homeTeamId = fixtureResult.response[0].teams.home.id;
         const awayTeamId = fixtureResult.response[0].teams.away.id;
-
-        // Stats del equipo local
         const homeStatsResponse = await fetch(
           `https://v3.football.api-sports.io/teams/statistics?league=${leagueId}&season=${season}&team=${homeTeamId}`,
           {
@@ -316,15 +241,12 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (homeStatsResponse.ok) {
           const homeStatsResult = await homeStatsResponse.json();
           if (homeStatsResult.response) {
             setHomeTeamStats(homeStatsResult.response);
           }
         }
-
-        // Stats del equipo visitante
         const awayStatsResponse = await fetch(
           `https://v3.football.api-sports.io/teams/statistics?league=${leagueId}&season=${season}&team=${awayTeamId}`,
           {
@@ -334,7 +256,6 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (awayStatsResponse.ok) {
           const awayStatsResult = await awayStatsResponse.json();
           if (awayStatsResult.response) {
@@ -342,8 +263,6 @@ const Page: React.FC = () => {
           }
         }
       }
-
-      // Obtener estadísticas del partido
       const statsResponse = await fetch(
         `https://v3.football.api-sports.io/fixtures/statistics?fixture=${matchId}`,
         {
@@ -353,13 +272,10 @@ const Page: React.FC = () => {
           },
         },
       );
-
       if (statsResponse.ok) {
         const statsResult = await statsResponse.json();
         setStatistics(statsResult.response || []);
       }
-
-      // Obtener odds del partido
       const oddsResponse = await fetch(
         `https://v3.football.api-sports.io/odds?fixture=${matchId}`,
         {
@@ -369,19 +285,14 @@ const Page: React.FC = () => {
           },
         },
       );
-
       if (oddsResponse.ok) {
         const oddsResult = await oddsResponse.json();
         if (oddsResult.response && oddsResult.response[0]) {
           setOdds(oddsResult.response[0]);
         }
       }
-
-      // Obtener H2H
       if (fixtureResult.response && fixtureResult.response[0]) {
         const fixture = fixtureResult.response[0];
-
-        // Obtener últimos 5 partidos para la tabla
         const h2hResponse = await fetch(
           `https://v3.football.api-sports.io/fixtures/headtohead?h2h=${fixture.teams.home.id}-${fixture.teams.away.id}&last=5`,
           {
@@ -391,13 +302,10 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (h2hResponse.ok) {
           const h2hResult = await h2hResponse.json();
           setH2hData(h2hResult.response || []);
         }
-
-        // Obtener más partidos históricos para el Historical Matchup Summary
         const h2hFullResponse = await fetch(
           `https://v3.football.api-sports.io/fixtures/headtohead?h2h=${fixture.teams.home.id}-${fixture.teams.away.id}&last=20`,
           {
@@ -407,7 +315,6 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (h2hFullResponse.ok) {
           const h2hFullResult = await h2hFullResponse.json();
           setH2hFullData(h2hFullResult.response || []);
@@ -421,6 +328,89 @@ const Page: React.FC = () => {
     }
   };
 
+  ///// PARA GRAFICOS TEAM STATS
+
+  useEffect(() => {
+    const fetchTeamFixtures = async (
+      teamId: number,
+      leagueId: number,
+      season: number,
+    ): Promise<FixtureAPIResponse[]> => {
+      const response = await fetch(
+        `https://v3.football.api-sports.io/fixtures?team=${teamId}&league=${leagueId}&season=${season}&status=FT`,
+        {
+          headers: {
+            'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+            'x-rapidapi-host': 'v3.football.api-sports.io',
+          },
+        },
+      );
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.response || [];
+    };
+
+    const getProgression = (fixtures: FixtureAPIResponse[], teamId: number) => {
+      // Ordenar por fecha ascendente
+      const sorted = [...fixtures].sort(
+        (a, b) =>
+          new Date(a.fixture.date).getTime() -
+          new Date(b.fixture.date).getTime(),
+      );
+      let points = 0;
+      return sorted.map((match) => {
+        let result = 0;
+        if (
+          match.teams.home.id === teamId &&
+          match.goals.home > match.goals.away
+        )
+          result = 3;
+        else if (
+          match.teams.away.id === teamId &&
+          match.goals.away > match.goals.home
+        )
+          result = 3;
+        else if (match.goals.home === match.goals.away) result = 1;
+        points += result;
+        // Formato de fecha dd/mm/aa
+        const dateObj = new Date(match.fixture.date);
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const year = String(dateObj.getFullYear()).slice(-2);
+        const dateLabel = `${day}/${month}/${year}`;
+        return {
+          date: dateLabel,
+          points,
+        };
+      });
+    };
+
+    const fetchAll = async () => {
+      if (!fixtureData) return;
+      const leagueId = fixtureData.league.id;
+      const season = fixtureData.league.season;
+      const homeId = fixtureData.teams.home.id;
+      const awayId = fixtureData.teams.away.id;
+      const [home, away] = await Promise.all([
+        fetchTeamFixtures(homeId, leagueId, season),
+        fetchTeamFixtures(awayId, leagueId, season),
+      ]);
+      // Calcular progresión de puntos
+      const homeProg = getProgression(home, homeId);
+      const awayProg = getProgression(away, awayId);
+      // Unir por matchday
+      const maxLen = Math.max(homeProg.length, awayProg.length);
+      const progression = Array.from({ length: maxLen }).map((_, i) => ({
+        date: homeProg[i]?.date || awayProg[i]?.date || '',
+        [fixtureData.teams.home.name]: homeProg[i]?.points ?? null,
+        [fixtureData.teams.away.name]: awayProg[i]?.points ?? null,
+      }));
+      setPointsProgression(progression);
+    };
+
+    if (fixtureData) fetchAll();
+  }, [fixtureData]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'long',
@@ -428,7 +418,6 @@ const Page: React.FC = () => {
       year: 'numeric',
     });
   };
-
   const getStatValue = (
     stats: Statistics[],
     teamId: number,
@@ -436,21 +425,15 @@ const Page: React.FC = () => {
   ) => {
     const teamStats = stats.find((s) => s.team.id === teamId);
     if (!teamStats) return '0';
-
     const stat = teamStats.statistics.find((s) => s.type === statType);
     return stat ? stat.value : '0';
   };
-
   const getTeamPosition = (
     teamId: number,
   ): { position: number; points: number } => {
     const standing = standings.find((s) => s.team.id === teamId);
-    return {
-      position: standing?.rank || 0,
-      points: standing?.points || 0,
-    };
+    return { position: standing?.rank || 0, points: standing?.points || 0 };
   };
-
   const getTeamForm = (teamId: number): string => {
     if (homeTeamStats && homeTeamStats.team.id === teamId) {
       return homeTeamStats.form || 'N/A';
@@ -461,29 +444,173 @@ const Page: React.FC = () => {
     const standing = standings.find((s) => s.team.id === teamId);
     return standing?.form || 'N/A';
   };
-
   const calculateFormFromH2H = (teamId: number): string => {
     const form = getTeamForm(teamId);
     if (form && form !== 'N/A') {
       return form.split('').slice(-5).join(' ');
     }
-
     if (h2hData.length === 0) {
       return 'N/A';
     }
-
     const recentMatches = h2hData.slice(0, 5);
     return recentMatches
       .map((match) => {
         const isHome = match.teams.home.id === teamId;
         const teamGoals = isHome ? match.goals.home : match.goals.away;
         const opponentGoals = isHome ? match.goals.away : match.goals.home;
-
         if (teamGoals > opponentGoals) return 'W';
         if (teamGoals < opponentGoals) return 'L';
         return 'D';
       })
       .join(' ');
+  };
+
+  // DATOS PARA EL GRAFICO DE RENDIMIENTO
+  const getPerformanceData = () => {
+    if (!fixtureData || h2hFullData.length === 0) return [];
+    const homeId = fixtureData.teams.home.id;
+    const awayId = fixtureData.teams.away.id;
+    const matches = h2hFullData.slice(0, 10).reverse();
+    return matches.map((match) => {
+      // Para cada equipo, asignar: Win=2, Draw=1, Loss=0
+      let homeResult = 1;
+      let awayResult = 1;
+      if (match.goals.home > match.goals.away) {
+        homeResult = match.teams.home.id === homeId ? 2 : 0;
+        awayResult = match.teams.away.id === awayId ? 0 : 2;
+      } else if (match.goals.home < match.goals.away) {
+        homeResult = match.teams.home.id === homeId ? 0 : 2;
+        awayResult = match.teams.away.id === awayId ? 2 : 0;
+      }
+      const dateObj = new Date(match.fixture.date);
+      const label = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+      return {
+        name: label,
+        [fixtureData.teams.home.name]: homeResult,
+        [fixtureData.teams.away.name]: awayResult,
+      };
+    });
+  };
+
+  //////// PARA LA GRAFICA DE KEY PLAYERS
+
+  useEffect(() => {
+    const fetchKeyPlayers = async () => {
+      if (!fixtureData) return;
+      setLoadingKeyPlayers(true);
+      const leagueId = fixtureData.league.id;
+      const season = fixtureData.league.season;
+      const homeId = fixtureData.teams.home.id;
+      const awayId = fixtureData.teams.away.id;
+      // Fetch players for both teams
+      const fetchPlayers = async (teamId: number) => {
+        const response = await fetch(
+          `https://v3.football.api-sports.io/players?team=${teamId}&league=${leagueId}&season=${season}`,
+          {
+            headers: {
+              'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+              'x-rapidapi-host': 'v3.football.api-sports.io',
+            },
+          },
+        );
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data.response || [];
+      };
+      const [homePlayers, awayPlayers] = await Promise.all([
+        fetchPlayers(homeId),
+        fetchPlayers(awayId),
+      ]);
+      const processPlayers = (
+        players: PlayerStatsAPIResponse[],
+        teamName: string,
+      ) =>
+        players
+          .map((p) => {
+            const stats = p.statistics[0];
+            return {
+              name: p.player.name,
+              team: teamName,
+              goals: stats?.goals?.total || 0,
+              assists: stats?.goals?.assists || 0,
+              contribution:
+                (stats?.goals?.total || 0) + (stats?.goals?.assists || 0),
+            };
+          })
+          .sort((a, b) => b.contribution - a.contribution)
+          .slice(0, 5);
+      const homeTop = processPlayers(homePlayers, fixtureData.teams.home.name);
+      const awayTop = processPlayers(awayPlayers, fixtureData.teams.away.name);
+
+      setKeyPlayersData([...homeTop, ...awayTop]);
+      setLoadingKeyPlayers(false);
+    };
+    fetchKeyPlayers();
+  }, [fixtureData]);
+
+  useEffect(() => {
+    const fetchPrediction = async () => {
+      if (!fixtureData) return;
+      setPredictionLoading(true);
+      try {
+        const response = await fetch(
+          `/api/football?endpoint=predictions&fixture=${fixtureData.fixture.id}`,
+        );
+        if (!response.ok) throw new Error('No prediction data');
+        const data = await response.json();
+        const pred = data.response?.[0]?.predictions;
+        if (pred && pred.percent) {
+          setPredictionData({
+            home: parseInt(pred.percent.home),
+            draw: parseInt(pred.percent.draw),
+            away: parseInt(pred.percent.away),
+          });
+          setPredictionAnalysis(pred.advice || null);
+        } else {
+          setPredictionData(null);
+          setPredictionAnalysis(null);
+        }
+      } catch {
+        setPredictionData(null);
+        setPredictionAnalysis(null);
+      } finally {
+        setPredictionLoading(false);
+      }
+    };
+    fetchPrediction();
+  }, [fixtureData]);
+
+  // Buscar la mejor odd para cada resultado
+  const getBestOdds = () => {
+    if (!odds || !odds.bookmakers)
+      return { home: null, draw: null, away: null };
+    let bestHome: string | null = null,
+      bestDraw: string | null = null,
+      bestAway: string | null = null;
+    odds.bookmakers.forEach((bookmaker) => {
+      const matchWinner = bookmaker.bets.find((b) => b.name === 'Match Winner');
+      if (matchWinner) {
+        const homeOdd = matchWinner.values.find((v) => v.value === 'Home')?.odd;
+        const drawOdd = matchWinner.values.find((v) => v.value === 'Draw')?.odd;
+        const awayOdd = matchWinner.values.find((v) => v.value === 'Away')?.odd;
+        if (
+          homeOdd &&
+          (!bestHome || parseFloat(homeOdd) > parseFloat(bestHome))
+        )
+          bestHome = homeOdd;
+        if (
+          drawOdd &&
+          (!bestDraw || parseFloat(drawOdd) > parseFloat(bestDraw))
+        )
+          bestDraw = drawOdd;
+        if (
+          awayOdd &&
+          (!bestAway || parseFloat(awayOdd) > parseFloat(bestAway))
+        )
+          bestAway = awayOdd;
+      }
+    });
+    return { home: bestHome, draw: bestDraw, away: bestAway };
   };
 
   if (loading) {
@@ -496,7 +623,6 @@ const Page: React.FC = () => {
       </div>
     );
   }
-
   if (error || !fixtureData) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-white">
@@ -509,8 +635,6 @@ const Page: React.FC = () => {
 
   const homePosition = getTeamPosition(fixtureData.teams.home.id);
   const awayPosition = getTeamPosition(fixtureData.teams.away.id);
-  //const homeStats = statistics.find(s => s.team.id === fixtureData.teams.home.id);
-  //const awayStats = statistics.find(s => s.team.id === fixtureData.teams.away.id);
 
   // Procesar odds de la API
   const bookmakers: BookmakerOdds[] = [];
@@ -521,7 +645,6 @@ const Page: React.FC = () => {
         const homeOdd = matchWinner.values.find((v) => v.value === 'Home')?.odd;
         const drawOdd = matchWinner.values.find((v) => v.value === 'Draw')?.odd;
         const awayOdd = matchWinner.values.find((v) => v.value === 'Away')?.odd;
-
         if (homeOdd && drawOdd && awayOdd) {
           bookmakers.push({
             name: bookmaker.name,
@@ -546,13 +669,11 @@ const Page: React.FC = () => {
             {fixtureData.teams.home.name} vs {fixtureData.teams.away.name}
           </span>
         </div>
-
         {/* Title */}
         <h1 className="text-2xl font-bold text-gray-900 mb-6">
           {fixtureData.teams.home.name} vs {fixtureData.teams.away.name}:
           In-depth Match Analysis and Predictions
         </h1>
-
         {/* Match Header Card */}
         <div className="bg-gradient-to-r from-blue-900 to-red-900 rounded-lg p-6 text-white mb-6">
           <div className="text-center mb-4">
@@ -1226,9 +1347,68 @@ const Page: React.FC = () => {
           </div>
         </div>
 
-        {/* Head-to-Head Section */}
-        {h2hFullData.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        {/* TABS */}
+
+        {activeTab === 'match-analysis' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">
+              Last 10 Matches Performance
+            </h2>
+            <ResponsiveContainer width="100%" height={350}>
+              <LineChart
+                data={getPerformanceData()}
+                margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  interval={0}
+                  tick={{ fontSize: 12, dy: 16 }}
+                  padding={{ left: 0, right: 30 }}
+                />
+                <YAxis
+                  type="number"
+                  domain={[0, 2]}
+                  ticks={[0, 1, 2]}
+                  tickFormatter={(v) =>
+                    v === 2 ? 'Win' : v === 1 ? 'Draw' : 'Loss'
+                  }
+                >
+                  <Label
+                    angle={-90}
+                    position="insideLeft"
+                    style={{ textAnchor: 'middle' }}
+                  />
+                </YAxis>
+                <Tooltip
+                  formatter={(value) =>
+                    value === 2 ? 'Win' : value === 1 ? 'Draw' : 'Loss'
+                  }
+                />
+                <Legend wrapperStyle={{ marginTop: 30, paddingTop: 50 }} />
+                <Line
+                  type="monotone"
+                  dataKey={fixtureData.teams.home.name}
+                  stroke="#6cb6f9"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey={fixtureData.teams.away.name}
+                  stroke="#a16be0"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
+        {activeTab === 'head-to-head' && h2hFullData.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
             <h2 className="text-xl font-bold mb-6">
               Head-to-Head: {fixtureData.teams.home.name} vs{' '}
               {fixtureData.teams.away.name}
@@ -1239,7 +1419,6 @@ const Page: React.FC = () => {
               <h3 className="text-lg font-semibold mb-4">
                 Historical Matchup Summary
               </h3>
-
               {(() => {
                 // Calculate wins, draws, losses from all h2h data
                 let homeWins = 0;
@@ -1263,12 +1442,6 @@ const Page: React.FC = () => {
                     draws++;
                   }
                 });
-
-                const total = homeWins + awayWins + draws;
-                const homePercentage = total > 0 ? (homeWins / total) * 100 : 0;
-                const drawPercentage = total > 0 ? (draws / total) * 100 : 0;
-                const awayPercentage = total > 0 ? (awayWins / total) * 100 : 0;
-
                 return (
                   <>
                     {/* Stats Cards */}
@@ -1296,71 +1469,59 @@ const Page: React.FC = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Pie Chart */}
-                    <div className="flex justify-center items-center">
-                      <div className="relative w-64 h-64">
-                        <svg
-                          viewBox="0 0 100 100"
-                          className="w-full h-full transform -rotate-90"
-                        >
-                          {/* Home team slice */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            fill="transparent"
-                            stroke="#60a5fa"
-                            strokeWidth="20"
-                            strokeDasharray={`${homePercentage * 2.51} ${251 - homePercentage * 2.51}`}
-                            strokeDashoffset="0"
-                          />
-                          {/* Draws slice */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            fill="transparent"
-                            stroke="#9ca3af"
-                            strokeWidth="20"
-                            strokeDasharray={`${drawPercentage * 2.51} ${251 - drawPercentage * 2.51}`}
-                            strokeDashoffset={`-${homePercentage * 2.51}`}
-                          />
-                          {/* Away team slice */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            fill="transparent"
-                            stroke="#a855f7"
-                            strokeWidth="20"
-                            strokeDasharray={`${awayPercentage * 2.51} ${251 - awayPercentage * 2.51}`}
-                            strokeDashoffset={`-${(homePercentage + drawPercentage) * 2.51}`}
-                          />
-                        </svg>
-                      </div>
-                    </div>
-
-                    {/* Legend */}
-                    <div className="flex justify-center gap-6 mt-4">
+                    <div className="flex flex-row justify-center gap-8 mb-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-blue-400 rounded"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="inline-block w-4 h-4 rounded bg-blue-500"></span>
+                        <span className="text-sm font-medium text-gray-700">
                           {fixtureData.teams.home.name} Wins
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-gray-400 rounded"></div>
-                        <span className="text-sm text-gray-600">Draws</span>
+                        <span className="inline-block w-4 h-4 rounded bg-gray-500"></span>
+                        <span className="text-sm font-medium text-gray-700">
+                          Draws
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="inline-block w-4 h-4 rounded bg-purple-500"></span>
+                        <span className="text-sm font-medium text-gray-700">
                           {fixtureData.teams.away.name} Wins
                         </span>
                       </div>
                     </div>
-
+                    <div className="flex justify-center">
+                      <PieChart width={340} height={340}>
+                        <Pie
+                          data={[
+                            {
+                              name: `${fixtureData.teams.home.name} Wins`,
+                              value: homeWins,
+                            },
+                            { name: 'Draws', value: draws },
+                            {
+                              name: `${fixtureData.teams.away.name} Wins`,
+                              value: awayWins,
+                            },
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={110}
+                          outerRadius={150}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          <Cell key="home" fill="#3b82f6" />
+                          <Cell key="draw" fill="#6b7280" />
+                          <Cell key="away" fill="#a16be0" />
+                        </Pie>
+                        <RechartsTooltip
+                          formatter={(value: number, name: string, props) => [
+                            `${value}`,
+                            props.payload?.name,
+                          ]}
+                        />
+                      </PieChart>
+                    </div>
                     <div className="text-center mt-4 text-sm text-gray-500">
                       Based on last {h2hFullData.length} matches
                     </div>
@@ -1368,88 +1529,81 @@ const Page: React.FC = () => {
                 );
               })()}
             </div>
-          </div>
-        )}
 
-        {/* Last 5 Meetings */}
-        {h2hData.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-bold mb-4">Last 5 Meetings</h2>
+            {/* Last 5 Meetings */}
+            {h2hData.length > 0 && (
+              <div className="bg-white p-6 mb-6">
+                <h2 className="text-lg font-bold mb-4">Last 5 Meetings</h2>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      DATE
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      COMPETITION
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      HOME
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">
-                      SCORE
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">
-                      AWAY
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {h2hData.slice(0, 5).map((match, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50">
-                      <td className="py-3 px-4 text-sm text-gray-600">
-                        {new Date(match.fixture.date).toLocaleDateString(
-                          'en-US',
-                          {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          },
-                        )}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">
-                        {match.league?.name || fixtureData.league.name}
-                      </td>
-                      <td className="py-3 px-4 text-sm">
-                        <span
-                          className={`font-medium ${match.teams.home.winner ? 'text-blue-600' : ''}`}
-                        >
-                          {match.teams.home.name}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-center font-semibold">
-                        {match.goals.home}-{match.goals.away}
-                      </td>
-                      <td className="py-3 px-4 text-sm text-right">
-                        <span
-                          className={`font-medium ${match.teams.away.winner ? 'text-blue-600' : ''}`}
-                        >
-                          {match.teams.away.name}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b bg-gray-50">
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                          DATE
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                          COMPETITION
+                        </th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                          HOME
+                        </th>
+                        <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">
+                          SCORE
+                        </th>
+                        <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">
+                          AWAY
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {h2hData.slice(0, 5).map((match, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4 text-sm text-gray-600">
+                            {new Date(match.fixture.date).toLocaleDateString(
+                              'en-US',
+                              {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              },
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-600">
+                            {match.league?.name || fixtureData.league.name}
+                          </td>
+                          <td className="py-3 px-4 text-sm">
+                            <span
+                              className={`font-medium ${match.teams.home.winner ? 'text-blue-600' : ''}`}
+                            >
+                              {match.teams.home.name}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-sm text-center font-semibold">
+                            {match.goals.home}-{match.goals.away}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-right">
+                            <span
+                              className={`font-medium ${match.teams.away.winner ? 'text-blue-600' : ''}`}
+                            >
+                              {match.teams.away.name}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
-        {/* Goal Distribution Section */}
-        {h2hFullData.length > 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-bold mb-6">Goal Distribution</h2>
-
+            {/* Goal Distribution Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Goals Scored (Last 10 Meetings) */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-4">
+                <h4 className="text-lg font-medium text-gray-700 mb-4">
                   Goals Scored (Last 10 Meetings)
                 </h4>
-
                 {(() => {
                   // Calculate total goals for each team in last 10 meetings
                   const last10Matches = h2hFullData.slice(0, 10);
@@ -1466,179 +1620,428 @@ const Page: React.FC = () => {
                     }
                   });
 
-                  const maxGoals = Math.max(homeTeamGoals, awayTeamGoals);
+                  const data = [
+                    {
+                      team: fixtureData.teams.home.name,
+                      Goals: homeTeamGoals,
+                      fill: '#6cb6f9',
+                    },
+                    {
+                      team: fixtureData.teams.away.name,
+                      Goals: awayTeamGoals,
+                      fill: '#a16be0',
+                    },
+                  ];
 
                   return (
-                    <div className="space-y-4">
-                      {/* Legend */}
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                          <span>Goals Scored</span>
-                        </div>
-                      </div>
-
-                      {/* Home Team Bar */}
-                      <div className="space-y-2">
-                        <div className="text-sm text-gray-600">
-                          {fixtureData.teams.home.name}
-                        </div>
-                        <div className="relative">
-                          <div className="bg-gray-200 h-8 rounded">
-                            <div
-                              className="bg-blue-500 h-full rounded flex items-center justify-end pr-2"
-                              style={{
-                                width: `${(homeTeamGoals / (maxGoals || 1)) * 80}%`,
-                              }}
-                            >
-                              <span className="text-white text-sm font-medium">
-                                {homeTeamGoals}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Away Team Bar */}
-                      <div className="space-y-2">
-                        <div className="text-sm text-gray-600">
-                          {fixtureData.teams.away.name}
-                        </div>
-                        <div className="relative">
-                          <div className="bg-gray-200 h-8 rounded">
-                            <div
-                              className="bg-purple-500 h-full rounded flex items-center justify-end pr-2"
-                              style={{
-                                width: `${(awayTeamGoals / (maxGoals || 1)) * 80}%`,
-                              }}
-                            >
-                              <span className="text-white text-sm font-medium">
-                                {awayTeamGoals}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* X-axis */}
-                      <div className="flex justify-between text-xs text-gray-500 mt-2">
-                        <span>0</span>
-                        <span>5</span>
-                        <span>10</span>
-                        <span>15</span>
-                        <span>20</span>
-                      </div>
-                    </div>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart
+                        data={data}
+                        layout="vertical"
+                        margin={{ top: 50, right: 60, left: -20, bottom: 30 }}
+                        barCategoryGap={20}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          type="number"
+                          allowDecimals={false}
+                          domain={[
+                            0,
+                            Math.max(homeTeamGoals, awayTeamGoals, 10) + 2,
+                          ]}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis type="category" dataKey="team" width={140} />
+                        <Tooltip />
+                        <Legend
+                          verticalAlign="top"
+                          height={10}
+                          iconType="rect"
+                          wrapperStyle={{
+                            top: 25,
+                            fontWeight: 600,
+                            fontSize: 15,
+                          }}
+                        />
+                        <Bar
+                          dataKey="Goals"
+                          isAnimationActive={false}
+                          barSize={48}
+                          radius={[0, 10, 10, 0]}
+                        >
+                          {data.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
                   );
                 })()}
               </div>
-
-              {/* Goal Timing (Last 10 Meetings) 
-              Es una simulación, hay que ajustar la forma en que la api trae la data*/}
+              {/* Goal Timing (Last 10 Meetings) */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-4">
+                <h4 className="text-lg font-medium text-gray-700 mb-4">
                   Goal Timing (Last 10 Meetings)
                 </h4>
-
                 {(() => {
-                  // Simulated data based on typical goal distribution patterns
-                  const simulatedData = {
-                    '1-15': { home: 2, away: 1 },
-                    '16-30': { home: 3, away: 2 },
-                    '31-45': { home: 4, away: 3 },
-                    '46-60': { home: 2, away: 5 },
-                    '61-75': { home: 3, away: 4 },
-                    '76-90': { home: 2, away: 3 },
-                  };
-
-                  const maxValue = 5; // Maximum value for scaling
-
+                  if (!homeTeamStats || !awayTeamStats) {
+                    return (
+                      <div className="text-gray-400 text-xs">
+                        No goal timing data available
+                      </div>
+                    );
+                  }
+                  const intervals = [
+                    '0-15',
+                    '16-30',
+                    '31-45',
+                    '46-60',
+                    '61-75',
+                    '76-90',
+                    '91-105',
+                    '106-120',
+                  ];
+                  const homeMinute = homeTeamStats.goals.for.minute;
+                  const awayMinute = awayTeamStats.goals.for.minute;
+                  if (!homeMinute || !awayMinute) {
+                    return (
+                      <div className="text-gray-400 text-xs">
+                        No goal timing data available
+                      </div>
+                    );
+                  }
+                  const data = intervals.map((interval) => ({
+                    interval: interval === '0-15' ? '1-15' : interval,
+                    [fixtureData.teams.home.name]:
+                      homeMinute[interval as keyof typeof homeMinute]?.total ??
+                      0,
+                    [fixtureData.teams.away.name]:
+                      awayMinute[interval as keyof typeof awayMinute]?.total ??
+                      0,
+                  }));
+                  const allZero = data.every(
+                    (d) =>
+                      d[fixtureData.teams.home.name] === 0 &&
+                      d[fixtureData.teams.away.name] === 0,
+                  );
+                  if (allZero) {
+                    return (
+                      <div className="text-gray-400 text-xs">
+                        No goal timing data available
+                      </div>
+                    );
+                  }
                   return (
-                    <div>
-                      {/* Legend */}
-                      <div className="flex items-center gap-4 text-sm mb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                          <span>{fixtureData.teams.home.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                          <span>{fixtureData.teams.away.name}</span>
-                        </div>
-                      </div>
-
-                      {/* Chart */}
-                      <div className="relative h-48">
-                        {/* Y-axis labels */}
-                        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
-                          <span>5</span>
-                          <span>4</span>
-                          <span>3</span>
-                          <span>2</span>
-                          <span>1</span>
-                          <span>0</span>
-                        </div>
-
-                        {/* Chart area */}
-                        <div className="ml-6 h-full relative">
-                          {/* Grid lines */}
-                          <div className="absolute inset-0 flex flex-col justify-between">
-                            {[0, 1, 2, 3, 4, 5].map((i) => (
-                              <div
-                                key={i}
-                                className="border-t border-gray-200"
-                              ></div>
-                            ))}
-                          </div>
-
-                          {/* Bars */}
-                          <div className="relative h-full flex items-end justify-around pb-6">
-                            {Object.entries(simulatedData).map(
-                              ([period, goals]) => (
-                                <div
-                                  key={period}
-                                  className="flex gap-1 items-end"
-                                >
-                                  <div
-                                    className="w-8 bg-blue-500 rounded-t"
-                                    style={{
-                                      height: `${(goals.home / maxValue) * 100}%`,
-                                    }}
-                                  ></div>
-                                  <div
-                                    className="w-8 bg-purple-500 rounded-t"
-                                    style={{
-                                      height: `${(goals.away / maxValue) * 100}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                              ),
-                            )}
-                          </div>
-
-                          {/* X-axis labels */}
-                          <div className="absolute bottom-0 left-0 right-0 flex justify-around text-xs text-gray-500">
-                            <span>1-15</span>
-                            <span>16-30</span>
-                            <span>31-45</span>
-                            <span>46-60</span>
-                            <span>61-75</span>
-                            <span>76-90</span>
-                          </div>
-
-                          <div className="text-center text-xs text-gray-500 mt-8">
-                            Minutes
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="text-center text-xs text-gray-400 mt-4">
-                        * Goal timing data is simulated for demonstration
-                      </div>
-                    </div>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart
+                        data={data}
+                        margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
+                        barCategoryGap={40}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="interval" tick={{ fontSize: 12 }} />
+                        <YAxis
+                          allowDecimals={false}
+                          label={{
+                            value: 'Goals',
+                            angle: -90,
+                            position: 'insideLeft',
+                            offset: 10,
+                          }}
+                        />
+                        <Tooltip />
+                        <Legend verticalAlign="top" height={36} />
+                        <Bar
+                          dataKey={fixtureData.teams.home.name}
+                          fill="#6cb6f9"
+                          barSize={18}
+                          radius={[4, 4, 0, 0]}
+                        />
+                        <Bar
+                          dataKey={fixtureData.teams.away.name}
+                          fill="#a16be0"
+                          barSize={18}
+                          radius={[4, 4, 0, 0]}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
                   );
                 })()}
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'team-stats' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">
+              Team Statistics Comparison
+            </h2>
+            {/* Gráfica de acumulación de puntos */}
+            <div className="mb-8">
+              <h3 className="text-md font-bold mb-2">Season Performance</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-semibold mb-2">Points Accumulation</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart
+                      data={pointsProgression}
+                      margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey={fixtureData?.teams.home.name}
+                        stroke="#6cb6f9"
+                        strokeWidth={3}
+                        dot={{ r: 3 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey={fixtureData?.teams.away.name}
+                        stroke="#a16be0"
+                        strokeWidth={3}
+                        dot={{ r: 3 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {/* Comparación de goles */}
+                <div>
+                  <h4 className="font-semibold mb-2">Goals Comparison</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart
+                      data={[
+                        {
+                          name: 'Goals Scored',
+                          [fixtureData?.teams.home.name]:
+                            homeTeamStats?.goals.for.total.total ?? 0,
+                          [fixtureData?.teams.away.name]:
+                            awayTeamStats?.goals.for.total.total ?? 0,
+                        },
+                        {
+                          name: 'Goals Conceded',
+                          [fixtureData?.teams.home.name]:
+                            homeTeamStats?.goals.against.total.total ?? 0,
+                          [fixtureData?.teams.away.name]:
+                            awayTeamStats?.goals.against.total.total ?? 0,
+                        },
+                      ]}
+                      margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+                      barCategoryGap={30}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar
+                        dataKey={fixtureData?.teams.home.name}
+                        fill="#6cb6f9"
+                        barSize={30}
+                        radius={[7, 7, 0, 0]}
+                      />
+                      <Bar
+                        dataKey={fixtureData?.teams.away.name}
+                        fill="#a16be0"
+                        barSize={30}
+                        radius={[7, 7, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'key-players' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">Key Players Analysis</h2>
+            <div className="mb-6">
+              <h3 className="text-md font-bold mb-2">
+                Goal Contribution Comparison
+              </h3>
+              {loadingKeyPlayers ? (
+                <div className="text-gray-500">Loading key players...</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart
+                    data={keyPlayersData}
+                    margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
+                    barCategoryGap={20}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                    <YAxis
+                      allowDecimals={false}
+                      label={{
+                        value: 'Count',
+                        angle: -90,
+                        position: 'insideLeft',
+                      }}
+                    />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="goals"
+                      name="Goals"
+                      fill="#4fd1c5"
+                      barSize={30}
+                      radius={[8, 8, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="assists"
+                      name="Assists"
+                      fill="#f6ad55"
+                      barSize={30}
+                      radius={[8, 8, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+              <div className="text-xs text-blue-700 mt-2">
+                Chart shows combined goals and assists for top 5 contributors
+                from each team this season.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'predictions' && (
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <h2 className="text-lg font-bold mb-4">Outcome Prediction</h2>
+            <div className="w-full flex flex-col items-center justify-center">
+              {/* Leyenda personalizada */}
+              <div className="flex flex-row justify-center gap-8 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 rounded bg-blue-500"></span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {fixtureData.teams.home.name} Win
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 rounded bg-gray-500"></span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Draw
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-4 h-4 rounded bg-purple-500"></span>
+                  <span className="text-sm font-medium text-gray-700">
+                    {fixtureData.teams.away.name} Win
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col md:flex-row w-full justify-center items-center gap-10">
+                <div className="flex flex-col items-center justify-center">
+                  <span className="block font-semibold mb-2">
+                    Match Result Probability
+                  </span>
+                  {predictionLoading ? (
+                    <div className="text-gray-500">Loading prediction...</div>
+                  ) : predictionData ? (
+                    <PieChart width={340} height={340}>
+                      <Pie
+                        data={[
+                          {
+                            name: `${fixtureData.teams.home.name} Win`,
+                            value: predictionData.home,
+                          },
+                          { name: 'Draw', value: predictionData.draw },
+                          {
+                            name: `${fixtureData.teams.away.name} Win`,
+                            value: predictionData.away,
+                          },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={110}
+                        outerRadius={150}
+                        paddingAngle={2}
+                        dataKey="value"
+                      >
+                        <Cell key="home" fill="#3b82f6" />
+                        <Cell key="draw" fill="#6b7280" />
+                        <Cell key="away" fill="#a16be0" />
+                      </Pie>
+                      <RechartsTooltip
+                        formatter={(value: number, name: string, props) => [
+                          `${value}%`,
+                          props.payload?.name,
+                        ]}
+                      />
+                    </PieChart>
+                  ) : (
+                    <div className="text-gray-400">
+                      No prediction data available
+                    </div>
+                  )}
+                </div>
+                {/* Análisis experto */}
+                <div className="flex-1 max-w-xl">
+                  <span className="block font-semibold mb-2 text-lg">
+                    Expert Analysis
+                  </span>
+                  <div className="text-gray-700 text-base whitespace-pre-line">
+                    {predictionAnalysis || 'No analysis available.'}
+                  </div>
+                </div>
+              </div>
+              {/* Recuadros de probabilidades y cuotas */}
+              {predictionData && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 w-full max-w-3xl">
+                  {(() => {
+                    const odds = getBestOdds();
+                    return [
+                      {
+                        label: 'Home Win',
+                        value: predictionData.home,
+                        odd: odds.home,
+                        color: 'text-blue-600',
+                        badge: 'bg-blue-100 text-blue-600',
+                      },
+                      {
+                        label: 'Draw',
+                        value: predictionData.draw,
+                        odd: odds.draw,
+                        color: 'text-gray-700',
+                        badge: 'bg-gray-200 text-gray-700',
+                      },
+                      {
+                        label: 'Away Win',
+                        value: predictionData.away,
+                        odd: odds.away,
+                        color: 'text-purple-600',
+                        badge: 'bg-purple-100 text-purple-600',
+                      },
+                    ].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="border rounded-xl p-6 text-center flex flex-col items-center shadow-sm bg-white"
+                      >
+                        <div className="text-xs text-gray-500 mb-1">
+                          {item.label}
+                        </div>
+                        <div
+                          className={`text-3xl font-bold mb-1 ${item.color}`}
+                        >
+                          {item.odd ? item.odd : '--'}
+                        </div>
+                        <span
+                          className={`mt-1 px-3 py-1 rounded-full text-xs font-semibold ${item.badge}`}
+                        >
+                          {item.value}% Probability
+                        </span>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              )}
             </div>
           </div>
         )}
