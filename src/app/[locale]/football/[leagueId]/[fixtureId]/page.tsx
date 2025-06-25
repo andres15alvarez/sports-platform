@@ -1442,12 +1442,6 @@ const Page: React.FC = () => {
                     draws++;
                   }
                 });
-
-                const total = homeWins + awayWins + draws;
-                const homePercentage = total > 0 ? (homeWins / total) * 100 : 0;
-                const drawPercentage = total > 0 ? (draws / total) * 100 : 0;
-                const awayPercentage = total > 0 ? (awayWins / total) * 100 : 0;
-
                 return (
                   <>
                     {/* Stats Cards */}
@@ -1475,71 +1469,59 @@ const Page: React.FC = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Pie Chart */}
-                    <div className="flex justify-center items-center">
-                      <div className="relative w-64 h-64">
-                        <svg
-                          viewBox="0 0 100 100"
-                          className="w-full h-full transform -rotate-90"
-                        >
-                          {/* Home team slice */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            fill="transparent"
-                            stroke="#60a5fa"
-                            strokeWidth="20"
-                            strokeDasharray={`${homePercentage * 2.51} ${251 - homePercentage * 2.51}`}
-                            strokeDashoffset="0"
-                          />
-                          {/* Draws slice */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            fill="transparent"
-                            stroke="#9ca3af"
-                            strokeWidth="20"
-                            strokeDasharray={`${drawPercentage * 2.51} ${251 - drawPercentage * 2.51}`}
-                            strokeDashoffset={`-${homePercentage * 2.51}`}
-                          />
-                          {/* Away team slice */}
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            fill="transparent"
-                            stroke="#a855f7"
-                            strokeWidth="20"
-                            strokeDasharray={`${awayPercentage * 2.51} ${251 - awayPercentage * 2.51}`}
-                            strokeDashoffset={`-${(homePercentage + drawPercentage) * 2.51}`}
-                          />
-                        </svg>
-                      </div>
-                    </div>
-
-                    {/* Legend */}
-                    <div className="flex justify-center gap-6 mt-4">
+                    <div className="flex flex-row justify-center gap-8 mb-4">
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-blue-400 rounded"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="inline-block w-4 h-4 rounded bg-blue-500"></span>
+                        <span className="text-sm font-medium text-gray-700">
                           {fixtureData.teams.home.name} Wins
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-gray-400 rounded"></div>
-                        <span className="text-sm text-gray-600">Draws</span>
+                        <span className="inline-block w-4 h-4 rounded bg-gray-500"></span>
+                        <span className="text-sm font-medium text-gray-700">
+                          Draws
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                        <span className="text-sm text-gray-600">
+                        <span className="inline-block w-4 h-4 rounded bg-purple-500"></span>
+                        <span className="text-sm font-medium text-gray-700">
                           {fixtureData.teams.away.name} Wins
                         </span>
                       </div>
                     </div>
-
+                    <div className="flex justify-center">
+                      <PieChart width={340} height={340}>
+                        <Pie
+                          data={[
+                            {
+                              name: `${fixtureData.teams.home.name} Wins`,
+                              value: homeWins,
+                            },
+                            { name: 'Draws', value: draws },
+                            {
+                              name: `${fixtureData.teams.away.name} Wins`,
+                              value: awayWins,
+                            },
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={110}
+                          outerRadius={150}
+                          paddingAngle={2}
+                          dataKey="value"
+                        >
+                          <Cell key="home" fill="#3b82f6" />
+                          <Cell key="draw" fill="#6b7280" />
+                          <Cell key="away" fill="#a16be0" />
+                        </Pie>
+                        <RechartsTooltip
+                          formatter={(value: number, name: string, props) => [
+                            `${value}`,
+                            props.payload?.name,
+                          ]}
+                        />
+                      </PieChart>
+                    </div>
                     <div className="text-center mt-4 text-sm text-gray-500">
                       Based on last {h2hFullData.length} matches
                     </div>
@@ -1985,7 +1967,7 @@ const Page: React.FC = () => {
                       >
                         <Cell key="home" fill="#3b82f6" />
                         <Cell key="draw" fill="#6b7280" />
-                        <Cell key="away" fill="#a78bfa" />
+                        <Cell key="away" fill="#a16be0" />
                       </Pie>
                       <RechartsTooltip
                         formatter={(value: number, name: string, props) => [
