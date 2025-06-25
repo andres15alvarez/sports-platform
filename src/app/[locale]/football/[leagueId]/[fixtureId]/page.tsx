@@ -132,6 +132,24 @@ interface FixtureAPIResponse {
   goals: { home: number; away: number };
 }
 
+// Tipo mínimo para los datos de jugadores
+interface PlayerStatsAPIResponse {
+  player: { id: number; name: string };
+  statistics: Array<{
+    team: { id: number; name: string };
+    goals: { total: number; assists: number };
+  }>;
+}
+
+// Tipo para los datos de la gráfica de key players
+interface PlayerKeyContribution {
+  name: string;
+  team: string;
+  goals: number;
+  assists: number;
+  contribution: number;
+}
+
 const Page: React.FC = () => {
   const params = useParams<{ leagueId: string; fixtureId: string }>();
   const fixtureId = params?.fixtureId ? Number(params.fixtureId) : null;
@@ -152,6 +170,10 @@ const Page: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('match-analysis');
   const [pointsProgression, setPointsProgression] = useState<unknown[]>([]);
+  const [keyPlayersData, setKeyPlayersData] = useState<PlayerKeyContribution[]>(
+    [],
+  );
+  const [loadingKeyPlayers, setLoadingKeyPlayers] = useState(false);
 
   useEffect(() => {
     if (fixtureId) {
@@ -457,6 +479,62 @@ const Page: React.FC = () => {
       };
     });
   };
+
+  //////// PARA LA GRAFICA DE KEY PLAYERS
+
+  useEffect(() => {
+    const fetchKeyPlayers = async () => {
+      if (!fixtureData) return;
+      setLoadingKeyPlayers(true);
+      const leagueId = fixtureData.league.id;
+      const season = fixtureData.league.season;
+      const homeId = fixtureData.teams.home.id;
+      const awayId = fixtureData.teams.away.id;
+      // Fetch players for both teams
+      const fetchPlayers = async (teamId: number) => {
+        const response = await fetch(
+          `https://v3.football.api-sports.io/players?team=${teamId}&league=${leagueId}&season=${season}`,
+          {
+            headers: {
+              'x-rapidapi-key': process.env.NEXT_PUBLIC_API_KEYY || '',
+              'x-rapidapi-host': 'v3.football.api-sports.io',
+            },
+          },
+        );
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data.response || [];
+      };
+      const [homePlayers, awayPlayers] = await Promise.all([
+        fetchPlayers(homeId),
+        fetchPlayers(awayId),
+      ]);
+      const processPlayers = (
+        players: PlayerStatsAPIResponse[],
+        teamName: string,
+      ) =>
+        players
+          .map((p) => {
+            const stats = p.statistics[0];
+            return {
+              name: p.player.name,
+              team: teamName,
+              goals: stats?.goals?.total || 0,
+              assists: stats?.goals?.assists || 0,
+              contribution:
+                (stats?.goals?.total || 0) + (stats?.goals?.assists || 0),
+            };
+          })
+          .sort((a, b) => b.contribution - a.contribution)
+          .slice(0, 5);
+      const homeTop = processPlayers(homePlayers, fixtureData.teams.home.name);
+      const awayTop = processPlayers(awayPlayers, fixtureData.teams.away.name);
+
+      setKeyPlayersData([...homeTop, ...awayTop]);
+      setLoadingKeyPlayers(false);
+    };
+    fetchKeyPlayers();
+  }, [fixtureData]);
 
   if (loading) {
     return (
@@ -1724,8 +1802,54 @@ const Page: React.FC = () => {
 
         {activeTab === 'key-players' && (
           <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-            <h2 className="text-lg font-bold mb-4">Key Players</h2>
-            <p className="text-gray-600">Key players content will go here...</p>
+            <h2 className="text-lg font-bold mb-4">Key Players Analysis</h2>
+            <div className="mb-6">
+              <h3 className="text-md font-bold mb-2">
+                Goal Contribution Comparison
+              </h3>
+              {loadingKeyPlayers ? (
+                <div className="text-gray-500">Loading key players...</div>
+              ) : (
+                <ResponsiveContainer width="100%" height={350}>
+                  <BarChart
+                    data={keyPlayersData}
+                    margin={{ top: 30, right: 30, left: 0, bottom: 30 }}
+                    barCategoryGap={20}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                    <YAxis
+                      allowDecimals={false}
+                      label={{
+                        value: 'Count',
+                        angle: -90,
+                        position: 'insideLeft',
+                      }}
+                    />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="goals"
+                      name="Goals"
+                      fill="#4fd1c5"
+                      barSize={30}
+                      radius={[8, 8, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="assists"
+                      name="Assists"
+                      fill="#f6ad55"
+                      barSize={30}
+                      radius={[8, 8, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+              <div className="text-xs text-blue-700 mt-2">
+                Chart shows combined goals and assists for top 5 contributors
+                from each team this season.
+              </div>
+            </div>
           </div>
         )}
 
