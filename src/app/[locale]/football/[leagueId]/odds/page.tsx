@@ -52,24 +52,6 @@ interface OddWithTeams extends OddResponse {
   teams?: TeamsInfo;
 }
 
-interface TableColumn {
-  key: string;
-  label: string;
-}
-
-interface MatchData {
-  match: string;
-  date: string;
-  probability: string;
-  prediction: string;
-  result: string;
-  odds: string;
-  greenOddsIndex?: number;
-  leagueLogo: string;
-  leagueName: string;
-  [key: string]: string | number | undefined;
-}
-
 interface LeagueInfo {
   id: number;
   name: string;
@@ -79,25 +61,14 @@ interface LeagueInfo {
   season: number;
 }
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-};
-
 const Page: React.FC = () => {
   const [selectedBetType, setSelectedBetType] = useState('Match Winner');
   const [odds, setOdds] = useState<OddWithTeams[]>([]);
-  const [tableData, setTableData] = useState<MatchData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [leagueInfo, setLeagueInfo] = useState<LeagueInfo | null>(null);
   const params = useParams<{ leagueId: string }>();
-
-  const leagueId = params?.leagueId || 71; // Brazil Serie A
+  const leagueId = params?.leagueId || 71;
   const season = 2025;
 
   const betTypes = [
@@ -120,103 +91,10 @@ const Page: React.FC = () => {
     { value: 'Asian Handicap', label: 'Handicap', shortLabel: 'Handicap' },
   ];
 
-  const desktopColumns: TableColumn[] = [
-    { key: 'match', label: 'Match' },
-    { key: 'date', label: 'Date' },
-    { key: 'probability', label: 'Prob. %' },
-    { key: 'prediction', label: 'Prediction' },
-    { key: 'result', label: 'Result' },
-    { key: 'odds', label: 'Odds' },
-  ];
-
-  const mobileColumns: TableColumn[] = [
-    { key: 'match', label: 'Match' },
-    { key: 'prediction', label: 'Pred' },
-    { key: 'odds', label: 'Odds' },
-  ];
-
-  const processOddsData = (odds: OddWithTeams[]) => {
-    return odds.map((item) => {
-      const fixture = item.fixture;
-      const league = item.league || {};
-
-      const homeTeam = item.teams?.home?.name ?? 'Team A';
-      const awayTeam = item.teams?.away?.name ?? 'Team B';
-
-      const date = formatDate(fixture.date);
-      const result = '-';
-
-      const bookmaker =
-        item.bookmakers?.find((b) => b.name === 'Bet365') ||
-        item.bookmakers?.find((b) => b.name === 'Bwin') ||
-        item.bookmakers?.[0];
-
-      const selectedBet = bookmaker?.bets?.find(
-        (b) => b.name === selectedBetType,
-      );
-      const betValues = selectedBet?.values ?? [];
-
-      let prediction = '?';
-      let probability = '?';
-      let greenOddsIndex: number | undefined = undefined;
-
-      if (selectedBetType === 'Match Winner' && betValues.length) {
-        const oddsWithIndex = betValues.map((v, i) => ({ ...v, index: i }));
-        const best = oddsWithIndex.reduce((min, curr) =>
-          parseFloat(curr.odd) < parseFloat(min.odd) ? curr : min,
-        );
-
-        prediction =
-          best.value === 'Home' ? '1' : best.value === 'Away' ? '2' : 'X';
-        probability = (100 / parseFloat(best.odd)).toFixed(0) + '%';
-        greenOddsIndex = best.index;
-      } else if (selectedBetType === 'Both Teams Score' && betValues.length) {
-        const yesOdd = betValues.find((v) => v.value === 'Yes');
-        const noOdd = betValues.find((v) => v.value === 'No');
-
-        if (yesOdd && noOdd) {
-          const yesProb = 100 / parseFloat(yesOdd.odd);
-          const noProb = 100 / parseFloat(noOdd.odd);
-
-          prediction = yesProb > noProb ? 'Yes' : 'No';
-          probability = Math.max(yesProb, noProb).toFixed(0) + '%';
-          greenOddsIndex = yesProb > noProb ? 0 : 1;
-        }
-      } else if (selectedBetType === 'Goals Over/Under' && betValues.length) {
-        const over = betValues.find((v) => v.value.includes('Over'));
-        const under = betValues.find((v) => v.value.includes('Under'));
-
-        if (over && under) {
-          const overProb = 100 / parseFloat(over.odd);
-          const underProb = 100 / parseFloat(under.odd);
-
-          prediction = overProb > underProb ? 'Over 2.5' : 'Under 2.5';
-          probability = Math.max(overProb, underProb).toFixed(0) + '%';
-          greenOddsIndex = overProb > underProb ? 0 : 1;
-        }
-      }
-
-      const oddsString = betValues.map((v) => v.odd).join(' ');
-
-      return {
-        match: `${homeTeam} - ${awayTeam}`,
-        date,
-        prediction,
-        probability,
-        result,
-        odds: oddsString,
-        greenOddsIndex,
-        leagueLogo: league.logo ?? '',
-        leagueName: league.name ?? '',
-      };
-    });
-  };
-
   useEffect(() => {
     const fetchLeagueOdds = async () => {
       setLoading(true);
       setError(null);
-
       try {
         const oddsResponse = await fetch(
           `https://v3.football.api-sports.io/odds?league=${leagueId}&season=${season}`,
@@ -227,36 +105,27 @@ const Page: React.FC = () => {
             },
           },
         );
-
         if (!oddsResponse.ok) throw new Error('Failed to fetch odds');
-
         const oddsData = await oddsResponse.json();
-
         if (!oddsData.response || oddsData.response.length === 0) {
           setOdds([]);
           setLoading(false);
           return;
         }
-
         const oddsResults: OddResponse[] = oddsData.response;
-
         if (oddsResults.length > 0) {
           setLeagueInfo(oddsResults[0].league);
         }
-
         const sortedOdds = oddsResults.sort(
           (a, b) => a.fixture.timestamp - b.fixture.timestamp,
         );
-
         const fixtureIds = [
           ...new Set(sortedOdds.map((odd) => odd.fixture.id)),
         ];
         const teamsMap = new Map<number, TeamsInfo>();
-
         const batchSize = 10;
         for (let i = 0; i < fixtureIds.length; i += batchSize) {
           const batch = fixtureIds.slice(i, i + batchSize);
-
           const batchPromises = batch.map(async (fixtureId) => {
             try {
               const response = await fetch(
@@ -268,9 +137,7 @@ const Page: React.FC = () => {
                   },
                 },
               );
-
               if (!response.ok) return null;
-
               const data = await response.json();
               if (data.response && data.response[0]) {
                 return {
@@ -279,134 +146,61 @@ const Page: React.FC = () => {
                 };
               }
               return null;
-            } catch (err) {
-              console.error(`Error fetching fixture ${fixtureId}:`, err);
+            } catch {
               return null;
             }
           });
-
           const results = await Promise.all(batchPromises);
-
           results.forEach((result) => {
             if (result) {
               teamsMap.set(result.fixtureId, result.teams);
             }
           });
-
           if (i + batchSize < fixtureIds.length) {
             await new Promise((resolve) => setTimeout(resolve, 200));
           }
         }
-
-        // Combine odds with team information
         const oddsWithTeams: OddWithTeams[] = sortedOdds.map((odd) => ({
           ...odd,
           teams: teamsMap.get(odd.fixture.id),
         }));
         setOdds(oddsWithTeams);
       } catch (err) {
-        console.error('Error:', err);
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);
       }
     };
     fetchLeagueOdds();
-  }, []);
+  }, [leagueId, season]);
 
-  useEffect(() => {
-    if (odds.length > 0) {
-      const processedData = processOddsData(odds);
-      setTableData(processedData);
-    }
-  }, [odds, selectedBetType]);
-
-  const Table: React.FC<{ columns: TableColumn[]; data: MatchData[] }> = ({
-    columns,
-    data,
-  }) => {
+  const getBookmakerLogo = (name: string) => {
+    const bookmakerLogos: { [key: string]: string } = {
+      Bet365: 'https://www.bet365.com/favicon.ico',
+      'William Hill': 'https://www.williamhill.com/favicon.ico',
+      Betfair: 'https://www.betfair.com/favicon.ico',
+      '1xBet': 'https://1xbet.com/favicon.ico',
+      Betway: 'https://www.betway.com/favicon.ico',
+    };
     return (
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr className="text-sm text-black bg-green-50 border-b-2 border-green-600 text-left">
-              {columns.map((col, index) => (
-                <th key={index} className="py-2 px-3 text-sm">
-                  {col.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            {data.map((row, index) => (
-              <tr
-                key={index}
-                className="border-b border-gray-200 hover:bg-green-50"
-              >
-                {columns.map((col, i) => (
-                  <td key={i} className="py-2 px-3 text-center">
-                    {col.key === 'match' ? (
-                      <div className="flex items-center">
-                        <Image
-                          src={row.leagueLogo}
-                          alt={row.leagueName}
-                          width={20}
-                          height={20}
-                          className="w-5 h-5 mr-2"
-                          unoptimized
-                        />
-                        <span className="hover:text-green-600 text-[11px] whitespace-nowrap lg:whitespace-normal">
-                          {row.match}
-                        </span>
-                        <span className="lg:inline-block text-xs hidden bg-gray-300 text-gray-700 px-1 rounded ml-2">
-                          {row.leagueName}
-                        </span>
-                      </div>
-                    ) : col.key === 'odds' ? (
-                      <div className="flex justify-center gap-2">
-                        {row.odds
-                          .split(' ')
-                          .filter(Boolean)
-                          .map((val: string, idx: number) => {
-                            const textColor =
-                              idx === row.greenOddsIndex
-                                ? 'text-green-600 font-semibold'
-                                : '';
-                            return (
-                              <span
-                                key={idx}
-                                className={`${textColor} font-medium`}
-                              >
-                                {val}
-                              </span>
-                            );
-                          })}
-                      </div>
-                    ) : col.key === 'prediction' ? (
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-semibold
-                          ${['1', 'Yes', 'Over 2.5'].includes(row.prediction) ? 'bg-green-100 text-green-800' : ''} 
-                          ${row.prediction === 'X' ? 'bg-yellow-100 text-yellow-800' : ''} 
-                          ${['2', 'No', 'Under 2.5'].includes(row.prediction) ? 'bg-red-100 text-red-800' : ''}`}
-                      >
-                        {row.prediction}
-                      </span>
-                    ) : (
-                      row[col.key]
-                    )}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      bookmakerLogos[name] ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=166534&color=fff&size=32`
     );
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-screen bg-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-800 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading league details...</p>
@@ -451,50 +245,182 @@ const Page: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Bet Type Selector */}
-        <div className="bg-gray-50 rounded-lg p-2 mb-4 overflow-x-auto whitespace-nowrap">
-          <div className="flex space-x-2">
-            {betTypes.map((type) => (
-              <button
-                key={type.value}
-                onClick={() => setSelectedBetType(type.value)}
-                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors
-                  ${
-                    selectedBetType === type.value
-                      ? 'bg-green-600 text-white'
-                      : 'bg-white hover:bg-green-50 text-gray-700 border border-gray-200'
-                  }`}
-              >
-                <span className="hidden lg:inline">{type.label}</span>
-                <span className="lg:hidden">{type.shortLabel}</span>
-              </button>
-            ))}
-          </div>
+        {/* Tabs de tipo de apuesta */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {betTypes.map((type) => (
+            <button
+              key={type.value}
+              className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors
+                ${selectedBetType === type.value ? 'bg-green-600 text-white' : 'bg-white text-green-900 border-green-200 hover:bg-green-50'}`}
+              onClick={() => setSelectedBetType(type.value)}
+            >
+              {type.label}
+            </button>
+          ))}
         </div>
-
-        {/* Matches Table */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-base lg:text-lg font-semibold mb-4">
-            {leagueInfo?.name || 'Campeonato Brasileiro Série A'} -{' '}
-            {selectedBetType}
-          </h3>
-
-          {/* Desktop Table */}
-          <div className="hidden lg:block">
-            <Table columns={desktopColumns} data={tableData} />
-          </div>
-
-          {/* Mobile Table */}
-          <div className="lg:hidden">
-            <Table columns={mobileColumns} data={tableData} />
-          </div>
-
-          {odds.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              No matches available for this league
-            </div>
-          )}
+        {/* Para cada partido, renderiza la tabla estilo bookmarkers */}
+        <div className="space-y-10">
+          {odds.map((odd) => {
+            const filteredBookmakers = odd.bookmakers.filter((b) =>
+              b.bets.some((bet) => bet.name === selectedBetType),
+            );
+            if (filteredBookmakers.length === 0) return null;
+            // Obtener los nombres de columnas dinámicamente
+            const bet = filteredBookmakers[0].bets.find(
+              (b) => b.name === selectedBetType,
+            );
+            const columns = bet ? bet.values.map((v) => v.value) : [];
+            // Calcular la mejor cuota por columna
+            const minOddsPerColumn: number[] = [];
+            if (filteredBookmakers.length > 0 && bet) {
+              const betsArrays = filteredBookmakers.map((bookmaker) => {
+                const betData = bookmaker.bets.find(
+                  (b) => b.name === selectedBetType,
+                );
+                return betData
+                  ? betData.values.map((v) => parseFloat(v.odd))
+                  : [];
+              });
+              const numColumns = betsArrays[0]?.length || 0;
+              for (let i = 0; i < numColumns; i++) {
+                let min = Infinity;
+                for (let j = 0; j < betsArrays.length; j++) {
+                  if (
+                    betsArrays[j][i] !== undefined &&
+                    betsArrays[j][i] < min
+                  ) {
+                    min = betsArrays[j][i];
+                  }
+                }
+                minOddsPerColumn[i] = min;
+              }
+            }
+            return (
+              <div
+                key={odd.fixture.id}
+                className="bg-white rounded-lg shadow-sm overflow-hidden mb-8"
+              >
+                {/* Header del partido */}
+                <div className="flex items-center justify-between bg-white px-4 py-8 border-b border-green-200">
+                  <div className="flex items-center gap-3">
+                    {odd.teams && (
+                      <>
+                        <div className="flex items-center gap-2">
+                          <Image
+                            src={odd.teams.home.logo}
+                            alt={odd.teams.home.name}
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                            unoptimized
+                          />
+                          <span className="font-semibold text-green-900">
+                            {odd.teams.home.name}
+                          </span>
+                        </div>
+                        <span className="text-green-700 font-bold">vs</span>
+                        <div className="flex items-center gap-2">
+                          <Image
+                            src={odd.teams.away.logo}
+                            alt={odd.teams.away.name}
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                            unoptimized
+                          />
+                          <span className="font-semibold text-green-900">
+                            {odd.teams.away.name}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-green-900 font-medium">
+                      {formatDate(odd.fixture.date)}
+                    </div>
+                    <div className="text-xs text-green-700">
+                      {odd.league.name}
+                    </div>
+                  </div>
+                </div>
+                {/* Tabla de odds estilo bookmarkers */}
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-gray-50">
+                    <thead>
+                      <tr className="text-sm text-black bg-green-50 border-b-2 border-green-600 text-left">
+                        <th className="py-2 px-3 text-sm">Bookmaker</th>
+                        {columns.map((col, idx) => (
+                          <th
+                            key={idx}
+                            className="py-2 px-3 text-sm text-center"
+                          >
+                            {col}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      {filteredBookmakers.map((bookmaker, idx) => {
+                        const bet = bookmaker.bets.find(
+                          (b) => b.name === selectedBetType,
+                        );
+                        if (!bet) return null;
+                        return (
+                          <tr
+                            key={idx}
+                            className="border-b border-gray-200 hover:bg-green-50"
+                          >
+                            <td className="py-2 px-3 text-sm">
+                              <div className="flex items-center space-x-2">
+                                <div className="relative w-6 h-6">
+                                  <Image
+                                    src={getBookmakerLogo(bookmaker.name)}
+                                    alt={bookmaker.name}
+                                    fill
+                                    className="object-contain rounded"
+                                    unoptimized
+                                    onError={(e) => {
+                                      const img = e.target as HTMLImageElement;
+                                      img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(bookmaker.name)}&background=166534&color=fff&size=32`;
+                                    }}
+                                  />
+                                </div>
+                                <span className="font-medium text-gray-900">
+                                  {bookmaker.name}
+                                </span>
+                              </div>
+                            </td>
+                            {bet.values.map((value, vIdx) => {
+                              const oddValue = parseFloat(value.odd);
+                              const isBest =
+                                oddValue === minOddsPerColumn[vIdx];
+                              return (
+                                <td
+                                  key={vIdx}
+                                  className="py-2 px-3 text-sm text-center text-gray-600"
+                                >
+                                  <span
+                                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                                      isBest
+                                        ? 'bg-green-100 text-green-700 font-bold hover:bg-green-200'
+                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                    }`}
+                                  >
+                                    {value.odd}
+                                  </span>
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

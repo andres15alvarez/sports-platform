@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ChevronDown } from 'lucide-react';
 
 // Tipo para el odd como viene de la API
 interface OddResponse {
@@ -71,11 +72,13 @@ const Page: React.FC = () => {
   const [selectedBet, setSelectedBet] = useState('Match Winner');
   const [leaguesData, setLeaguesData] = useState<LeagueData[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [expandedMatches, setExpandedMatches] = useState<{
+    [fixtureId: number]: boolean;
+  }>({});
 
   // Ligas actualmente activas (enero 2025)
   const activeLeagues = [
-    { id: 71, name: 'Série A', country: 'Brazil' },
-    { id: 240, name: 'Liga BetPlay', country: 'Colombia' },
+    { id: 15, name: 'Liga BetPlay', country: 'Colombia' },
     { id: 239, name: 'Primera División', country: 'Chile' },
     { id: 268, name: 'Primera División', country: 'Uruguay' },
     { id: 281, name: 'Liga 1', country: 'Peru' },
@@ -260,19 +263,12 @@ const Page: React.FC = () => {
     }
   };
 
-  {
-    /*
-  const toggleLeagueExpansion = (index: number) => {
-    setLeaguesData(prev => {
-      const updated = [...prev];
-      updated[index] = {
-        ...updated[index],
-        expanded: !updated[index].expanded,
-      };
-      return updated;
-    });
-  };*/
-  }
+  const toggleMatchExpansion = (fixtureId: number) => {
+    setExpandedMatches((prev) => ({
+      ...prev,
+      [fixtureId]: !prev[fixtureId],
+    }));
+  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -419,6 +415,40 @@ const Page: React.FC = () => {
 
                           if (filteredBookmakers.length === 0) return null;
 
+                          const isExpanded =
+                            expandedMatches[odd.fixture.id] || false;
+                          const bookmakersToShow = isExpanded
+                            ? filteredBookmakers
+                            : filteredBookmakers.slice(0, 3);
+
+                          const minOddsPerColumn: number[] = [];
+                          if (filteredBookmakers.length > 0) {
+                            const betsArrays = filteredBookmakers.map(
+                              (bookmaker) => {
+                                const bet = bookmaker.bets.find(
+                                  (b) => b.name === selectedBet,
+                                );
+                                return bet
+                                  ? bet.values.map((v) => parseFloat(v.odd))
+                                  : [];
+                              },
+                            );
+
+                            const numColumns = betsArrays[0]?.length || 0;
+                            for (let i = 0; i < numColumns; i++) {
+                              let min = Infinity;
+                              for (let j = 0; j < betsArrays.length; j++) {
+                                if (
+                                  betsArrays[j][i] !== undefined &&
+                                  betsArrays[j][i] < min
+                                ) {
+                                  min = betsArrays[j][i];
+                                }
+                              }
+                              minOddsPerColumn[i] = min;
+                            }
+                          }
+
                           return (
                             <div
                               key={odd.fixture.id}
@@ -476,53 +506,82 @@ const Page: React.FC = () => {
                               {/* Odds Display */}
                               <div className="p-4 bg-gray-50 border-t border-gray-200">
                                 <div className="space-y-2">
-                                  {filteredBookmakers
-                                    .slice(0, 3)
-                                    .map((bookmaker, idx) => {
-                                      const bet = bookmaker.bets.find(
-                                        (b) => b.name === selectedBet,
-                                      );
-                                      if (!bet) return null;
-
-                                      return (
-                                        <div
-                                          key={idx}
-                                          className="flex items-center justify-between text-xs"
-                                        >
-                                          <div className="flex items-center space-x-1">
-                                            <div className="relative w-4 h-4">
-                                              <Image
-                                                src={getBookmakerLogo(
-                                                  bookmaker.name,
-                                                )}
-                                                alt={bookmaker.name}
-                                                fill
-                                                className="object-contain rounded"
-                                                unoptimized
-                                                onError={(e) => {
-                                                  const img =
-                                                    e.target as HTMLImageElement;
-                                                  img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(bookmaker.name)}&background=166534&color=fff&size=32`;
-                                                }}
-                                              />
-                                            </div>
-                                            <span className="font-medium text-gray-700">
-                                              {bookmaker.name}
-                                            </span>
+                                  {bookmakersToShow.map((bookmaker, idx) => {
+                                    const bet = bookmaker.bets.find(
+                                      (b) => b.name === selectedBet,
+                                    );
+                                    if (!bet) return null;
+                                    return (
+                                      <div
+                                        key={idx}
+                                        className="flex items-center justify-between text-xs"
+                                      >
+                                        <div className="flex items-center space-x-1">
+                                          <div className="relative w-4 h-4">
+                                            <Image
+                                              src={getBookmakerLogo(
+                                                bookmaker.name,
+                                              )}
+                                              alt={bookmaker.name}
+                                              fill
+                                              className="object-contain rounded"
+                                              unoptimized
+                                              onError={(e) => {
+                                                const img =
+                                                  e.target as HTMLImageElement;
+                                                img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(bookmaker.name)}&background=166534&color=fff&size=32`;
+                                              }}
+                                            />
                                           </div>
-                                          <div className="flex space-x-1">
-                                            {bet.values.map((value, vIdx) => (
+                                          <span className="font-medium text-gray-700">
+                                            {bookmaker.name}
+                                          </span>
+                                        </div>
+                                        <div className="flex space-x-1">
+                                          {bet.values.map((value, vIdx) => {
+                                            const oddValue = parseFloat(
+                                              value.odd,
+                                            );
+                                            const isBest =
+                                              oddValue ===
+                                              minOddsPerColumn[vIdx];
+                                            return (
                                               <span
                                                 key={vIdx}
-                                                className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold"
+                                                className={
+                                                  isBest
+                                                    ? 'bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-semibold'
+                                                    : 'bg-gray-100 text-gray-500 px-2 py-1 rounded text-xs font-semibold'
+                                                }
                                               >
                                                 {value.odd}
                                               </span>
-                                            ))}
-                                          </div>
+                                            );
+                                          })}
                                         </div>
-                                      );
-                                    })}
+                                      </div>
+                                    );
+                                  })}
+                                  {filteredBookmakers.length > 3 && (
+                                    <div className="flex justify-end">
+                                      <button
+                                        className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-green-100 transition-colors focus:outline-none mt-2"
+                                        onClick={() =>
+                                          toggleMatchExpansion(odd.fixture.id)
+                                        }
+                                        aria-label={
+                                          isExpanded
+                                            ? 'Mostrar menos casas'
+                                            : `Mostrar ${filteredBookmakers.length - 3} más`
+                                        }
+                                        type="button"
+                                      >
+                                        <ChevronDown
+                                          className={`w-5 h-5 text-green-700 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                                        />
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </div>
