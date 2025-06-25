@@ -54,16 +54,6 @@ const LeagueCalendar: React.FC<LeagueCalendarProps> = ({
                 />
               ))}
             </div>
-            {league.fixtures.length > 3 && (
-              <div className="mt-6 text-center">
-                <a
-                  href={`/${sportType}/${league.id}/calendar`}
-                  className="inline-block bg-green-600 text-white py-2 px-6 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
-                >
-                  View Full Calendar
-                </a>
-              </div>
-            )}
           </div>
         )}
       </div>

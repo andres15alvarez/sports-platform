@@ -27,8 +27,6 @@ const SportsResultsPage: React.FC<SportsResultsPageProps> = ({
     return <LoadingSpinner message={config.loadingMessage} />;
   }
 
-  console.log(`Current ${config.sportType} leagues data:`, leaguesData);
-
   return (
     <div className="min-h-screen bg-white py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

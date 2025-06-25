@@ -50,24 +50,23 @@ const LeagueCalendarHeader: React.FC<LeagueCalendarHeaderProps> = ({
         </div>
       </div>
       {league.fixtures.length > 0 && (
-        <Link
-          href={`/${sportType}/${league.id}/calendar`}
-          className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center space-x-1"
-        >
-          <span>View Full Calendar</span>
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
+        <Link href={`/${sportType}/${league.id}/calendar`}>
+          <button className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center space-x-1">
+            <span>View More</span>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </Link>
       )}
     </div>

@@ -34,14 +34,6 @@ const SportsCalendarPage: React.FC<SportsCalendarPageProps> = ({
     return <LoadingSpinner message={config.loadingMessage} />;
   }
 
-  // Debug logs
-  console.log('leagues', leagues);
-  console.log('fixtures', fixtures);
-  console.log(
-    'leaguesData',
-    leagues.map((l) => ({ id: l.id, name: l.name })),
-  );
-
   const now = Date.now();
   const leaguesData: LeagueWithFixtures[] = leagues.map((league: League) => {
     const leagueUpcomingFixtures = fixtures
@@ -65,15 +57,6 @@ const SportsCalendarPage: React.FC<SportsCalendarPageProps> = ({
       expanded: false,
     };
   });
-
-  console.log(
-    'leaguesDataWithUpcoming',
-    leaguesData.map((l) => ({
-      id: l.id,
-      name: l.name,
-      upcoming: l.fixtures.length,
-    })),
-  );
 
   const previewLeagues = leaguesData
     .filter((l) => l.fixtures.length > 0)
