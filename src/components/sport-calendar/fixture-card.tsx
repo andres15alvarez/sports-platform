@@ -76,28 +76,41 @@ const FixtureCard: React.FC<FixtureCardProps> = ({ fixture, onClick }) => {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
+  };
+
   return (
     <div
-      className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer"
+      className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 cursor-pointer"
       onClick={() => onClick(fixture)}
     >
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <Image
-              src={fixture.league.logo}
-              alt={fixture.league.name}
-              width={24}
-              height={24}
-              className="object-contain"
-              unoptimized
-            />
-            <span className="text-sm text-gray-600">
-              {fixture.league.name} - {fixture.league.round}
-            </span>
-          </div>
+      <div className="bg-white p-4">
+        {/* Date and Time */}
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs text-gray-500">
+            {formatDate(fixture.fixture.date)}
+          </span>
+          <span className="text-xs text-gray-500">
+            {formatTime(fixture.fixture.date)}
+          </span>
+        </div>
+
+        {/* Status */}
+        <div className="mb-2 text-center">
           <span
-            className={`text-sm font-medium ${getStatusColor(fixture.fixture.status.short)}`}
+            className={`text-xs font-medium ${getStatusColor(fixture.fixture.status.short)}`}
           >
             {getStatusText(
               fixture.fixture.status.short,
@@ -106,76 +119,64 @@ const FixtureCard: React.FC<FixtureCardProps> = ({ fixture, onClick }) => {
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex-1 flex items-center space-x-3">
-            <Image
-              src={fixture.teams.home.logo}
-              alt={fixture.teams.home.name}
-              width={40}
-              height={40}
-              className="object-contain"
-              unoptimized
-            />
-            <span
-              className={`font-medium ${fixture.teams.home.winner ? 'text-green-600' : ''}`}
-            >
-              {fixture.teams.home.name}
-            </span>
-          </div>
-
-          <div className="px-6 text-center">
-            {fixture.fixture.status.short === 'NS' ? (
-              <span className="text-xl font-bold text-gray-700">
-                {formatTime(fixture.fixture.date)}
+        {/* Teams and Score/Time (horizontal layout) */}
+        <div className="space-y-2">
+          {/* Home */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 flex-1">
+              <Image
+                src={fixture.teams.home.logo}
+                alt={fixture.teams.home.name}
+                width={32}
+                height={32}
+                className="object-contain"
+                unoptimized
+              />
+              <span className="text-sm font-medium">
+                {fixture.teams.home.name}
               </span>
-            ) : (
-              <div className="text-2xl font-bold">
-                <span
-                  className={
-                    fixture.teams.home.winner
-                      ? 'text-green-600'
-                      : 'text-gray-700'
-                  }
-                >
-                  {fixture.goals.home ?? '-'}
-                </span>
-                <span className="mx-2 text-gray-400">:</span>
-                <span
-                  className={
-                    fixture.teams.away.winner
-                      ? 'text-green-600'
-                      : 'text-gray-700'
-                  }
-                >
-                  {fixture.goals.away ?? '-'}
-                </span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1 flex items-center justify-end space-x-3">
-            <span
-              className={`font-medium ${fixture.teams.away.winner ? 'text-green-600' : ''}`}
-            >
-              {fixture.teams.away.name}
+            </div>
+            <span className="text-lg font-bold text-gray-700">
+              {fixture.fixture.status.short === 'NS'
+                ? ''
+                : (fixture.goals.home ?? '-')}
             </span>
-            <Image
-              src={fixture.teams.away.logo}
-              alt={fixture.teams.away.name}
-              width={40}
-              height={40}
-              className="object-contain"
-              unoptimized
-            />
+          </div>
+          {/* Away */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 flex-1">
+              <Image
+                src={fixture.teams.away.logo}
+                alt={fixture.teams.away.name}
+                width={32}
+                height={32}
+                className="object-contain"
+                unoptimized
+              />
+              <span className="text-sm font-medium">
+                {fixture.teams.away.name}
+              </span>
+            </div>
+            <span className="text-lg font-bold text-gray-700">
+              {fixture.fixture.status.short === 'NS'
+                ? ''
+                : (fixture.goals.away ?? '-')}
+            </span>
           </div>
         </div>
-
-        {fixture.fixture.venue.name && (
-          <div className="mt-3 text-center text-sm text-gray-500">
-            {fixture.fixture.venue.name}
-          </div>
-        )}
       </div>
+
+      {/* Venue and extra info at the bottom in gray bg */}
+      {(fixture.fixture.venue.name || fixture.league.round) && (
+        <div className="p-4 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
+          <div className="flex flex-col items-center space-y-1">
+            {fixture.league.round && <div>{fixture.league.round}</div>}
+            {fixture.fixture.venue.name && (
+              <div>{fixture.fixture.venue.name}</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
