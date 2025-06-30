@@ -31,7 +31,7 @@ const ExpertPredictionsChart: React.FC = () => {
     responsive: true,
     plugins: {
       legend: { position: 'right' },
-      title: { display: true, text: 'OddsSite Expert Panel Predictions' },
+      title: { display: true, text: 'Odds Expert Panel Predictions' },
     },
   };
 

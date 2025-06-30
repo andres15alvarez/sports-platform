@@ -54,8 +54,8 @@ const BettingOffers = () => {
         <p className="text-sm text-blue-800 flex items-center">
           <i className="bx bx-info-circle mr-2 text-xl"></i>
           Gambling is forbidden to minors under 18 years of age. Gamble
-          responsibly. OddsSite compares odds from ADM (formerly AAMS)
-          authorized bookmakers.
+          responsibly. Odds compares odds from ADM (formerly AAMS) authorized
+          bookmakers.
         </p>
       </div>
     </section>

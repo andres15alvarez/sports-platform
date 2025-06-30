@@ -35,7 +35,7 @@ const ExpertPanelPieChart: React.FC = () => {
       },
       title: {
         display: true,
-        text: 'OddsSite Expert Panel Predictions',
+        text: 'Odds Expert Panel Predictions',
       },
     },
   };

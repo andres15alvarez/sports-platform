@@ -33,7 +33,7 @@ const OddsPredictionPieChart: React.FC = () => {
       legend: { position: 'right' },
       title: {
         display: true,
-        text: 'OddsSite Expert Panel Predictions',
+        text: 'Odds Expert Panel Predictions',
       },
     },
   };

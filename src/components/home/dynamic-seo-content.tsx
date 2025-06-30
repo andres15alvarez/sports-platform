@@ -36,7 +36,7 @@ const faqData: FAQ[] = [
   {
     question: 'What are the best odds for Inter-Milan?',
     answer:
-      'Current odds indicate Inter as the favorite at 1.85, with a draw at 3.40 and a Milan win at 4.50. Always compare odds on OddsSite to find the best values.',
+      'Current odds indicate Inter as the favorite at 1.85, with a draw at 3.40 and a Milan win at 4.50. Always compare odds on Odds to find the best values.',
   },
   {
     question: 'How can I access exclusive predictions?',

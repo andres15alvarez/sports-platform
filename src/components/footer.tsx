@@ -6,16 +6,16 @@ const Footer: React.FC = () => {
     <footer className="bg-green-900 text-white py-8">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {/* OddsSite Description */}
+          {/* Odds Description */}
           <div className="hidden lg:block">
-            <h3 className="text-lg font-bold mb-4">OddsSite</h3>
+            <h3 className="text-lg font-bold mb-4">Odds</h3>
             <p className="text-sm">
               Your complete portal for sports odds, expert predictions, and
               comparison of the best Italian and European bookmakers.
             </p>
             <div className="flex space-x-4 mt-4">
               <a
-                href="https://www.facebook.com/oddssite"
+                href="https://www.facebook.com/odds"
                 aria-label="Facebook"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
                 <i className="bx bxl-facebook text-xl"></i>
               </a>
               <a
-                href="https://www.twitter.com/oddssite"
+                href="https://www.twitter.com/odds"
                 aria-label="Twitter"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -31,7 +31,7 @@ const Footer: React.FC = () => {
                 <i className="bx bxl-twitter text-xl"></i>
               </a>
               <a
-                href="https://www.instagram.com/oddssite"
+                href="https://www.instagram.com/odds"
                 aria-label="Instagram"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -150,7 +150,7 @@ const Footer: React.FC = () => {
 
         <div className="flex justify-center space-x-4 mt-4 lg:hidden">
           <a
-            href="https://www.facebook.com/oddssite"
+            href="https://www.facebook.com/odds"
             aria-label="Facebook"
             target="_blank"
             rel="noopener noreferrer"
@@ -158,7 +158,7 @@ const Footer: React.FC = () => {
             <i className="bx bxl-facebook text-xl"></i>
           </a>
           <a
-            href="https://www.twitter.com/oddssite"
+            href="https://www.twitter.com/odds"
             aria-label="Twitter"
             target="_blank"
             rel="noopener noreferrer"
@@ -166,7 +166,7 @@ const Footer: React.FC = () => {
             <i className="bx bxl-twitter text-xl"></i>
           </a>
           <a
-            href="https://www.instagram.com/oddssite"
+            href="https://www.instagram.com/odds"
             aria-label="Instagram"
             target="_blank"
             rel="noopener noreferrer"
@@ -178,12 +178,11 @@ const Footer: React.FC = () => {
         {/* Footer Bottom Section */}
         <div className="border-t border-green-700 mt-6 pt-6 text-center text-xs lg:text-sm">
           <p>
-            &copy; 2025 OddsSite. All rights reserved. Gambling is forbidden to
+            &copy; 2025 Odds. All rights reserved. Gambling is forbidden to
             minors under 18 years of age. Gamble responsibly.
           </p>
           <p className="mt-2 hidden lg:block">
-            OddsSite compares odds from ADM (formerly AAMS) authorized
-            bookmakers.
+            Odds compares odds from ADM (formerly AAMS) authorized bookmakers.
           </p>
         </div>
         <div className="flex justify-center text-xs mt-2 mb-12 space-x-2 lg:hidden">

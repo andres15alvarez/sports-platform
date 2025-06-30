@@ -33,11 +33,11 @@ export default function Header() {
           <Link
             href="/"
             className="flex items-center space-x-1"
-            aria-label="OddsSite Homepage"
+            aria-label="Odds Homepage"
           >
             <i className="bx bx-money text-green-700 text-2xl"></i>
             <span className="text-xl font-bold text-green-800 hidden sm:inline">
-              OddsSite
+              Odds
             </span>
           </Link>
           {/* Mobile menu button */}
